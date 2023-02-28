@@ -1,24 +1,20 @@
 # MIXED MESSAGES PORTFOLIO PROJECT
-==================================
+-----------------------------------
 ## Project Description:
-------------------------
 For this project, you will build a message generator program. Every time a user runs a program, they should get a new, randomized output. You’re welcome to take the project in a couple of different forms, like an astrology generator, inspirational message, or nonsensical jokes. To make your program truly random, the message that it outputs should be made up of at least three different pieces of data. Take what you know of JavaScript syntax so far to build the program and customize it to your liking.
-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------
 ## Key Objectives:
-------------------------------------------------------
 + Build a message generator program using JavaScript
 + Use Git version control
 + Use command line
 + Develop locally on your computer
 ------------------------------------------------------
 ## Prerequisites:
---------------------
 + JavaScript
 + Git and GitHub
 + Command Line
 -------------------------------
 ## Personal thoughts and ideas:
--------------------------------
 ### Creating a Poker hand/card dealer
 + **Poker hand/card dealer (2 unique cards) per player**
 + Allow client to enter number of players (min 2)
@@ -30,7 +26,6 @@ For this project, you will build a message generator program. Every time a user 
 4. BONUS - randomly allocate small and big blinds to 2 players.
 -------------------------------
 ## How to use my program:
--------------------------------
 + Download the program onto your computer and open it in your Integrated Development Environment (IDE), I use Visual Studio Code (VS Code).
 + Read the comments!
 + You will see in the first few lines a comment asking you to amend the value assigning the number of players to a number of your liking.
@@ -38,7 +33,6 @@ For this project, you will build a message generator program. Every time a user 
 + There are a few comments new the end of the program that you can uncomment to change the output and see under the hood of certain features if you would like to see the inner working in greater detail. On top of that, throughout the programe I have included descriptive comments labeling each section.
 -------------------------------
 ## Highlighted complexities:
--------------------------------
 + factory function to generate random cards as objects
 + setting up loop based off user input (no. players)
 + assigning UNIQUE cards to players with no duplicates is actually a very complex operation (at least the way I have done it haha)
