@@ -1,4 +1,4 @@
-# 'MIXED MESSAGES' PORTFOLIO PROJECT
+# 'MIXED MESSAGES' (VANILLA JAVASCRIPT LOGIC DEMONSTRATION) PORTFOLIO PROJECT
 ==================================
 ## Project Description:
 ------------------------
