@@ -1,53 +1,18 @@
-# MIXED MESSAGES PORTFOLIO PROJECT
-==================================
-## Project Description:
-------------------------
-### This is being done as part of the Codecadamy Full-Stack Engineer Career Path Course I am currently taking (25% complete).
+## THIS IS THE E-COMMERCE CODECADEMY PROJECT DESCRIPTION/INSTRUCTIONS THAT WERE PROVIDED TO ME BEFORE I BEGAN THE PROJECT:
 
-For this project, you will build a message generator program. Every time a user runs a program, they should get a new, randomized output. You’re welcome to take the project in a couple of different forms, like an astrology generator, inspirational message, or nonsensical jokes. To make your program truly random, the message that it outputs should be made up of at least three different pieces of data. Take what you know of JavaScript syntax so far to build the program and customize it to your liking.
-------------------------------------------------------------------------------------------------------
-## Key Objectives:
-------------------------------------------------------
-+ Build a message generator program using JavaScript
-+ Use Git version control
-+ Use command line
-+ Develop locally on your computer
-------------------------------------------------------
-## Prerequisites:
---------------------
-+ JavaScript
-+ Git and GitHub
-+ Command Line
--------------------------------
-## Personal thoughts and ideas:
--------------------------------
-### Creating a Poker hand/card dealer
-+ **Poker hand/card dealer (2 unique cards) per player**
-+ Allow client to enter number of players (min 2)
-+ Deal random hand to each player
-+ The 3 main different pieces of random data can be:
-1. Suit of card
-2. Number/figure of card
-3. Random Small (thus Big Blind) minimum wagers to play.
-4. BONUS - randomly allocate small and big blinds to 2 players.
--------------------------------
-## Highlighted complexities:
--------------------------------
-+ factory function to generate random cards as objects
-+ setting up loop based off user input (no. players)
-+ assigning UNIQUE cards to players with no duplicates is actually a very complex operation (at least the way I have done it haha)
-+ min number of players to be 2.
-+ after looking into poker documentation, max players using 1 deck = **22** (22*2 + 1(burn)+3(flop) + 1(burn)+1(turn) + 1(burn)+1(river) = 52)
--------------------------------
-## How to use my program:
--------------------------------
-+ Download the program onto your computer and open it in your Integrated Development Environment (IDE), I use Visual Studio Code (VS Code).
-+ Read the comments!
-+ You will see in the first few lines a comment asking you to amend the value assigning the number of players to a number of your liking.
-+ Once assigned, save the program with any updates, if any at all, and run the program. See what it outputs!
-+ There are a few comments new the end of the program that you can uncomment to change the output and see under the hood of certain features if you would like to see the inner working in greater detail. On top of that, throughout the programe I have included descriptive comments labeling each section.
-
-**I HOPE YOU ENJOY WHAT I HAVE CREATED, IT'S MY FIRST RELATIVELY BIG PROJECT. 
-I have currently completed 25% of the Codecademy Full-Stack Engineer Career Path with no prior IT or programming experience. I thought I'd challenge myself and exceed what the MIXED MESSAGES Porfolio Project has outlined in it's objectives. I think I have suceeded.**
+  # Challenge Project: Credit Card Checker
+  ## Overview:
+    This project is slightly different than others you have encountered thus far on Codecademy. 
+    Instead of a step-by-step tutorial, this project contains a series of open-ended requirements which describe the project you’ll be building. 
+    There are many possible ways to correctly fulfil all of these requirements, and you should expect to use the internet, Codecademy, and other 
+    resources when you encounter a problem that you cannot easily solve.
+  
+  ## Project Goals
+    Context: The fictional company that you work for suspects that credit card distributors have been mailing out cards that have invalid numbers. 
+    In this project, you have the role of a clerk who checks if credit cards are valid. Every other clerk currently checks using pencil and paper, 
+    but you’ll be optimizing the verification process using your knowledge of functions and loops to handle multiple credit cards at a time. 
+    Unlike the other clerks, you can spend the rest of your time relaxing!
+  
+  As you progress through the steps, use the terminal and console.log() statements to check the output of your loops and functions.
 
 **Kind Regards, Dylan :)**
