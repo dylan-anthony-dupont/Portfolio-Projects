@@ -1,4 +1,4 @@
-# MIXED MESSAGES PORTFOLIO PROJECT
+# 'MIXED MESSAGES' PORTFOLIO PROJECT
 ==================================
 ## Project Description:
 ------------------------
