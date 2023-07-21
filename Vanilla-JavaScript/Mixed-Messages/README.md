@@ -2,7 +2,7 @@
 ==================================
 ## Project Description:
 ------------------------
-### This is being done as part of the Codecademy Full-Stack Engineer Career Path Course I am currently taking (25% complete).
+### This was done as part of the Codecademy Full-Stack Engineer Career Path Course I am doing online in my spare time.
 
 For this project, you will build a message generator program. Every time a user runs a program, they should get a new, randomized output. You’re welcome to take the project in a couple of different forms, like an astrology generator, inspirational message, or nonsensical jokes. To make your program truly random, the message that it outputs should be made up of at least three different pieces of data. Take what you know of JavaScript syntax so far to build the program and customize it to your liking.
 ------------------------------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ For this project, you will build a message generator program. Every time a user 
 ------------------------------------------------------
 + Build a message generator program using JavaScript
 + Use Git version control
-+ Use command line
++ Use the command line
 + Develop locally on your computer
 ------------------------------------------------------
 ## Prerequisites:
@@ -45,8 +45,8 @@ For this project, you will build a message generator program. Every time a user 
 + Read the comments!
 + You will see in the first few lines a comment asking you to amend the value assigning the number of players to a number of your liking.
 + Once assigned, save the program with any updates, if any at all, and run the program. See what it outputs!
-+ There are a few comments new the end of the program that you can uncomment to change the output and see under the hood of certain features if you would like to see the inner working in greater detail. On top of that, throughout the programme, I have included descriptive comments labelling each section.
++ There are a few comments near the end of the program that you can uncomment to change the output and see under the hood of certain features if you would like to see the inner workings in greater detail. On top of that, throughout the programme, I have included descriptive comments labelling each section.
 
-**I thought I'd challenge myself and exceed what the MIXED MESSAGES Portfolio Project has outlined in its objectives. I think I have succeeded.**
+**I thought I'd challenge myself and exceed what the 'MIXED MESSAGES' Portfolio Project has outlined in its objectives. I think I have succeeded.**
 
 **Kind Regards, Dylan :)**
