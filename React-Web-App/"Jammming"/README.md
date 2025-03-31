@@ -1,3 +1,3 @@
 # "JAMMMING" PROJECT (React Web App & Spotify API demonstration) DESCRIPTION:
 
-## In this project, I built a React Web Application called "Jammming". I used my knowledge of React components, passing state, and requests with the Spotify API to build a website that allows users to search the Spotify library, create a custom playlist, and save it to their Spotify account - all without leaving my React Web App.
+## In this project, I built a React Web Application called "Jammming". I used my knowledge of Javascript, React components, passing state, and requests with the Spotify API to build a website that allows users to search the Spotify library, create a custom playlist, and save it to their Spotify account - all without leaving my React Web App.
