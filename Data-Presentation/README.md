@@ -4,4 +4,7 @@
 
 ## On top of R Programming Language, PowerBI, I can also use Tableau to create fixed and live dashboards to present to key stakeholders that are non-technical 
 
+# INSTRUCTIONS:
+## To use and see this file, download and open it in PowerBI
+
 ## Kind Regards, Dylan :)
