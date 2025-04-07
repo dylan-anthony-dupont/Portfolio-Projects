@@ -1,4 +1,12 @@
-# Opening Thoughts, Remarks, and the Thought Experiment
+
+
+# Extrapolating the Maximum Human IQ Using Monte Carlo Simulation
+
+This project simulates the expected **maximum IQ score** one might find in a population of any given sample size — including the **entire world population** (~8.062 billion people). By combining **Monte Carlo simulation**, **statistical modeling**, and **logarithmic extrapolation**, we can estimate how "exceptional" the most exceptional person might statistically be and extrapolate under known assumptions to converge to a very specific prediction of the maximum IQ score **ON EARTH!**
+
+-----------------------------------------------------------------
+
+## Opening Thoughts, Remarks, and the Thought Experiment
 
 - “Could we estimate the intelligence of the smartest human alive today purely from statistical and probability laws?”
 - “How rare would the rarest mind truly be?”
@@ -6,12 +14,6 @@
 - “Or do these maximum recorded IQs need to be scaled back based on statistical implausibility?”
 
 What followed was an exploration not just in code, but in probability, thresholds, and the outer limits of what statistics can tell us about the outliers walking among us.
-
------------------------------------------------------------------
-
-# Extrapolating the Maximum Human IQ Using Monte Carlo Simulation
-
-This project simulates the expected **maximum IQ score** one might find in a population of any given size — including the **entire world population** (~8.062 billion people). By combining **Monte Carlo simulation**, **statistical modeling**, and **logarithmic extrapolation**, we estimate how "exceptional" the most exceptional person might statistically be.
 
 -----------------------------------------------------------------
 
