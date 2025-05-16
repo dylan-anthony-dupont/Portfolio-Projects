@@ -1,7 +1,7 @@
 # C++ Prime Number Tool — Sieve of Eratosthenes Simulation
 
 ## Description
-This is a simple yet educational C++ program that identifies and displays all **prime numbers** up to a user-defined limit using the **Sieve of Eratosthenes** — a classic algorithm in number theory.
+This is a simple yet fundamental C++ program that identifies and displays all **prime numbers** up to a user-defined limit using the **Sieve of Eratosthenes** — a classic algorithm in number theory.
 
 It includes visualisation of which numbers are marked prime, step-by-step sieve progress, and clean console output, making it ideal for:
 - Strengthening C++ fundamentals
