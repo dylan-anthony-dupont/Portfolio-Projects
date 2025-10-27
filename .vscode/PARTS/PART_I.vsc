@@ -410,6 +410,123 @@ We do not need \eqref{eq:eta2-min} in the final theorem: choosing $\eta\le\min\{
 % Part IV
 %------------------------------------------------------------------------------------------
 
+% ===================================================
+\section{Analytic tail (uniform in \texorpdfstring{$\alpha$}{alpha})}\label{sec:tail}
+% ===================================================
+
+\paragraph{Setup and notation.}
+Let $\varphi:\D\to B(\alpha,m,\delta)$ be a conformal bijection with $\varphi(0)=\alpha+im$; define the \emph{dial pair} on the horizontal centerline by
+\[
+v_\pm^\star=\pm(a+im),\qquad z_\pm\in\partial\D\ \text{ with }\ \varphi(z_\pm)=v_\pm^\star.
+\]
+Split the boundary $\partial B$ into the two \emph{quiet arcs} $Q$ (horizontal edges) and the two short vertical sides $I_\pm$.
+Write
+\[
+W:=\frac{E}{\Gout},\qquad f:=W\circ\varphi^{-1}\in H^\infty(\D).
+\]
+(Boundedness: $\Gout$ is zero-free, $W$ is analytic on the compact $B$.)
+
+% ---------------------------------------------------
+\subsection{Upper envelope via $L^2$ and harmonic measure}\label{subsec:upper}
+% ---------------------------------------------------
+
+\begin{lemma}[Boundary phase $\Rightarrow$ dial-pair deficit]\label{lem:upper-envelope}
+There exist \emph{shape-only} constants $C_{\rm rect},K_{\rm rect}>0$ such that, for suitable anchor phases $\phi_0^\pm$ (the harmonic-measure averages of $\arg W$ seen from $v_\pm^\star$),
+\begin{equation}\label{eq:upper-point}
+\big|W(v_\pm^\star)-e^{i\phi_0^\pm}\big|
+\ \le\ C_{\rm rect}\Big(\sqrt{8\delta}+2\delta\Big)\,\big(C_1\log m+C_2\big)
+\ \le\ K_{\rm rect}\!\left(\sqrt{\eta\,\alpha}+\frac{\eta\,\alpha}{\log m}\right).
+\end{equation}
+Consequently, summing at the two dial points,
+\begin{equation}\tag{4.1.1}\label{eq:Uhm}
+\mathcal{U}_{\!hm}(m,\alpha)
+:=\sum_{\pm}\big|W(v_\pm^\star)-e^{i\phi_0^\pm}\big|
+\ \le\ 2K_{\rm rect}\!\left(\sqrt{\eta\,\alpha}+\frac{\eta\,\alpha}{\log m}\right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}[Proof idea]
+Apply the Poisson sub-mean inequality to $\log|f-c|$ with $c=e^{i\phi_0^\pm}$; use $|e^{i\theta}-1|\le 2|\sin(\theta/2)|$. Control the quiet arcs in $L^2$ via the boundary Hilbert transform isometry on $\partial\D$ (M.~Riesz; see Duren~\cite[§§I.3, I.6--I.7]{DurenHp}), and the conformal $L^2$ trace to $\partial B$ on Lipschitz boundaries (Coifman--McIntosh--Meyer). Control the verticals by arclength times $\sup_{\partial B}|E'/E|$ from \eqref{eq:residual-sup} (i.e., (2.3)). Side-lengths give the $\sqrt{\delta}$ and $\delta$ factors. Background on harmonic measure and Poisson kernels: Ransford~\cite[§3.9]{Ransford}, Garnett--Marshall~\cite[Chs.~IV--V]{GarnettMarshall}.
+\end{proof}
+
+% ---------------------------------------------------
+\subsection{Lower envelope via forcing and residual budgets}\label{subsec:lower}
+% ---------------------------------------------------
+
+We track phases first for $\arg E$. By Lemma~A (short-side forcing; see (2.5)) one has on the near vertical
+\[
+\Delta_{I_+}\arg E - \Delta_{I_-}\arg E\ \ge\ \frac{\pi}{2}\quad\text{when }|\alpha-a|\le \delta.
+\]
+Subtract vertical residuals using \eqref{eq:residual-sup}--\eqref{eq:residual-perim} ((2.3)--(2.4)) and bound the horizontal budget for $\arg\Gout$ on $Q$ by the same $L^2$ method as above. Convert the resulting side gap to a dial-pair \emph{modulus} deficit for $W$ via a boundary-to-point estimate on rectangles (Poisson--Jensen/Lipschitz).
+
+\begin{lemma}[Forcing vs budgets $\Rightarrow$ dial-pair deficit]\label{lem:lower-envelope}
+There exist $c_0\in(0,1)$ and a shape-only constant $C_h'>0$ such that
+\begin{equation}\label{eq:lower}
+\mathcal{L}(m,\alpha)\ :=\ \sum_{\pm}\big||W(v_\pm^\star)|-1\big|
+\ \ge\ c_0\,\frac{\pi}{2}\ -\ \delta\Big(2c_0(C_1\log m+C_2)+C_h'(\log m+1)\Big).
+\end{equation}
+\end{lemma}
+
+\begin{quote}\small
+\textbf{Auxiliary boundary-to-point estimate (used in the proof).}
+If $H$ is harmonic on $B$, $J\subset\partial B$ is a side, $p$ is the midpoint of the opposite side, $\operatorname{osc}_{J}H\ge\Delta$, and $\sup_{\partial B}|\nabla H|\le L$, then
+\begin{equation}\tag{4.2.1}\label{eq:boundary-to-point}
+|H(p)-H(p_J)|\ \ge\ c_{\rm side}\,\Delta\ -\ C_{\rm side}\,(\operatorname{length}\partial B)\,L,
+\end{equation}
+where $p_J$ is the harmonic-measure average of $H|_J$ seen from $p$, and $c_{\rm side},C_{\rm side}>0$ depend only on the rectangle aspect. Apply with $H=\log|W|$; absorb constants into $c_0,C_h'$.
+\end{quote}
+
+% ---------------------------------------------------
+\subsection{Tail comparison (analytic, uniform in \texorpdfstring{$\alpha$}{alpha})}\label{subsec:comparison}
+% ---------------------------------------------------
+
+\begin{theorem}[Tail Comparison Theorem (analytic)]\label{thm:tail}
+Fix $\eta\in(0,\tfrac12]$. Define
+\[
+\eta_1:=\left(\frac{c_0\pi}{8\,K_{\rm rect}}\right)^{\!2}.
+\]
+If $\eta\le\eta_1$, then there exists $M_0(\eta)$ (depending only on $\eta$, $C_1,C_2$ and the shape-only constants $K_{\rm rect},C_h'$) such that, for all $m\ge M_0(\eta)$ and all $\alpha\in(0,1]$,
+\[
+\mathcal{U}_{\!hm}(m,\alpha)\ <\ \mathcal{L}(m,\alpha).
+\]
+Equivalently: no off-axis quartet can lie in any $B(\alpha,m,\delta)$ with $\delta=\eta\,\alpha/(\log m)^2$ for $m\ge M_0(\eta)$. The comparison is uniform in $\alpha$; the worst case is $\alpha=1$.
+\end{theorem}
+
+\begin{proof}[Sketch of constants]
+From \eqref{eq:Uhm},
+\[
+\mathcal{U}_{\!hm}\ \le\ 2K_{\rm rect}\Big(\sqrt{\eta\,\alpha}+\frac{\eta\,\alpha}{\log m}\Big).
+\]
+From \eqref{eq:lower},
+\[
+\mathcal{L}\ \ge\ c_0\frac{\pi}{2}\ -\ \eta\,\alpha\left(\frac{2c_0C_1+C_h'}{\log m}+\frac{2c_0C_2}{(\log m)^2}\right).
+\]
+Choose $\eta\le\eta_1$ so $2K_{\rm rect}\sqrt{\eta}\le \tfrac{c_0\pi}{4}$; then select $M_0(\eta)$ so the $O(\eta/\log m)$ terms are $<\tfrac{c_0\pi}{4}$. Uniformity in $\alpha$ follows by taking $\alpha=1$ as the extremal case.
+\end{proof}
+
+% ---------------------------------------------------
+\subsection{Interpretive (non-load-bearing): $\Omega$-neutrality and winding}\label{subsec:omega}
+% ---------------------------------------------------
+
+If $\operatorname*{ess\,sup}_{\partial B}|\arg W-\phi_0|\le \varepsilon$, then $|W(z)-e^{i\phi_0}|\le 2\sin(\varepsilon/2)$ for all $z\in B$. If $\Delta_{\partial B}\arg W=2\pi N$, then the interior contains exactly $N$ zeros counted with multiplicity (argument principle). Sub-threshold budgets force $N=0$, i.e., inner collapse $W\equiv e^{i\theta_B}$ (Bridge~\ref{prop:bridge1}). For the $\Omega$-continuum / ray viewpoint, see Appendix~J; this layer does not enter any proof in \S\ref{sec:tail}.
+
+% ---------------------------------------------------
+\subsection{Symbolic thresholds and global consequence}\label{subsec:thresholds}
+% ---------------------------------------------------
+
+Let $m_1$ be the first nontrivial height in the width-2 frame (Appendix~I). In addition to $\eta\le\eta_1$, define
+\begin{equation}\label{eq:eta2}\tag{4.5}
+\eta_2\ :=\ \frac{c_0\,\pi\,\log m_1}{4\,(2c_0C_1+C_h')}.
+\end{equation}
+If $\eta\le \min\{\eta_1,\eta_2\}$, then $M_0(\eta)\le m_1$ by Theorem~\ref{thm:tail}, hence the analytic tail excludes off-axis quartets for all $m\ge m_1$; Appendix~I implies there are no nontrivial zeros below $m_1$.
+
+\begin{remark}[Optional variant at the global analytic floor]
+Let $m_{\min}\in\{6,10\}$ denote the analytic floor used to ensure the uniform classical inputs (Part~I, §2.1). Replacing $m_1$ by $m_{\min}$ in \eqref{eq:eta2} yields
+\begin{equation}\label{eq:eta2-min}\tag{4.5.1}
+\eta_2^{(\min)}\ :=\ \frac{c_0\,\pi\,\log m_{\min}}{4\,(2c_0C_1+C_h')}.
+\end{equation}
+We do not need \eqref{eq:eta2-min} in the final theorem: choosing $\eta\le\min\{\eta_1,\eta_2\}$ already places the tail threshold below $m_1$, which is optimal for translating to the global on-axis statement.
+\end{remark}
 
 
 \end{document}
