@@ -1,0 +1,521 @@
+\documentclass[11pt]{article}
+
+% --------- Preamble ----------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm,mathrsfs,enumerate}
+\usepackage{microtype}
+\usepackage{booktabs,array,tabularx}
+\usepackage{hyperref}
+
+\numberwithin{equation}{section}
+
+% Theorem styles
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Common macros
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\Real}{Re}
+\newcommand{\osc}{\operatorname{osc}}
+
+% Notation for this manuscript
+\newcommand{\zetaTwo}{\zeta_2}
+\newcommand{\LamTwo}{\Lambda_2}
+\newcommand{\chiTwo}{\chi_2}
+\newcommand{\Gout}{G_{\mathrm{out}}}
+\newcommand{\Zloc}{Z_{\mathrm{loc}}}
+
+% Column types for wide tables
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}p{2.7cm}}
+
+% Hyperref setup
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+%------------------------------------------------------------------------------------------
+% Front matter
+%------------------------------------------------------------------------------------------
+
+\title{\Large A Height-Local Width-2 Program for Excluding Off-Axis Quartets\\[2pt]
+\large with an Analytic Tail and a Rigorous Certified Outer/Rouch\'e Criterion}
+\author{Dylan [Surname]}
+\date{} % add a date if desired
+
+\begin{document}
+\maketitle
+
+\paragraph{Authorship and AI-use disclosure.}
+The author, Dylan [Surname], designed the framework, chose all constants/normalizations, and validated all mathematics and computations. A generative assistant (GPT-5~Pro) was used only for typesetting assistance, editorial organization, and consistency checks; it is not an author. All claims are the author's responsibility (COPE/ICMJE guidance).
+
+\paragraph{MSC.} 11M06; 30C85; 30E20; 65G40.
+\paragraph{Keywords.} Riemann zeta; functional equation; outer function; Rouch\'e; harmonic measure; conformal trace; interval arithmetic.
+
+\begin{abstract}
+In the width-2 centered frame $u=2s$, $v=u-1$, let $\LamTwo(u)=\pi^{-u/4}\Gamma(u/4)\zeta(u/2)$ and $E(v)=\LamTwo(1+v)$. We present a boundary-only, height-local program to exclude off-axis quartets $\{\pm a\pm i m\}$ via two complementary routes:
+\begin{enumerate}[(1)]
+\item an analytic tail (uniform in $\alpha\in(0,1]$) using only: (i) explicit short-side forcing $\ge \pi/2$; (ii) a residual bound for $F=E/\Zloc$ with the correct perimeter factor $8\delta$; and (iii) an $L^2$+harmonic-measure boundary-to-midpoint estimate (no $L^\infty$ Hilbert transform);
+\item a rigorous certified \emph{Outer/Rouch\'e Criterion (Certification Path)}: interval arithmetic on $\partial B$ + validated Poisson + Lipschitz grid$\to$continuum enclosure $\Rightarrow \sup_{\partial B}\!\big|E-\Gout\big|/|\Gout|<1 \Rightarrow$ zero-free box, followed by Bridge~1 (inner collapse $W\equiv e^{i\theta}$) and Bridge~2 (stitching across overlaps).
+\end{enumerate}
+We also prove a \emph{corner outer interpolation} from continuous Dirichlet data, removing Julia--Carath\'eodory/$L^\infty$ pitfalls. The tail is stated symbolically: for each fixed $\eta\in(0,\tfrac12]$ there exists $M_0(\eta)$ such that no off-axis quartet lies in any $B(\alpha,m,\delta)$ with $\delta=\eta\alpha/(\log m)^2$ for all $m\ge M_0(\eta)$, uniformly in $\alpha$. Choosing $\eta\le\min\{\eta_1,\eta_2\}$ so that $M_0(\eta)\le m_1$ (first nontrivial height in width-2) yields the global on-axis theorem: no off-axis quartets exist at any height; all nontrivial zeros lie on $\Real s=\tfrac12$. The certified route provides an independent rigorous alternative for any finite band. A Symbols \& Provenance table and a constants ledger make the paper self-contained.
+\end{abstract}
+
+% ---------------------------------------------------
+\section*{Symbols \& Provenance (at a glance)}\label{sec:symbols}
+% ---------------------------------------------------
+
+\noindent\textit{Notation hygiene.} We reserve $\psi$ for the digamma function and write $\varphi:\D\to B$ for the conformal map used later (to avoid any clash).
+
+\medskip
+\begin{tabularx}{\textwidth}{@{}p{3.2cm} L L@{}}
+\toprule
+\textbf{Symbol} & \textbf{Definition / role} & \textbf{Provenance / why this form}\\
+\midrule
+$u=2s$, $v=u-1$ & Width-2 frame centered at $\Real u=1$ & Centers functional equation symmetry\\[2pt]
+$\LamTwo(u)=\pi^{-u/4}\Gamma(u/4)\zeta(u/2)$ & Completed object & Standard; functional equation for $\LamTwo$; width-2 transport\\[2pt]
+$E(v)=\LamTwo(1+v)$ & Workhorse in $v$-plane & Even \& conjugate-symmetric: $E(v)=E(-v)=\overline{E(\bar v)}$\\[2pt]
+$\zeta_2(u)=\zeta(u/2)$ & Width-2 zeta & Used in functional equation and hinge law\\[2pt]
+$A_2(u)$, $\chiTwo(u)=A_2(u)^{-1}$ & FE factors for $\zeta_2$ & Classical; $\chiTwo(u)=\pi^{u/2-1/2}\frac{\Gamma((2-u)/4)}{\Gamma(u/4)}$\\[2pt]
+$B(\alpha,m,\delta)$ & $\big[\alpha-\delta,\alpha+\delta\big]\times\big[m-\delta,m+\delta\big]$ & Square (width \& height $2\delta$) centered at $(\alpha,m)$\\[2pt]
+$\alpha\in(0,1]$ & Horizontal center (distance from hinge $\Real v=0$) & Uniform-in-$\alpha$ statements use worst case $\alpha=1$\\[2pt]
+$m\ge 10$ & Height parameter & Ensures uniform regimes for DLMF/Titchmarsh/Ivi\'c inputs\\[2pt]
+$\delta=\dfrac{\eta\,\alpha}{(\log m)^2}$, $\eta\in(0,\tfrac12]$ & Half-side length of $B$ & Balances forcing ($\pi/2$) vs residual $O(\delta\log m)$; uniform in $\alpha$\\[4pt]
+$\partial B$ & Boundary of $B(\alpha,m,\delta)$ & Used for all boundary integrals / suprema\\[2pt]
+$I_\pm$ & Short vertical sides of $\partial B$ & Near/far verticals in forcing budgets\\[2pt]
+$Q$ & Quiet arcs (horizontal sides of $\partial B$) & $L^2$-controlled in tail estimates\\[2pt]
+$\Zloc=\prod_{|\Imag\rho-m|\le1}(v-\rho)^{m_\rho}$ & Local zero/pole factors & De-singularizes $E$ near $\partial B$\\[2pt]
+$F=E/\Zloc$ & Residual analytic factor (nonvanishing near $\partial B$) & Lemma~\ref{lem:residual}: $\sup_{\partial B}\big|\frac{F'}{F}\big|\le C_1\log m+C_2$\\[2pt]
+$G(v)=\dfrac{E(1+v)}{E(1-v)}$ & Odd-lane quotient & Links to hinge via two-point identity (used in §\ref{sec:criteria})\\[2pt]
+$\Gout=e^{U+iV}$ & Outer with $|\,\Gout\,|=|E|$ on $\partial B$ & $U=\log|E|\in C(\overline B)$ solves Dirichlet; $V$ harmonic conjugate\\[2pt]
+$W=E/\Gout$ & Inner quotient ($|W|=1$ on $\partial B$ a.e.) & Collapses to unimodular constant under the certification path\\[2pt]
+$v_\pm^\star=\pm(a+im)$ & “Dial pair” on centerline & Points of evaluation in the tail (§\ref{sec:tail})\\[2pt]
+$\varphi:\D\to B$ & Conformal map (center $\alpha+im$) & Boundary $L^2$ trace used in §\ref{sec:tail}\\[2pt]
+$z_\pm\in\partial\D$ & Preimages with $\varphi(z_\pm)=v_\pm^\star$ & For Poisson kernels and $L^2$ control\\[2pt]
+$R(v)$ & Ratio in Lemma~\ref{lem:G-chi-link} & Cancels in symmetric product \eqref{eq:G-chi-product}\\[2pt]
+$U,V$ & Harmonic potential \& conjugate & Dirichlet solution for $\Gout$\\[2pt]
+$M_0(\eta)$ & Tail threshold height & From Tail Comparison Theorem\\[2pt]
+$\eta_1,\eta_2$ & Symbolic thresholds & Defined in \S\ref{subsec:comparison}, \S\ref{subsec:thresholds}\\[2pt]
+$m_1$ & First nontrivial height in width-2 & Appendix~I (classical tables)\\[2pt]
+$m_{\min}\in\{6,10\}$ & Analytic floor for uniform inputs & Part~I, §\ref{sec:boxes} (Why $m\ge10$)\\[2pt]
+$\Omega(z)=z/|z|$; $T_\lambda(u)=1+\lambda(u-1)$ & Ω-projection; FE-symmetric dilation & Interpretive only; Appendix~J\\[2pt]
+$\psi(z)$ & Digamma function $\Gamma'(z)/\Gamma(z)$ & DLMF §\,5.5 (reflection), §\,5.11 (vertical-strip bounds)\\[2pt]
+$C_1=46,\ C_2=8$ & Residual envelope constants & DLMF §\,5.11; Titchmarsh §\,14; Ivi\'c Ch.\,9 (width-2 transport)\\[2pt]
+$c_0=\tfrac1{20}$ & Phase$\to$deficit constant & Conservative Poisson--Jensen/Lipschitz on rectangles\\[2pt]
+$C_{\rm rect},K_{\rm rect},C_h,C_h'$ & Geometry/$L^2$ trace constants & Depend only on rectangle shape; independent of $m,\alpha$\\
+\bottomrule
+\end{tabularx}
+
+\medskip
+\noindent\textit{Sources (for Part~I).} Digamma: DLMF §\,5.5 (reflection), §\,5.11 (vertical-strip bounds). $\zeta'/\zeta$: Titchmarsh, \textit{The Theory of the Riemann Zeta-Function}, §\,14; Ivi\'c, \textit{The Riemann Zeta-Function}, Ch.\,9.
+
+% ---------------------------------------------------
+\section{Frames, symmetry, and the hinge law}\label{sec:frames}
+% ---------------------------------------------------
+
+We work in the width-2 centered frame $u=2s$, $v=u-1$, with
+\[
+\LamTwo(u)=\pi^{-u/4}\Gamma\!\Big(\frac{u}{4}\Big)\zeta\!\Big(\frac{u}{2}\Big),
+\qquad
+E(v):=\LamTwo(1+v).
+\]
+Then $E(v)=E(-v)=\overline{E(\bar v)}$; off-axis zeros appear as quartets $\{\pm a\pm im\}$.
+
+\begin{theorem}[Hinge--Unitarity]\label{thm:hinge}
+Let $\zeta_2(u)=\zeta(u/2)$ and $\zeta_2(u)=A_2(u)\,\zeta_2(2-u)$ with
+\[
+\chiTwo(u):=A_2(u)^{-1}=\pi^{u/2-1/2}\frac{\Gamma\big(\frac{2-u}{4}\big)}{\Gamma\big(\frac{u}{4}\big)}.
+\]
+\emph{(i)} If $\zeta_2(p)\ne 0$ and $|\zeta_2(2-p)|=|\zeta_2(\overline p)|$, then $|\chiTwo(p)|=1$ and hence $\Real p=1$. \;
+\emph{(ii)} If $p_0$ is a zero of multiplicity $r\ge1$ and $|\zeta_2^{(r)}(2-p_0)|=|\zeta_2^{(r)}(\overline{p_0})|$, then $\Real p_0=1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply the functional equation and conjugation to obtain $|\zeta_2(2-p)|=|A_2(p)|^{-1}|\zeta_2(p)|=|\zeta_2(\overline p)|$, hence $|A_2(p)|=1$ and $|\chiTwo(p)|=1$. Using the digamma reflection identity $\psi(1-z)-\psi(z)=\pi\cot(\pi z)$ (DLMF §\,5.5) and vertical-strip bounds (DLMF §\,5.11) one checks $\Real u\mapsto\log|\chiTwo(u)|$ is strictly monotone with a unique zero at $\Real u=1$. The zero case follows by differentiating the functional equation $r$ times at $p_0$. A fully detailed 8-line proof appears in Appendix~A.
+\end{proof}
+
+\paragraph{(Interpretive; non-load-bearing) $\Omega$-continuum and ray invariance.}
+Let $\Omega(z)=z/|z|$ forget scale. Functional-equation-symmetric dilations $T_\lambda(u)=1+\lambda(u-1)$ preserve rays; $\tan\theta=\Imag v/\Real v=m/a$. At a nontrivial zero $a=0$, the ray is vertical. This layer is contextual only; the proofs below do not use it.
+
+% ---------------------------------------------------
+\section{Boxes, de-singularization, residual control, and forcing}\label{sec:boxes}
+% ---------------------------------------------------
+
+Fix $m\ge 10$, $\alpha\in(0,1]$, and
+\begin{equation}\label{eq:box-delta}
+B(\alpha,m,\delta)=\big[\alpha-\delta,\alpha+\delta\big]\times\big[m-\delta,m+\delta\big],
+\qquad
+\delta=\frac{\eta\,\alpha}{(\log m)^2},\ \ \eta\in(0,\tfrac12].
+\end{equation}
+
+\paragraph{Why $m\ge 10$.}
+This ensures uniform applicability of the vertical-strip digamma bounds (DLMF §\,5.11) and of the $\zeta'/\zeta$ expansions on $1/2\le\sigma\le1,\ t\ge 3$ (Titchmarsh §\,14; Ivi\'c Ch.\,9) after width-2 transport (since $u=2s$ doubles ordinates, $t\ge3$ corresponds to $m\ge 6$; we take $m\ge10$ for margin).
+
+\paragraph{Why $\delta=\eta\alpha/(\log m)^2$.}
+This balances the scale-free forcing ($\ge\pi/2$) against residual budgets $O(\delta\log m)$ and yields an $L^2$+harmonic-measure upper envelope (in §\,\ref{sec:tail}) that is uniformly small in $\alpha$.
+
+\begin{lemma}[Short boxes stay in $\Real v>0$]\label{lem:box-right}
+For $m\ge10$ and $\eta\le\tfrac12$, we have $\eta/(\log m)^2\le 0.1$, hence $\delta\le 0.1\,\alpha$ and $B(\alpha,m,\delta)\subset\{\Real v>0\}$.
+\end{lemma}
+
+\paragraph{De-singularization on $\partial B$.}
+Let
+\begin{equation}\label{eq:Zloc}
+\Zloc(v)=\prod_{\rho:\,|\Imag\rho-m|\le 1}(v-\rho)^{m_\rho},\qquad
+F(v):=\frac{E(v)}{\Zloc(v)}.
+\end{equation}
+Then $F$ is analytic and zero-free on a neighborhood of $\partial B$.
+
+\paragraph{Boundary contact convention.}
+If a zero or pole meets $\partial B$, shrink $\delta$ by a factor $1-\varepsilon$ or shift $\alpha$ by $O(\delta)$. All constants/inequalities below (Lemma~\ref{lem:residual}, Lemma~\ref{lem:short-side}) are stable under $O(\delta)$ changes.
+
+\begin{lemma}[Residual envelope]\label{lem:residual}
+On $\partial B$,
+\begin{equation}\label{eq:residual-sup}
+\sup_{\partial B}\Big|\frac{F'}{F}\Big|\ \le\ C_1\log m + C_2,\qquad (C_1,C_2)=(46,8),
+\end{equation}
+and
+\begin{equation}\label{eq:residual-perimeter}
+\big|\Delta_{\partial B}\arg F\big|\ \le\ 8\delta\,\big(C_1\log m+C_2\big).
+\end{equation}
+\emph{Justification.} DLMF §\,5.11 controls $\psi$ on vertical strips; Titchmarsh §\,14 (esp.\ Thms.\,14.5–14.9) and Ivi\'c Ch.\,9 control $\zeta'/\zeta$ on $1/2\le\sigma\le 1,\ t\ge 3$. After removing local poles via \eqref{eq:Zloc} and transporting to width-2, we obtain \eqref{eq:residual-sup}; \eqref{eq:residual-perimeter} is perimeter $8\delta$ times the sup.
+\end{lemma}
+
+\begin{lemma}[Short-side forcing]\label{lem:short-side}
+Let $Z_{\rm pair}(v)=(v-(a+im))(v-(-a+im))$. On the near vertical
+\[
+I_+=\{\alpha+i y:\ |y-m|\le \delta\},\quad\text{with }|\alpha-a|\le\delta,
+\]
+one has
+\begin{equation}\label{eq:short-side}
+\Delta_{I_+}\arg Z_{\rm pair}
+=2\arctan\frac{\delta}{|\alpha-a|}+2\arctan\frac{\delta}{\alpha+a}\ \ge\ \frac{\pi}{2}.
+\end{equation}
+\end{lemma}
+
+% ---------------------------------------------------
+\section{Boundary-only criteria, bridges, and corner interpolation}\label{sec:criteria}
+% ---------------------------------------------------
+
+\subsection{Two-point Schur/outer criterion (boundary-only)}\label{subsec:schur-criterion}
+
+Let $\varphi:\D\to B$ be a conformal bijection with $\varphi(0)$ the box center and with the boundary map avoiding corners at the two marked points. Define
+\begin{equation}\label{eq:schur-def}
+G(v):=\frac{E(1+v)}{E(1-v)},\qquad \Phi:=(G/H)\circ\varphi,
+\end{equation}
+where $H$ is an \emph{outer majorant} for $G$ on $B$: that is, $M\in C(\partial B)$ with $M\ge |G|$ almost everywhere on $\partial B$ and $H=e^{U+iV}$ where $U$ is the continuous Dirichlet solution with boundary data $\log M$ and $V$ a harmonic conjugate (uniqueness modulo a unimodular constant). Then $\Phi\in H^\infty(\D)$ with $\|\Phi\|_\infty\le 1$; we call this the \emph{two-point Schur/outer criterion}.
+
+\begin{remark}[How the criterion is used]
+If a verified boundary pattern places $|\Phi|$ at $1$ at two designated boundary points (non-corner, in the sense of angular limits) and strictly below $1$ on the complementary arcs (``quiet-arc contraction''), then the Carath\'eodory--Julia theory for angular derivatives yields unimodular boundary pins at those points for $\Phi$; transporting back to $B$ gives quantitative constraints on $|G(\pm(a+im))|$. We emphasize this is a \emph{criterion}: we do not assert interior unimodularity of $\Phi$. See Duren~\cite[Chs.~II, IV--V]{DurenHp} and Garnett~\cite[Chs.~II--III]{GarnettBAF}.
+\end{remark}
+
+\begin{lemma}[Two-point link for $|G|$ and $|\chi_2|$]\label{lem:G-chi-link}
+For $v=a+im$ one has
+\begin{equation}\label{eq:G-chi-link}
+|G(v)|=\big|\chi_2(1+v)\big|\cdot R(v),\qquad R(-v)=R(v)^{-1},
+\end{equation}
+hence
+\begin{equation}\label{eq:G-chi-product}
+|G(a+im)|\,|G(-a+im)|
+=\big|\chi_2(1+a+im)\big|\,\big|\chi_2(1-a+im)\big|.
+\end{equation}
+Here
+\[
+R(v)=\pi^{-a}\left|\frac{\Gamma\!\Big(\frac{2+v}{4}\Big)}{\Gamma\!\Big(\frac{2-v}{4}\Big)}\right|
+\left|\frac{\zeta\!\big(1+\tfrac{v}{2}\big)}{\zeta\!\big(1-\tfrac{v}{2}\big)}\right|,
+\qquad R(-v)=R(v)^{-1}.
+\]
+\emph{Proof sketch.}
+Expand $\LamTwo$ at $1\pm v$ and collect $\Gamma$ and $\pi$ factors; the stated identity follows directly; multiplying at $\pm v$ cancels $R$ and yields \eqref{eq:G-chi-product}. If $|G(\pm(a+im))|=1$, then $|\chi_2(1\pm(a+im))|=1$ and Theorem~\ref{thm:hinge} forces $a=0$.
+\end{lemma}
+
+\subsection{Outer/Rouch\'e Criterion (Certification Path)}\label{subsec:rouche-criterion}
+
+Let $U=\log|E|\in C(\overline B)$ solve the Dirichlet problem on $B$ and let $V$ be a harmonic conjugate fixed by an anchor. Set
+\[
+\Gout:=e^{U+iV}.
+\]
+Then $\Gout$ is analytic and zero-free on $B$ and satisfies $|\Gout|=|E|$ nontangentially on $\partial B$ (almost everywhere with respect to arclength). Existence/uniqueness of $\Gout$ (up to a unimodular constant) follows from the Dirichlet solution and harmonic conjugation in simply connected domains; see Duren~\cite[§II.5]{DurenHp} and Garnett~\cite[§II.2]{GarnettBAF}.
+
+\begin{proposition}[Outer/Rouch\'e Criterion]\label{prop:rouche-criterion}
+If
+\begin{equation}\label{eq:rouche-ratio}
+\sup_{v\in\partial B}\frac{|E(v)-\Gout(v)|}{|\Gout(v)|}\ <\ 1,
+\end{equation}
+then $E$ is zero-free in $B$ (Rouch\'e's theorem; e.g.\ Ahlfors~\cite[§§5--6]{Ahlfors}, Conway~\cite[Ch.~VI]{Conway}). Consequently the inner quotient $W:=E/\Gout$ is analytic and nonvanishing on $B$ with $|W|=1$ almost everywhere on $\partial B$.
+\end{proposition}
+
+\begin{proposition}[Bridge~1: inner collapse]\label{prop:bridge1}
+Under \eqref{eq:rouche-ratio}, $\log|W|$ is harmonic with zero boundary trace on $B$, hence $|W|\equiv 1$ on $B$. By the open mapping theorem, $W\equiv e^{i\theta_B}$ on $B$ for some real constant $\theta_B$.
+\end{proposition}
+
+\begin{proposition}[Bridge~2: stitching]\label{prop:bridge2}
+If $B_1,B_2$ overlap and $W\equiv e^{i\theta_{B_j}}$ on $B_j$ $(j=1,2)$, then $e^{i\theta_{B_1}}=e^{i\theta_{B_2}}$ on $B_1\cap B_2$ by analyticity. Hence a band tiled by certified boxes inherits a single unimodular phase.
+\end{proposition}
+
+\begin{remark}[Certification recipe and reproducibility]
+The verification of \eqref{eq:rouche-ratio} is performed by a robust, rigorous pipeline detailed in Appendix~G: (i) interval enclosures for $|E|$ and $\arg E$ on $\partial B$; (ii) a validated Poisson solver on $\D$ to reconstruct $U=\log|\Gout|$ and transport to $B$; (iii) an interval reconstruction of $\arg\Gout$; and (iv) a grid$\to$continuum Lipschitz enclosure using $\sup_{\partial B}|E'/E|$ (Lemma~\ref{lem:residual}). Appendix~G also pins libraries (e.g.\ Arb), precisions, and boundary meshes to ensure reproducibility. No interior zero-freeness is assumed unless deduced from \eqref{eq:rouche-ratio}.
+\end{remark}
+
+\subsection{Corner outer interpolation (two-point)}\label{subsec:corner-interp}
+
+\begin{theorem}[Corner outer interpolation]\label{thm:corner-outer}
+Let $G$ be analytic in a neighborhood of $\overline B$. Let $h\in C(\partial B)$ satisfy $h\ge 0$ and $h\equiv 0$ on small boundary arcs containing the two top corners $C_\pm$. Let $H=e^{U+iV}$ be the outer on $B$ with $U|\_{\partial B}=\log|G|+h$. Then the nontangential limits at $C_\pm$ exist and
+\[
+|H(C_\pm)|=|G(C_\pm)|.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Rectangles are Wiener-regular; continuous boundary data admit a harmonic extension continuous up to $\overline B$ (Kellogg, Ch.~VI; Axler--Bourdon--Ramey, Thm.~6.12). Since $h=0$ on arcs about $C_\pm$, $U=\log|G|$ there; exponentiating gives the stated corner modulus equality. Conformal parametrizations and boundary traces for polygons are classical (Ahlfors, Ch.~VIII; Pommerenke, §§2–3). A full proof is provided in Appendix~F.
+\end{proof}
+
+\begin{remark}[Non-circularity in \S\ref{sec:criteria}]
+All steps above are boundary-only. In particular, the Schur/outer criterion uses a boundary majorant $M\ge|G|$ and outer synthesis for $H$; the Outer/Rouch\'e criterion derives interior zero-freeness \emph{only} from the verified ratio~\eqref{eq:rouche-ratio}; and the corner interpolation is a statement about nontangential boundary limits of outer functions with continuous boundary data.
+\end{remark}
+
+% ===================================================
+\section{Analytic tail (uniform in \texorpdfstring{$\alpha$}{alpha})}\label{sec:tail}
+% ===================================================
+
+\paragraph{Setup and notation.}
+Let $\varphi:\D\to B(\alpha,m,\delta)$ be a conformal bijection with $\varphi(0)=\alpha+im$; define the \emph{dial pair} on the horizontal centerline by
+\[
+v_\pm^\star=\pm(a+im),\qquad z_\pm\in\partial\D\ \text{ with }\ \varphi(z_\pm)=v_\pm^\star.
+\]
+Split the boundary $\partial B$ into the two \emph{quiet arcs} $Q$ (horizontal edges) and the two short vertical sides $I_\pm$.
+Write
+\[
+W:=\frac{E}{\Gout},\qquad f:=W\circ\varphi^{-1}\in H^\infty(\D).
+\]
+(Boundedness: $\Gout$ is zero-free, $W$ is analytic on the compact $B$.)
+
+% ---------------------------------------------------
+\subsection{Upper envelope via $L^2$ and harmonic measure}\label{subsec:upper}
+% ---------------------------------------------------
+
+\begin{lemma}[Boundary phase $\Rightarrow$ dial-pair deficit]\label{lem:upper-envelope}
+There exist \emph{shape-only} constants $C_{\rm rect},K_{\rm rect}>0$ such that, for suitable anchor phases $\phi_0^\pm$ (the harmonic-measure averages of $\arg W$ seen from $v_\pm^\star$),
+\begin{equation}\label{eq:upper-point}
+\big|W(v_\pm^\star)-e^{i\phi_0^\pm}\big|
+\ \le\ C_{\rm rect}\Big(\sqrt{8\delta}+2\delta\Big)\,\big(C_1\log m+C_2\big)
+\ \le\ K_{\rm rect}\!\left(\sqrt{\eta\,\alpha}+\frac{\eta\,\alpha}{\log m}\right).
+\end{equation}
+Consequently, summing at the two dial points,
+\begin{equation}\tag{4.1.1}\label{eq:Uhm}
+\mathcal{U}_{\!hm}(m,\alpha)
+:=\sum_{\pm}\big|W(v_\pm^\star)-e^{i\phi_0^\pm}\big|
+\ \le\ 2K_{\rm rect}\!\left(\sqrt{\eta\,\alpha}+\frac{\eta\,\alpha}{\log m}\right).
+\end{equation}
+\end{lemma}
+
+\begin{proof}[Proof idea]
+Apply the Poisson sub-mean inequality to $\log|f-c|$ with $c=e^{i\phi_0^\pm}$; use $|e^{i\theta}-1|\le 2|\sin(\theta/2)|$. Control the quiet arcs in $L^2$ via the boundary Hilbert transform isometry on $\partial\D$ (M.~Riesz; see Duren~\cite[§§I.3, I.6--I.7]{DurenHp}), and the conformal $L^2$ trace to $\partial B$ on Lipschitz boundaries (Coifman--McIntosh--Meyer). Control the verticals by arclength times $\sup_{\partial B}|E'/E|$ from \eqref{eq:residual-sup}. Side-lengths give the $\sqrt{\delta}$ and $\delta$ factors. Background: Ransford~\cite[§3.9]{Ransford}, Garnett--Marshall~\cite[Chs.~IV--V]{GarnettMarshall}.
+\end{proof}
+
+% ---------------------------------------------------
+\subsection{Lower envelope via forcing and residual budgets}\label{subsec:lower}
+% ---------------------------------------------------
+
+We track phases first for $\arg E$. By Lemma~\ref{lem:short-side} one has on the near vertical
+\[
+\Delta_{I_+}\arg E - \Delta_{I_-}\arg E\ \ge\ \frac{\pi}{2}\quad\text{when }|\alpha-a|\le \delta.
+\]
+Subtract vertical residuals using \eqref{eq:residual-sup}--\eqref{eq:residual-perimeter} and bound the horizontal budget for $\arg\Gout$ on $Q$ by the same $L^2$ method as above. Convert the resulting side gap to a dial-pair \emph{modulus} deficit for $W$ via a boundary-to-point estimate on rectangles (Poisson--Jensen/Lipschitz).
+
+\begin{lemma}[Forcing vs budgets $\Rightarrow$ dial-pair deficit]\label{lem:lower-envelope}
+There exist $c_0\in(0,1)$ and a shape-only constant $C_h'>0$ such that
+\begin{equation}\label{eq:lower}
+\mathcal{L}(m,\alpha)\ :=\ \sum_{\pm}\big||W(v_\pm^\star)|-1\big|
+\ \ge\ c_0\,\frac{\pi}{2}\ -\ \delta\Big(2c_0(C_1\log m+C_2)+C_h'(\log m+1)\Big).
+\end{equation}
+\end{lemma}
+
+\begin{quote}\small
+\textbf{Auxiliary boundary-to-point estimate (used in the proof).}
+If $H$ is harmonic on $B$, $J\subset\partial B$ is a side, $p$ is the midpoint of the opposite side, $\osc_{J}H\ge\Delta$, and $\sup_{\partial B}|\nabla H|\le L$, then
+\begin{equation}\tag{4.2.1}\label{eq:boundary-to-point}
+|H(p)-H(p_J)|\ \ge\ c_{\rm side}\,\Delta\ -\ C_{\rm side}\,(\operatorname{length}\partial B)\,L,
+\end{equation}
+where $p_J$ is the harmonic-measure average of $H|_J$ seen from $p$, and $c_{\rm side},C_{\rm side}>0$ depend only on the rectangle aspect. Apply with $H=\log|W|$; absorb constants into $c_0,C_h'$.
+\end{quote}
+
+% ---------------------------------------------------
+\subsection{Tail comparison (analytic, uniform in \texorpdfstring{$\alpha$}{alpha})}\label{subsec:comparison}
+% ---------------------------------------------------
+
+\begin{theorem}[Tail Comparison Theorem (analytic)]\label{thm:tail}
+Fix $\eta\in(0,\tfrac12]$. Define
+\[
+\eta_1:=\left(\frac{c_0\pi}{8\,K_{\rm rect}}\right)^{\!2}.
+\]
+If $\eta\le\eta_1$, then there exists $M_0(\eta)$ (depending only on $\eta$, $C_1,C_2$ and the shape-only constants $K_{\rm rect},C_h'$) such that, for all $m\ge M_0(\eta)$ and all $\alpha\in(0,1]$,
+\[
+\mathcal{U}_{\!hm}(m,\alpha)\ <\ \mathcal{L}(m,\alpha).
+\]
+Equivalently: no off-axis quartet can lie in any $B(\alpha,m,\delta)$ with $\delta=\eta\,\alpha/(\log m)^2$ for $m\ge M_0(\eta)$. The comparison is uniform in $\alpha$; the worst case is $\alpha=1$.
+\end{theorem}
+
+\begin{proof}[Sketch of constants]
+From \eqref{eq:Uhm},
+\[
+\mathcal{U}_{\!hm}\ \le\ 2K_{\rm rect}\Big(\sqrt{\eta\,\alpha}+\frac{\eta\,\alpha}{\log m}\Big).
+\]
+From \eqref{eq:lower},
+\[
+\mathcal{L}\ \ge\ c_0\frac{\pi}{2}\ -\ \eta\,\alpha\left(\frac{2c_0C_1+C_h'}{\log m}+\frac{2c_0C_2}{(\log m)^2}\right).
+\]
+Choose $\eta\le\eta_1$ so $2K_{\rm rect}\sqrt{\eta}\le \tfrac{c_0\pi}{4}$; then select $M_0(\eta)$ so the $O(\eta/\log m)$ terms are $<\tfrac{c_0\pi}{4}$. Uniformity in $\alpha$ follows by taking $\alpha=1$ as the extremal case.
+\end{proof}
+
+% ---------------------------------------------------
+\subsection{Interpretive (non-load-bearing): $\Omega$-neutrality and winding}\label{subsec:omega}
+% ---------------------------------------------------
+
+If $\operatorname*{ess\,sup}_{\partial B}|\arg W-\phi_0|\le \varepsilon$, then $|W(z)-e^{i\phi_0}|\le 2\sin(\varepsilon/2)$ for all $z\in B$. If $\Delta_{\partial B}\arg W=2\pi N$, then the interior contains exactly $N$ zeros counted with multiplicity (argument principle). Sub-threshold budgets force $N=0$, i.e., inner collapse $W\equiv e^{i\theta_B}$ (Bridge~\ref{prop:bridge1}). For the $\Omega$-continuum / ray viewpoint, see Appendix~J; this layer does not enter any proof in \S\ref{sec:tail}.
+
+% ---------------------------------------------------
+\subsection{Symbolic thresholds and global consequence}\label{subsec:thresholds}
+% ---------------------------------------------------
+
+Let $m_1$ be the first nontrivial height in the width-2 frame (Appendix~I). In addition to $\eta\le\eta_1$, define
+\begin{equation}\label{eq:eta2}\tag{4.5}
+\eta_2\ :=\ \frac{c_0\,\pi\,\log m_1}{4\,(2c_0C_1+C_h')}.
+\end{equation}
+If $\eta\le \min\{\eta_1,\eta_2\}$, then $M_0(\eta)\le m_1$ by Theorem~\ref{thm:tail}, hence the analytic tail excludes off-axis quartets for all $m\ge m_1$; Appendix~I implies there are no nontrivial zeros below $m_1$.
+
+\begin{remark}[Optional variant at the global analytic floor]
+Let $m_{\min}\in\{6,10\}$ denote the analytic floor used to ensure the uniform classical inputs (Part~I, §\ref{sec:boxes}). Replacing $m_1$ by $m_{\min}$ in \eqref{eq:eta2} yields
+\begin{equation}\label{eq:eta2-min}\tag{4.5.1}
+\eta_2^{(\min)}\ :=\ \frac{c_0\,\pi\,\log m_{\min}}{4\,(2c_0C_1+C_h')}.
+\end{equation}
+We do not need \eqref{eq:eta2-min} in the final theorem: choosing $\eta\le\min\{\eta_1,\eta_2\}$ already places the tail threshold below $m_1$, which is optimal for translating to the global on-axis statement.
+\end{remark}
+
+% ===================================================
+\appendix
+% ===================================================
+
+\section*{Appendices (A--J): proofs, constants, certification, and the $\Omega$-layer}
+
+\section{Hinge--Unitarity (8-line proof)}\label{app:hinge}
+Let $u=\sigma+it$. From $\zeta_2(u)=A_2(u)\zeta_2(2-u)$ and $|\zeta_2(\overline u)|=|\zeta_2(u)|$ we get $|\chi_2(u)|=|\zeta_2(u)|/|\zeta_2(2-u)|$. Set $f(\sigma)=\log|\chi_2(\sigma+it)|$. Using $\partial_x\log|\Gamma(x+iy)|=\Real\psi(x+iy)$ and $\psi(1-z)-\psi(z)=\pi\cot(\pi z)$, one computes $f'(\sigma)$ has a fixed sign away from $\sigma=1$ and $f(1)=0$, hence $|\chi_2(u)|=1\iff \Real u=1$. For a zero of multiplicity $r\ge1$, differentiate $r$ times and apply the same monotonicity. Full details follow the classical argument and are omitted for brevity.
+
+\section{Constants ledger and width-2 transport}\label{app:constants}
+\emph{Digamma (DLMF §\,5.11).} $\psi(z)=\log z+O(1)$ uniformly on vertical strips; transported to width-2 gives $\Real\psi((1+v)/4)=\log|m|+O(1)$ on $\partial B$.
+\smallskip
+
+\noindent\emph{$\zeta'/\zeta$ (Titchmarsh §\,14; Ivi\'c Ch.\,9).}
+\[
+\frac{\zeta'}{\zeta}(\sigma+it)=\sum_{|\Imag\rho-t|\le 1}\frac{1}{\sigma+it-\rho}+O(\log t)\quad (1/2\le\sigma\le1,\ t\ge 3).
+\]
+Removing local poles via $\Zloc$ yields \eqref{eq:residual-sup}. The perimeter bound \eqref{eq:residual-perimeter} is $8\delta$ times the sup.
+\smallskip
+
+\noindent\emph{Hilbert transform (only $L^2$).} On $\partial\D$ the boundary Hilbert transform is an $L^2$ isometry (M.~Riesz). Under $\varphi:\D\to B$, boundary traces induce a bounded $L^2$ isomorphism with norm depending only on the rectangle geometry (Coifman--McIntosh--Meyer). We fold these into $C_{\rm rect},K_{\rm rect},C_h,C_h'$.
+
+\section{Bridges (inner collapse and stitching)}\label{app:bridges}
+\textbf{Bridge~1.} If \eqref{eq:rouche-ratio} holds, then $E$ and $\Gout$ have the same zero count, $\Gout$ is zero-free, $|W|=1$ on $\partial B$. Thus $\log|W|\equiv0$, and by open mapping $W\equiv e^{i\theta_B}$.
+\smallskip
+
+\noindent\textbf{Bridge~2.} If $W\equiv e^{i\theta_{B_j}}$ on overlapping boxes $B_j$, the phases agree on overlaps and propagate by analyticity.
+
+\section{Conformal normalization $\varphi$}\label{app:conformal}
+Fix $\varphi:\D\to B(\alpha,m,\delta)$ with $\varphi(0)=\alpha+im$ and $\varphi(\pm1)$ the top corners. By symmetry, $\varphi((-1,1))$ is the horizontal centerline; there is a unique $r_0\in(0,1)$ with $\varphi(\pm r_0)=\pm(a+im)$. Corner approach regions admit nontangential limits.
+
+\section{$L^2$ Hilbert and conformal trace (detail for \texorpdfstring{\eqref{eq:upper-point}}{(4.1)})}\label{app:L2}
+Let $f=W\circ\varphi^{-1}\in H^\infty(\D)$. For $c=e^{i\phi_0}$, $\log|f-c|$ is subharmonic and
+\[
+\log|f(z)|\le \int_{0}^{2\pi}\log|f(e^{it})-c|\,P(z,e^{it})\,\frac{dt}{2\pi}.
+\]
+On $\partial\D$, $|e^{i\theta}-1|\le 2|\sin(\theta/2)|$; use the $L^2$ isometry on $\partial\D$ and the conformal $L^2$ trace to $\partial B$ to bound $\|\arg W-\phi_0\|_{L^2(\partial B)}\lesssim \sqrt{|\partial B|}\,\sup_{\partial B}|E'/E|$. Side-lengths produce the $\sqrt{\delta}$ and $\delta$ factors, yielding \eqref{eq:upper-point}.
+
+\section{Corner outer interpolation (full proof)}\label{app:corner}
+With $U=\log|G|+h\in C(\overline B)$, solve Dirichlet to get $U$ harmonic; choose harmonic conjugate $V$ (normalized by an anchor), and set $H=e^{U+iV}$. At corners where $h=0$, nontangential limits satisfy $|H|=|G|$. Regularity of rectangle corners and boundary traces are classical (Kellogg; Axler--Bourdon--Ramey; Ahlfors; Pommerenke).
+
+\section{Certified Outer/Rouch\'e protocol (rigorous recipe)}\label{app:cert}
+\textbf{(i) Boundary intervals.} Interval arithmetic (e.g.\ Arb) for $|E|$, $\arg E$ on $\partial B$ at a grid $(N_{\rm side}\times N_{\rm side})$.
+\smallskip
+
+\noindent\textbf{(ii) Validated Poisson.} Interval Dirichlet solver on $\D$ for $U=\log|\Gout|$, with conformal push-forward to $\partial B$.
+\smallskip
+
+\noindent\textbf{(iii) Phase reconstruction.} Interval Hilbert on $\partial\D$, conformal trace to $\partial B$.
+\smallskip
+
+\noindent\textbf{(iv) Grid$\to$continuum.} Lipschitz enclosure via $\sup_{\partial B}|E'/E|$ and explicit pair terms (Lemma~\ref{lem:residual}). Check \eqref{eq:rouche-ratio} in intervals. Pin library versions, precision, and grids for reproducibility.
+
+\section{Toolbox (structural; not used in proofs)}\label{app:toolbox}
+Catalog of auxiliary identities/filters (modulated families, ray curvature extractor). Structural and not used in §§\ref{sec:boxes}--\ref{sec:tail}.
+
+\section{First nontrivial height in width-2}\label{app:firstheight}
+Let $t_1\approx 14.134725\ldots$ be the least nontrivial ordinate of $\zeta(s)$ (Titchmarsh--Heath-Brown). In width-2 $u=2s$, $m_1=2t_1\approx 28.26945$. There are no nontrivial zeros below $m_1$.
+
+\section{$\Omega$-framework (interpretive)}\label{app:omega}
+$\Omega$-projection $\Omega(z)=z/|z|$; functional-equation-symmetric dilations $T_\lambda(u)=1+\lambda(u-1)$ preserve rays; $\Omega$-neutrality (small boundary phase forces a single $\Omega$-state inside) is a restatement of inner collapse. This layer is interpretive only; proofs in the body do not depend on it.
+
+% ---------------------------------------------------
+\section*{References}
+% ---------------------------------------------------
+\begin{thebibliography}{99}
+
+\bibitem{DLMF}
+NIST Digital Library of Mathematical Functions, \emph{DLMF}, \url{https://dlmf.nist.gov}, esp.\ §5.5, §5.11.
+
+\bibitem{Titchmarsh}
+E.\ C.\ Titchmarsh (rev.\ D.\ R.\ Heath-Brown),
+\emph{The Theory of the Riemann Zeta-Function}, 2nd ed., Oxford Univ.\ Press, 1986.
+
+\bibitem{Ivic}
+A.\ Ivi\'c, \emph{The Riemann Zeta-Function}, John Wiley \& Sons, 1985.
+
+\bibitem{DurenHp}
+P.\ L.\ Duren, \emph{Theory of $H^p$ Spaces}, Dover, 2000 (reprint of Academic Press, 1970).
+
+\bibitem{GarnettBAF}
+J.\ B.\ Garnett, \emph{Bounded Analytic Functions}, rev.\ 1st ed., Springer, 2007.
+
+\bibitem{GarnettMarshall}
+J.\ B.\ Garnett and D.\ E.\ Marshall, \emph{Harmonic Measure}, Cambridge Univ.\ Press, 2005.
+
+\bibitem{Ransford}
+T.\ Ransford, \emph{Potential Theory in the Complex Plane}, Cambridge Univ.\ Press, 1995.
+
+\bibitem{Ahlfors}
+L.\ V.\ Ahlfors, \emph{Complex Analysis}, 3rd ed., McGraw--Hill, 1979.
+
+\bibitem{Conway}
+J.\ B.\ Conway, \emph{Functions of One Complex Variable I}, 2nd ed., Springer, 1978.
+
+\bibitem{CMM}
+R.\ R.\ Coifman, A.\ McIntosh, and Y.\ Meyer,
+``L’int\'egrale de Cauchy d\'efinit un op\'erateur born\'e sur $L^2$ pour les courbes Lipschitziennes,''
+\emph{Ann.\ of Math.} \textbf{116} (1982), 361--387.
+
+\bibitem{AxlerBourdonRamey}
+S.\ Axler, P.\ Bourdon, and W.\ Ramey, \emph{Harmonic Function Theory}, 2nd ed., Springer, 2001.
+
+\bibitem{Kellogg}
+O.\ D.\ Kellogg, \emph{Foundations of Potential Theory}, Springer, 1929 (reprint: Dover).
+
+\bibitem{Pommerenke}
+Ch.\ Pommerenke, \emph{Boundary Behaviour of Conformal Maps}, Springer, 1992.
+
+\bibitem{JohanssonArb}
+F.\ Johansson, ``Arb: efficient arbitrary-precision midpoint-radius interval arithmetic,'' \emph{IEEE Trans.\ Computers} \textbf{66}(8) (2017), 1281--1292.
+
+\end{thebibliography}
+
+\end{document}
