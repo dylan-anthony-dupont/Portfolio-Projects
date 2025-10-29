@@ -167,11 +167,15 @@ B(\alpha,m,\delta)=\big[\alpha-\delta,\alpha+\delta\big]\times\big[m-\delta,m+\d
 This ensures uniform applicability of the vertical-strip digamma bounds (DLMF §5.11) and of the $\zeta'/\zeta$ expansions on $1/2\le\sigma\le1,\ t\ge 3$ (Titchmarsh §14; Ivi\'c Ch.~9) after width-2 transport (since $u=2s$ doubles ordinates, $t\ge3$ corresponds to $m\ge 6$; we take $m\ge10$ for margin).
 
 \paragraph{Why $\delta=\eta\alpha/(\log m)^2$.}
-This balances the scale-free forcing ($\ge\pi/2$) against residual budgets $O(\delta\log m)$ and yields an $L^2$ + harmonic-measure upper envelope (in Section~\ref{sec:tail}) that is uniformly small in $\alpha$.
+This balances the scale-free forcing ($\ge\pi/2$) against residual budgets $O(\delta\log m)$ and yields an $L^2$ + harmonic-measure upper envelope (in Section~\ref{sec:tail}) that is uniformly small in $\alpha$. % [EDIT P2: delta motivation]
 
 \begin{lemma}[Short boxes stay in $\Real v>0$]\label{lem:box-right}
-For $m\ge10$ and any $\eta\in(0,1)$, one has $\delta\le \alpha$ and $B(\alpha,m,\delta)\subset\{\Real v>0\}$.
+For $m\ge10$ and any $\eta\in(0,1)$, one has $\delta<\alpha$ and $B(\alpha,m,\delta)\subset\{\Real v>0\}$, uniformly in $\alpha\in(0,1]$.
 \end{lemma}
+% [EDIT P2: box-right proof]
+\begin{proof}
+Since $\eta\in(0,1)$ and $\log m\ge\log 10>0$, we have $\eta/(\log m)^2<1$, hence $\delta=\alpha\,\eta/(\log m)^2<\alpha$. Therefore the left edge is at $\alpha-\delta>0$, so the entire box lies strictly in $\{\Real v>0\}$, uniformly for $\alpha\in(0,1]$.
+\end{proof}
 
 \paragraph{De-singularization on $\partial B$.}
 Let
@@ -179,10 +183,10 @@ Let
 \Zloc(v)=\prod_{\rho:\,|\Imag\rho-m|\le 1}(v-\rho)^{m_\rho},\qquad
 F(v):=\frac{E(v)}{\Zloc(v)}.
 \end{equation}
-Then $F$ is analytic and zero-free on a neighborhood of $\partial B$.
+Then $F$ is analytic and zero-free on a neighborhood of $\partial B$ (all local zeros/poles within $|\Imag\rho-m|\le 1$ have been removed).
 
 \paragraph{Boundary contact convention.}
-If a zero/pole meets $\partial B$, shrink $\delta$ by a factor $1-\varepsilon$ or shift $\alpha$ by $O(\delta)$. All constants/inequalities below are stable under $O(\delta)$ changes.
+If a zero/pole meets $\partial B$, shrink $\delta$ by a factor $1-\varepsilon$ or shift $\alpha$ by $O(\delta)$. All constants/inequalities below (\emph{residual envelope}, \emph{short-side forcing}) are stable under $O(\delta)$ changes. % [EDIT P2: contact stability]
 
 \begin{lemma}[Residual envelope]\label{lem:residual}
 On $\partial B$,
@@ -193,8 +197,22 @@ and
 \begin{equation}\label{eq:residual-perimeter}
 \big|\Delta_{\partial B}\arg F\big|\ \le\ 8\delta\,\big(C_1\log m+C_2\big).
 \end{equation}
-\emph{Justification.} DLMF §5.11 controls $\psi$ on vertical strips; Titchmarsh §14 and Ivi\'c Ch.~9 control $\zeta'/\zeta$ on $1/2\le\sigma\le 1,\ t\ge 3$. After removing local poles via \eqref{eq:Zloc} and transporting to width-2, we obtain \eqref{eq:residual-sup}; \eqref{eq:residual-perimeter} is perimeter $8\delta$ times the sup. The constants $C_1,C_2>0$ are absolute; see Appendix~S.2 for an optional instantiation. We keep $C_1,C_2$ symbolic in all theorems.
+\emph{Justification.} DLMF §5.11 controls $\psi$ on vertical strips; Titchmarsh §14 and Ivi\'c Ch.~9 control $\zeta'/\zeta$ on $1/2\le\sigma\le 1,\ t\ge 3$. After removing local poles via \eqref{eq:Zloc} and transporting to width-2, we obtain \eqref{eq:residual-sup}. For \eqref{eq:residual-perimeter}, write $\Delta_{\partial B}\arg F=\int_{\partial B}\partial_s\arg F\,ds$ as the sum of side integrals (angular limits at the corners); then bound by $|\partial B|\,\sup_{\partial B}|F'/F|=8\delta\,\sup|F'/F|$. The constants $C_1,C_2>0$ are absolute; we keep them symbolic (see Appendix~S.2 for an optional instantiation). % [EDIT P2: perimeter factor]
 \end{lemma}
+
+% [EDIT P2: bridge lemma]
+\begin{lemma}[Logarithmic derivatives on $\partial B$]\label{lem:bridge-logs}
+On $\partial B$,
+\[
+\frac{E'}{E}=\frac{F'}{F}+\frac{(Z_{\rm loc})'}{Z_{\rm loc}},\qquad
+\sup_{\partial B}\Big|\frac{E'}{E}\Big|
+\ \le\ \sup_{\partial B}\Big|\frac{F'}{F}\Big|+\sum_{\rho:\,|\Imag\rho-m|\le 1}\ \sup_{v\in\partial B}\frac{m_\rho}{|v-\rho|}\,.
+\]
+In particular, by the boundary-contact convention the right-hand side is finite.
+\end{lemma}
+\begin{proof}
+The identity follows from $E=F\,Z_{\rm loc}$. For the inequality, take suprema termwise and use $\big|\frac{(v-\rho)'}{v-\rho}\big|=\frac{1}{|v-\rho|}$. Finiteness holds since only finitely many $\rho$ satisfy $|\Imag\rho-m|\le 1$ and none lie on $\partial B$ after the contact adjustment.
+\end{proof}
 
 \begin{lemma}[Short-side forcing]\label{lem:short-side}
 Let $Z_{\rm pair}(v)=(v-(a+im))(v-(-a+im))$. On the near vertical
@@ -207,6 +225,10 @@ one has
 =2\arctan\frac{\delta}{|\alpha-a|}+2\arctan\frac{\delta}{\alpha+a}\ \ge\ \frac{\pi}{2}.
 \end{equation}
 \end{lemma}
+% [EDIT P2: forcing proof]
+\begin{proof}
+Along $I_+$, $\arg(v-(\pm a+im))=\arctan\!\frac{y-m}{\alpha\mp a}$. As $y$ runs from $m-\delta$ to $m+\delta$, the increment is $\arctan\frac{\delta}{|\alpha-a|}-\arctan\!\Big(-\frac{\delta}{|\alpha-a|}\Big)=2\arctan\frac{\delta}{|\alpha-a|}$ for the near factor and $2\arctan\frac{\delta}{\alpha+a}$ for the far factor. Since $\alpha>0$ and $a\ge0$, $\alpha+a>0$, and the sum is monotone in $\delta$. When $|\alpha-a|\le\delta$, the first term contributes at least $\pi/2$ and the second is nonnegative, proving the bound. A symmetric formula holds on $I_-$, though not needed here.
+\end{proof}
 
 % ---------------------------------------------------
 \section{Boundary-only criteria, bridges, and corner interpolation}\label{sec:criteria}
@@ -506,6 +528,8 @@ Let $F=E/Z_{\rm loc}$ with $Z_{\rm loc}$ removing local zeros with $|\Imag\rho-m
 \sup_{\partial B}\Big|\frac{F'}{F}\Big|\ \le\ C_1\log m + C_2,
 \]
 with absolute constants $C_1,C_2>0$; any choices respecting the cited explicit estimates are legitimate. The main text keeps $C_1,C_2$ symbolic.
+% [EDIT P2: S.2 bridge note]
+On $\partial B$ we have $\frac{E'}{E}=\frac{F'}{F}+\frac{(Z_{\rm loc})'}{Z_{\rm loc}}$ (Lemma~\ref{lem:bridge-logs}); the local sum is finite under the boundary‑contact convention, so $L=\sup_{\partial B}|E'/E|$ is controlled by the residual bound plus finitely many explicit local terms.
 
 % -----------------------------------------------------------------------------------------
 % Bibliography
@@ -547,11 +571,11 @@ A.~Ivi\'c, \emph{The Riemann Zeta-Function}, John Wiley \& Sons, 1985.
 O.~D.~Kellogg, \emph{Foundations of Potential Theory}, Dover, 1953.
 
 \bibitem{Platt2017}
-D.~J.~Platt, Isolating some nontrivial zeros of $\zeta(s)$, \emph{Math. Comp.} \textbf{86} (2017), 2449--2467.
+D.~J.~Platt, Isolating some nontrivial zeros of $\zeta(s)$, \emph{Math. Comp.} \textbf{86} (2017), 2449–2467.
 
 \bibitem{PlattTrudgian2021}
 D.~J.~Platt and T.~S.~Trudgian, The Riemann hypothesis is true up to $3\cdot 10^{12}$,
-\emph{Bull. Lond. Math. Soc.} \textbf{53} (2021), 792--797.
+\emph{Bull. Lond. Math. Soc.} \textbf{53} (2021), 792–797.
 
 \bibitem{Pommerenke}
 Ch.~Pommerenke, \emph{Boundary Behaviour of Conformal Maps}, Springer, 1992.
