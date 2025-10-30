@@ -1,0 +1,18 @@
+\BOOKMARK [1][-]{section.1}{Frames, symmetry, and the hinge law}{}% 1
+\BOOKMARK [1][-]{section.2}{Boxes, de-singularization, residual control, and forcing}{}% 2
+\BOOKMARK [1][-]{section.3}{Boundary-only criteria, bridges, and corner interpolation}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Two-point Schur/outer criterion \(boundary-only\)}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Outer/Rouch\351 Certification Path}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Corner outer interpolation \(two-point\)}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Analytic tail \(uniform in alpha\)}{}% 7
+\BOOKMARK [2][-]{subsection.4.1}{Upper envelope via a disc-based L2 route}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Lower envelope via forcing, L2 allocation, and Jensen}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.3}{Tail comparison \(symbolic constants\)}{section.4}% 10
+\BOOKMARK [1][-]{appendix.A}{Hinge proof \(eight-line variant\)}{}% 11
+\BOOKMARK [1][-]{appendix.B}{Constants ledger \(sources \046 transport\)}{}% 12
+\BOOKMARK [1][-]{appendix.C}{Bridges \(one-liners\)}{}% 13
+\BOOKMARK [1][-]{appendix.D}{Conformal normalization}{}% 14
+\BOOKMARK [1][-]{appendix.E}{Corner interpolation \(detail\)}{}% 15
+\BOOKMARK [1][-]{appendix.F}{Outer/Rouch\351 certification protocol \(rigorous outline\)}{}% 16
+\BOOKMARK [1][-]{appendix.G}{Toolbox \(structural; not used in proofs\)}{}% 17
+\BOOKMARK [1][-]{appendix.H}{Certified first nontrivial zero}{}% 18
