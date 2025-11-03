@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2025.10.27)  30 OCT 2025 18:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2025.10.27)  3 NOV 2025 22:12
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/workspaces/Portfolio-Projects/.vscode/PARTS/v9_ad2/Manuscript_v9.tex
-(/workspaces/Portfolio-Projects/.vscode/PARTS/v9_ad2/Manuscript_v9.tex
+**/workspaces/Portfolio-Projects/.vscode/PARTS/PART_II/v9_ad2/Manuscript_v9.tex
+(/workspaces/Portfolio-Projects/.vscode/PARTS/PART_II/v9_ad2/Manuscript_v9.tex
 LaTeX2e <2020-02-02> patch level 2
 L3 programming layer <2020-02-14> (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2019/12/20 v1.4l Standard LaTeX document class
@@ -318,7 +318,7 @@ Package hyperref Info: Option `colorlinks' set `true' on input line 45.
 File: l3backend-pdfmode.def 2020-02-03 L3 backend support: PDF mode
 \l__kernel_color_stack_int=\count279
 \l__pdf_internal_box=\box49
-) (/workspaces/Portfolio-Projects/.vscode/PARTS/v9_ad2/Manuscript_v9.aux)
+) (/workspaces/Portfolio-Projects/.vscode/PARTS/PART_II/v9_ad2/Manuscript_v9.aux)
 \openout1 = `Manuscript_v9.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
@@ -699,7 +699,7 @@ LaTeX Warning: Reference `lem:bridge-logs' on page 12 undefined on input line 58
 LaTeX Warning: Reference `eq:M0-criterion' on page 12 undefined on input line 584.
 
 
-/workspaces/Portfolio-Projects/.vscode/PARTS/v9_ad2/Manuscript_v9.tex:608: LaTeX Error: Undefined color `blue!60!black'.
+/workspaces/Portfolio-Projects/.vscode/PARTS/PART_II/v9_ad2/Manuscript_v9.tex:608: LaTeX Error: Undefined color `blue!60!black'.
 
 See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
@@ -717,7 +717,7 @@ Package microtype Info: Loading generic protrusion settings for font family
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 643.
 [12]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 643.
- (/workspaces/Portfolio-Projects/.vscode/PARTS/v9_ad2/Manuscript_v9.aux)
+ (/workspaces/Portfolio-Projects/.vscode/PARTS/PART_II/v9_ad2/Manuscript_v9.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 643.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 643.
 
@@ -739,14 +739,14 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 643.
  ) 
 Here is how much of TeX's memory you used:
  9665 strings out of 483183
- 147502 string characters out of 5966291
+ 147574 string characters out of 5966291
  470304 words of memory out of 5000000
  24256 multiletter control sequences out of 15000+600000
  557512 words of font info for 164 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 40i,14n,42p,771b,422s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 40i,14n,42p,779b,422s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/tcti1095.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on /workspaces/Portfolio-Projects/.vscode/PARTS/v9_ad2/Manuscript_v9.pdf (12 pages, 315222 bytes).
+Output written on /workspaces/Portfolio-Projects/.vscode/PARTS/PART_II/v9_ad2/Manuscript_v9.pdf (12 pages, 315222 bytes).
 PDF statistics:
  267 PDF objects out of 1000 (max. 8388607)
  227 compressed objects within 3 object streams

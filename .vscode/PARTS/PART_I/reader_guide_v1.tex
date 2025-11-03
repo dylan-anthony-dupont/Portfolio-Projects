@@ -1,0 +1,355 @@
+% ======================================================================
+% Master Manuscript — Part I (Reader's Guide) + Part II (Analytic Core) + Part III (Structural Corollaries)
+% ======================================================================
+
+\documentclass[11pt]{article}
+
+% --------- Packages ----------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm,mathrsfs,enumerate}
+\usepackage{microtype}
+\usepackage{booktabs,array,tabularx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+% --------- Numbering ----------
+\numberwithin{equation}{section}
+
+% --------- Theorem styles ----------
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --------- Macros ----------
+% Sets
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+% Operators / small utilities
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\Real}{Re}
+\newcommand{\Arg}{\operatorname{Arg}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\ii}{\mathrm{i}}
+
+% Manuscript-specific
+\newcommand{\zetaTwo}{\zeta_2}
+\newcommand{\LamTwo}{\Lambda_2}
+\newcommand{\LambdaTwo}{\Lambda_2}
+\newcommand{\chiTwo}{\chi_2}
+\newcommand{\Gout}{G_{\mathrm{out}}}
+\newcommand{\Zloc}{Z_{\mathrm{loc}}}
+\newcommand{\Afac}{A_2}
+\newcommand{\Podd}{P_{\mathrm{odd}}}
+\newcommand{\Peven}{P_{\mathrm{even}}}
+\newcommand{\U}{U}
+\newcommand{\UR}{U_{\mathrm{R}}}
+\newcommand{\UL}{U_{\mathrm{L}}}
+\newcommand{\Ecomp}{E}
+
+% --------- Tables ----------
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+% --------- Hyperref ----------
+% Hyperref setup 
+\hypersetup{ 
+    colorlinks=true, 
+    linkcolor=blue!60!black, 
+    citecolor=blue!60!black, 
+    urlcolor=blue!60!black 
+    }
+
+% ------------------ Title page ------------------
+\title{\Large A Height-Local Width-2 Program for Excluding Off-Axis Quartets\\[2pt]
+\large with an Analytic Tail and a Rigorous Certified Criterion}
+\author{Dylan Anthony Dupont}
+\date{"date here"}
+
+\begin{document}
+\maketitle
+
+\paragraph{Authorship and AI-use disclosure.}
+The author, Dylan Anthony Dupont, designed the framework, chose all constants/normalizations, and validated all mathematics and computations. Generative assistants (From GPT-4o to GPT-5~Pro) were used only for typesetting assistance, editorial organization, and consistency checks; and thus are not an author. All claims are the author's responsibility (based on COPE/ICMJE guidance).
+
+\begin{abstract}
+\noindent
+This paper is organized in three parts:\;
+\begin{itemize}
+  \item \textbf{Part~I} --- Reader’s Guide / Motivation, reducing the Riemann Hypothesis (RH) to a height--local statement in the width--2 frame: \emph{RH $\Leftrightarrow$ $a(m)=0$ at each nontrivial height $m$}, while recording non--load--bearing structural scaffolding.
+  \item \textbf{Part~II} --- A self--contained, boundary--only analytic proof that the per--height tilt satisfies $a(m)=0$ at every nontrivial height using a disc--based $L^2$ upper envelope and an $L^2$ lower envelope via allocation $+$ restricted contour $+$ Jensen. A rigorous Outer/Rouch\'e Certification Path, explicit domains and symbolic constants (“shape--only” vs.\ residual).
+  \item \textbf{Part~III} --- Promotes the identities constructed in Part I to structural corollaries of the main theorem once $a(m)=0$ is established.
+  \item \textbf{Appendices} --- Technical details supporting Part~II (load--bearing for Part~II; load--bearing for Part~III if reference to appendices is required in Part~III).
+\end{itemize}
+\emph{Dependency map (schematic):} Part~I $\to$ (no arrows into Part~II);\; Part~II $\to$ Part~III;\; Appendices $\to$ Part~II and Part~III.
+\end{abstract}
+
+% ======================================================================
+% Part I — Reader’s Guide / Motivation, Reduction & Implications
+% ======================================================================
+\section*{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}
+\addcontentsline{toc}{section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}
+
+\paragraph{What this section is (and is not).}
+\emph{What it does.} It introduces modulated frames and the width--2 normalization, defines the centered ``$a$--lens'' that measures horizontal tilt at a fixed height, and reduces RH to the height--local target $a(m)=0$ for each nontrivial height $m$. It also records the structural toolbox (projectors, rectifier, canonical stream, recurrence, curvature extractor, seed$\to$rectifier) and explains how these become consequences once $a(m)=0$ is proved.
+
+\noindent\emph{What it does not do.} It contains no analytic estimates and no proofs. The hinge unitarity fact and all bounds are proved later. This Guide is not used by the analytic part.
+
+\subsection*{1) Modulated frames and the width--2 pivot}
+For $f>0$ define the modulated family $\zeta_f(s):=\zeta(s/f)$ with completed form
+\[
+\Lambda_f(s)=\pi^{-\,s/(2f)}\,\Gamma\!\Big(\frac{s}{2f}\Big)\,\zeta_f(s),
+\]
+so $\Lambda_f$ is entire and satisfies $\Lambda_f(s)=\Lambda_f(f-s)$. Equivalently, $\zeta_f(s)=A_f(s)\,\zeta_f(f-s)$ with $A_f(s)A_f(f-s)\equiv1$.
+
+\smallskip
+\noindent\textbf{Width--2 normalization.} Put $u:=(2/f)\,s$. Then
+\[
+\zetaTwo(u):=\zeta(u/2),\qquad
+\LambdaTwo(u):=\pi^{-u/4}\Gamma(u/4)\,\zeta(u/2),\qquad
+\LambdaTwo(u)=\LambdaTwo(2-u).
+\]
+The non--completed FE reads $\zetaTwo(u)=\Afac(u)\,\zetaTwo(2-u)$.
+In the open strip $0<\Re u<2$ and $\Im u\neq0$, $\Afac$ is analytic and nonvanishing.
+
+\smallskip
+\noindent\textbf{Partner map.} On $\Im u>0$, FE $+$ conjugation gives the involution $J(u)=2-\overline{u}$, swapping the two column points at the same height.
+
+\smallskip
+\noindent\textbf{Hinge unitarity (deferred).} The statement ``$|\chiTwo(u)|=|\Afac(u)|^{-1}=1$ iff $\Re u=1$'' is proved in Part~II (Hinge--Unitarity). We do not use it here.
+
+\subsection*{2) Centered $a$--lens and the quartet}
+Let $v:=u-1$ and $\,\Ecomp(v):=\LambdaTwo(1+v)$. Then $\Ecomp(v)=\Ecomp(-v)=\overline{\Ecomp(\overline v)}$.
+
+\smallskip
+\noindent\textbf{Nontrivial height.} A ``nontrivial height'' $m>0$ means: $m$ occurs as the imaginary part of a nontrivial zero $s=\tfrac12+\ii m/2$. The reduction shows that whenever such an $m$ occurs, the associated tilt must satisfy $a(m)=0$.
+
+\smallskip
+\noindent\textbf{Tilt at height $m$.} At fixed $m>0$, set
+\[
+\UR(m;a)=1+a+\ii m,\qquad \UL(m;a)=1-a+\ii m,\qquad a\in[0,1).
+\]
+In the centered frame, the ``dial points'' are $\pm(a+\ii m)$. The partner map $J$ swaps $\UR\leftrightarrow \UL$.
+
+\smallskip
+\noindent\textbf{Quartet.} Conjugation (top$\leftrightarrow$bottom) and FE reflection generate the quartet $\{\,1\pm a\pm \ii m\,\}$ at height $m$.
+
+\subsection*{3) Why width--2: slope invariance}
+If the columns collapse at height $m$ ($a=0$), the point is $u=1+\ii m$ and its slope is $\Im u/\Re u = m/1=m$. Rescaling to any frame $s=(f/2)\,u$ preserves the slope:
+\[
+\frac{\Im s}{\Re s}=\frac{(f/2)\,m}{f/2}=m.
+\]
+Thus $\{m_k\}$ simultaneously records the imaginary ordinates of the nontrivial zeros and their origin--through slopes in every modulated frame---provided the per--height collapse holds.
+
+\subsection*{4) Height--local reduction of RH}
+Fix a nontrivial height $m>0$ and write $\UR=1+a+\ii m$, $\UL=1-a+\ii m$. The following are purely algebraic and equivalent:
+\begin{itemize}
+  \item (PHU--1) Column equality: $\Re \UR=\Re \UL \iff a=0$.
+  \item (PHU--2) Ray (slope) lock: $\Im \UR/\Re \UR=\Im \UL/\Re \UL$, i.e.\ $m/(1+a)=m/(1-a)\iff a=0$.
+  \item (PHU--3) Hinge form: $\UR=\UL=1+\ii m$.
+\end{itemize}
+\emph{Reduction target.} RH $\iff$ for every nontrivial height $m>0$, $a(m)=0$. Part~II proves this per--height collapse; nothing from this Guide is used there.
+
+\subsection*{5) Box alignment and hand--off (no circularity)}
+For later reference, define
+\[
+B(\alpha,m,\delta)=[\alpha-\delta,\alpha+\delta]\times[m-\delta,m+\delta],\qquad
+\delta:=\eta\,\alpha/(\log m)^2,\ \ \eta\in(0,1).
+\]
+When $\alpha=\pm a$, the dial points $\pm(a+\ii m)$ lie on the box’s horizontal centerline.
+
+\noindent\textbf{What Part~II does.} Using only boundary analysis on such boxes (completed FE symmetry, Cauchy--Riemann transport, three--lines tools, Stirling--class envelopes, explicit control of $\zeta'/\zeta$ away from zeros), Part~II shows that any off--axis quartet forces a boundary lower bound larger than an explicit upper bound, hence $a(m)=0$.
+
+\noindent\textbf{No circularity.} The analytic proof is logically independent of this Guide.
+
+\subsection*{6) Parity gating and selection devices (interpretive only)}
+\textbf{Gating from the non--completed FE.} In the width--2 frame the non--completed FE reads
+\[
+\zetaTwo(u)=\Afac(u)\,\zetaTwo(2-u),\quad
+\Afac(u)=2^{u/2}\,\pi^{\,u/2-1}\,\sin\!\Big(\frac{\pi u}{4}\Big)\,\Gamma\!\Big(1-\frac{u}{2}\Big).
+\]
+On the open strip $0<\Re u<2$ with $\Im u\neq0$, the prefactor $\Afac(u)$ is nonzero and finite; its sine zeros (the “trivial ladder”) lie on the real axis only. Thus \emph{inside the open strip only $\zetaTwo$ can vanish} (nontrivial zeros), while the \emph{trivial class is confined to the real axis}. This is the basic “odd/even lane” picture: the odd (upper) lane can host nontrivial zeros; the even (real) lane hosts the trivial ladder.
+
+\smallskip
+\noindent\textbf{Orthogonal split on the integer lattice.} To model this dichotomy as a clean input--space symmetry, decompose any lattice signal $X:\Z\to\C$ via the orthogonal projectors
+\[
+\Podd(n)=\tfrac{1-\cos(\pi n)}{2},\qquad
+\Peven(n)=\tfrac{1+\cos(\pi n)}{2},
+\]
+so $X=\Podd X+\Peven X$. We \emph{assign the nontrivial stream to odd slots} (where $\Podd=1$) and the \emph{trivial ladder to even slots} (where $\Peven=1$). This mirrors the FE fact above without using it analytically.
+
+\subsection*{7) Toolbox $\to$ structural consequences (after the theorem)}
+The items below are not inputs to the analytic proof. After Part~II proves $a(m)=0$ for all nontrivial heights, they become \emph{Structural Corollaries} describing the collapsed geometry and its lattice faces. (\emph{Explicit formulas and brief proofs are recorded as corollaries in Part~III; Part~I intentionally omits them and they are not inputs to Part~II.})
+
+\begin{itemize}
+  \item Pre--collapse columns (projector faces in the $u$--frame): right/left templates place odd--slot samples $x\pm \ii m_k$ and the even ladder $-4(\cdot)$ via $\Podd,\Peven$; scaffolding, not assumptions.
+  \item Collapsed canonical stream $U(n)$: when per--height collapse holds ($x=1$ on odd slots), the two columns coincide; parity form (via $\Podd,\Peven$) and an equivalent trigonometric form (via $\sin^2(\pi n/2),\cos^2(\pi n/2)$).
+  \item Single--frequency collapse (cosine face): a two--parameter cosine form $U(n)=(c+d)+(c-d)\cos(\pi n)$ recovers the same stream; $c,d$ simple in the odd--indexer $k(n)$.
+  \item Self--indexed recurrence (no explicit $k$): a short recurrence for $U(n)$ pulls the needed odd index from the previous even sample; encodes the collapsed geometry without an explicit $k(n)$.
+  \item Curvature extractor \& the $\zeta(2)$ disguise: the discrete second--difference of the imaginary part at even indices recovers $m_j$ and admits an odd--square convolution form normalized by $\zeta(2)$.
+  \item Seed $\to$ rectifier $\to$ physical streams: two--carrier seeds rectify under a mod--4 factor to yield the physical stream $S_f(n)$ proportional to $U(n)$; pre--collapse faces scale analogously.
+\end{itemize}
+
+\subsection*{8) Implications and one--sentence hand--off}
+The width--2 organization centralizes symmetry at $\Re u=1$; the centered $a$--lens isolates the single per--height degree of freedom; parity--orthogonal scaffolding separates the nontrivial stream from the ladder without entering the proof. With these definitions, RH reduces to: for every nontrivial height $m>0$, $a(m)=0$.
+
+\noindent\textbf{Hand--off.} \textbf{Part~II} now proves this per--height collapse by a boundary--only contradiction on aligned boxes; nothing from this Guide is used in that proof.
+
+% ======================================================================
+% Part II — Analytic Core (self-contained; boundary-only)
+% ======================================================================
+\section*{Part II --- Analytic Core (self--contained; boundary--only)}
+\addcontentsline{toc}{section}{Part II --- Analytic Core (self--contained; boundary--only)}
+
+% === IMPORTANT ===
+% Insert your latest full analytic core (second adversarial full manuscript version) HERE
+% === IMPORTANT ===
+
+% ======================================================================
+% Part III — Structural Corollaries (post-Theorem; brief proofs)
+% ======================================================================
+\section*{Part III --- Structural Corollaries (after the main theorem)}
+\addcontentsline{toc}{section}{Part III --- Structural Corollaries (after the main theorem)}
+
+\paragraph{Standing assumption for this part.}
+Assume the \emph{Main Theorem (Part~II)}: for every nontrivial height $m>0$, the per--height tilt satisfies $a(m)=0$.
+Equivalently, in the universal strip $0<\Re u<2$ each upper partner has real part $1$.
+
+\medskip
+
+\paragraph{Parity projectors and indexer.}
+On $\mathbb Z$ set
+\[
+\Podd(n)=\frac{1-\cos(\pi n)}{2},\qquad
+\Peven(n)=\frac{1+\cos(\pi n)}{2},\qquad
+k(n)=\frac{n}{2}+\frac{1-\cos(\pi n)}{4}.
+\]
+Then $k(2j-1)=j$ and $k(2j)=j$ for $j\in\mathbb Z$.
+
+\begin{corollary}[Canonical columns]\label{cor:canonical-columns}
+For $x\in(0,2)$ define
+\[
+\UR(x,n)=\Podd(n)\,\big(x+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\Peven(n),
+\]
+\[
+\UL(x,n)=\Podd(n)\,\big(2-x+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\Peven(n).
+\]
+Let $x=1\pm a$ with $a\in(-1,1)$. Under the standing assumption $a(m)=0$ at each nontrivial height,
+the canonical choice $x=1$ yields $\UR(1,n)=\UL(1,n)$ for all $n\in\mathbb Z$.
+\end{corollary}
+
+\begin{proof}
+On odd $n=2j-1$, both columns give $1+\ii\,m_j$. On even $n=2j$, both give $-4\big((2j)+1-k(2j)\big)=-4(j+1)$.
+\end{proof}
+
+\begin{corollary}[Collapsed canonical stream: $U(n)$]\label{cor:collapsed-mod4}
+Define
+\[
+\U(n):=\UR(1,n)=\UL(1,n)=\Podd(n)\,\big(1+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\Peven(n).
+\]
+Then $\U(2j-1)=1+\ii m_j$ and $\U(2j)=-4(j+1)$ for all $j\in\mathbb Z$.
+\end{corollary}
+
+\begin{proof}
+Immediate from $\Podd(2j-1)=1$, $\Peven(2j-1)=0$ and $\Podd(2j)=0$, $\Peven(2j)=1$, with $k(2j-1)=k(2j)=j$.
+\end{proof}
+
+\begin{corollary}[Squared--trig form]\label{cor:collapsed-mod2}
+Using $\sin^2(\pi n/2)=\Podd(n)$ and $\cos^2(\pi n/2)=\Peven(n)$,
+\[
+\U(n)=\sin^2\!\Big(\frac{\pi n}{2}\Big)\,\big(1+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\cos^2\!\Big(\frac{\pi n}{2}\Big).
+\]
+\end{corollary}
+
+\begin{proof}
+Substitute the trigonometric projector identities into Cor.~\ref{cor:collapsed-mod4}.
+\end{proof}
+
+\begin{corollary}[Single--frequency collapse]\label{cor:single-frequency}
+There exist $c(n)\in\mathbb R$ and $d(n)\in\mathbb C$ such that
+\[
+\U(n)=(c+d)\;+\;(c-d)\,\cos(\pi n),\qquad
+c=2\big(k(n)-n-1\big),\quad d=\frac{1+\ii\,m_{k(n)}}{2}.
+\]
+\end{corollary}
+
+\begin{proof}
+From Cor.~\ref{cor:collapsed-mod2}, use $\sin^2\theta=\tfrac12(1-\cos2\theta)$ and $\cos^2\theta=\tfrac12(1+\cos2\theta)$
+with $\theta=\pi n/2$, and collect constant and $\cos(\pi n)$ parts.
+\end{proof}
+
+\begin{corollary}[Self--indexed recurrence]\label{cor:self-indexed}
+With initial values $\U(0)=-4$ and $\U(1)=1+\ii m_1$, for all $n\ge2$,
+\[
+\U(n)=\Podd(n)\,\Big(1+\ii\,m_{-\U(n-1)/4}\Big)\;-\;\Peven(n)\,\Big(\U(n-2)+4(n+1)\Big).
+\]
+\end{corollary}
+
+\begin{proof}
+On odd $n=2j-1$, we have $-\U(n-1)/4=-(\U(2j-2))/4=j$, so the odd sample is $1+\ii m_j$.
+On even $n=2j$, the update gives $-4(j+1)$. This matches Cor.~\ref{cor:collapsed-mod4}.
+\end{proof}
+
+\begin{corollary}[Curvature extractor \& $\zeta(2)$ disguise]\label{cor:curvature}
+Let $F(n):=\Im \U(n)$ and let $\Delta^2$ denote the discrete second difference in $n$.
+Then $F(2j-1)=m_j$, $F(2j)=0$, and
+\[
+F(2j-1)=\frac{2}{\pi^2}\,\Im\big(\Delta^2\U(2j)\big)
+=\frac{1}{3\,\zeta(2)}\,\Im\big(\Delta^2\U(2j)\big)
+=\frac{2}{3\,\zeta(2)}\sum_{\ell\in\mathbb Z}\frac{m_\ell}{\big(2(j-\ell)+1\big)^2}=m_j.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply $\Delta^2$ to the trigonometric form in Cor.~\ref{cor:collapsed-mod2}; at even sites only the squared factors contribute.
+Use $\zeta(2)=\pi^2/6$ to rewrite $2/\pi^2=1/(3\zeta(2))$. The odd-square kernel arises from the sampled second difference of $\cos^2(\pi n/2)$.
+\end{proof}
+
+\begin{corollary}[Seed $\to$ rectifier $\to$ physical streams]\label{cor:rectifier}
+Let $\chi_4(n):=(-1)^{\lfloor n/2\rfloor}$ and define the even--ladder duplicator
+\[
+E(n):=2\big(n+1-k(n)\big)
+\quad\text{so that}\quad E(2j)=2(j+1),\ E(2j-1)=0.
+\]
+For $f>0$ and gain $\lambda\in\mathbb R$, set the seed
+\[
+s_{f}(n)=f\lambda\Big[\sin\!\Big(\frac{\pi n}{2}\Big)\big(1+\ii\,m_{k(n)}\big)\;-\;E(n)\,\cos\!\Big(\frac{\pi n}{2}\Big)\Big].
+\]
+On $\mathbb Z$ we have $\chi_4(n)\sin(\pi n/2)=\Podd(n)$ and $\chi_4(n)\cos(\pi n/2)=\Peven(n)$, hence
+\[
+\chi_4(n)\,s_{f}(n)=f\lambda\Big[\Podd(n)\big(1+\ii\,m_{k(n)}\big)\;-\;E(n)\,\Peven(n)\Big].
+\]
+Choosing $\lambda=\tfrac12$ and recalling $E(n)=2(n+1-k(n))$ yields the \emph{physical stream}
+\[
+S_f(n):=\frac{f}{2}\,\U(n).
+\]
+\end{corollary}
+
+\begin{proof}
+The mod--4 identities map sine/cosine to parity projectors on $\mathbb Z$; the even ladder $E(n)$ then gives the correct $-4(j+1)$ at $n=2j$.
+Setting $\lambda=\tfrac12$ collapses to $S_f=(f/2)\,U$.
+\end{proof}
+
+\begin{corollary}[Slope invariance under frame modulation]\label{cor:slope}
+If $u=1+\ii m$ then $s=(f/2)\,u$ satisfies $\dfrac{\Im s}{\Re s}=m$, independent of $f>0$.
+\end{corollary}
+
+\begin{proof}
+$(\Im s)/(\Re s)=((f/2)m)/(f/2)=m$.
+\end{proof}
+
+
+% ======================================================================
+% Acknowledgments / Appendices / References
+% ======================================================================
+
+% Your existing appendices and references are part of Part II's included file.
+% If you add a short "Structural Corollaries Appendix" later, insert it after Part III.
+
+\end{document}
