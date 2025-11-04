@@ -1,0 +1,34 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{1}{section*.2}%
+\contentsline {paragraph}{What this section is (and is not).}{1}{section*.3}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{4}{section*.12}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{6}{section.1}%
+\contentsline {paragraph}{(Interpretive; non-load-bearing) $\Omega $-continuum and ray invariance.}{6}{section*.14}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{6}{section.2}%
+\contentsline {paragraph}{Why $m\ge 10$.}{6}{section*.15}%
+\contentsline {paragraph}{Why $\delta =\eta \alpha /(\qopname \relax o{log}m)^2$.}{6}{section*.16}%
+\contentsline {paragraph}{De-singularization on $\partial B$.}{7}{section*.17}%
+\contentsline {paragraph}{Boundary contact convention.}{7}{section*.18}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Two-point Schur/outer criterion (boundary-only)}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Outer/Rouch\'e Certification Path}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Corner outer interpolation (two-point)}{9}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Analytic tail (uniform in $\alpha $)}{9}{section.4}%
+\contentsline {paragraph}{Setup and notation.}{9}{section*.19}%
+\contentsline {subsection}{\numberline {4.1}Upper envelope via a disc-based $L^2$ route}{9}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lower envelope via forcing, $L^2$ allocation, and Jensen}{10}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Tail comparison (symbolic constants)}{11}{subsection.4.3}%
+\contentsline {paragraph}{Choice of $M_0(\eta )$ (explicit criterion).}{11}{section*.20}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{11}{section*.21}%
+\contentsline {paragraph}{Standing assumption for this part.}{11}{section*.22}%
+\contentsline {section}{Part III (continued) --- Prime--Locked Corollaries and Generator}{12}{section*.23}%
+\contentsline {paragraph}{Standing hypotheses and notation.}{12}{section*.24}%
+\contentsline {section}{\numberline {A}Hinge proof (eight-line variant)}{14}{appendix.A}%
+\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{14}{appendix.B}%
+\contentsline {section}{\numberline {C}Bridges (one-liners)}{14}{appendix.C}%
+\contentsline {section}{\numberline {D}Conformal normalization}{14}{appendix.D}%
+\contentsline {section}{\numberline {E}Outer/Rouch\'e certification protocol (rigorous outline)}{15}{appendix.E}%
+\contentsline {section}{\numberline {F}Toolbox (structural; not used in proofs)}{15}{appendix.F}%
+\contentsline {section}{\numberline {G}Certified first nontrivial zero}{15}{appendix.G}%
+\contentsline {section}{\numberline {H}Operator norms on Lipschitz boundaries (existence and shape-only dependence)}{15}{appendix.H}%
+\contentsline {section}{\numberline {I}Instantiating $(C_1,C_2)$ from explicit literature bounds (optional)}{16}{appendix.I}%
+\contentsline {section}{\numberline {J}A concrete Paley--Wiener weight and benign constants}{16}{appendix.J}%
