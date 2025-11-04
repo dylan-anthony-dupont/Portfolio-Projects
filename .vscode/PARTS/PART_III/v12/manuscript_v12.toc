@@ -1,0 +1,31 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{2}{section*.2}%
+\contentsline {paragraph}{What this section is (and is not).}{2}{section*.3}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{3}{section*.11}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{6}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{6}{section.2}%
+\contentsline {paragraph}{Short boxes stay in $\operatorname {Re}v>0$.}{6}{section*.13}%
+\contentsline {paragraph}{De-singularization on $\partial B$.}{6}{section*.14}%
+\contentsline {paragraph}{Boundary contact convention.}{7}{section*.15}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Two-point Schur/outer criterion}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Outer/Rouch\'e Certification Path}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Corner outer interpolation}{8}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Analytic tail (uniform in $\alpha $)}{8}{section.4}%
+\contentsline {paragraph}{Setup.}{8}{section*.16}%
+\contentsline {subsection}{\numberline {4.1}Upper envelope via a disc-based $L^2$ route}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lower envelope via forcing, allocation, and Jensen}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Tail comparison (symbolic constants)}{9}{subsection.4.3}%
+\contentsline {paragraph}{Choice of $M_0(\eta )$.}{10}{section*.17}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{10}{section*.18}%
+\contentsline {paragraph}{Standing assumption.}{10}{section*.19}%
+\contentsline {paragraph}{Standing corollaries given the Main Theorem of Part\nobreakspace {}II}{11}{section*.20}%
+\contentsline {section}{\numberline {A}Hinge proof (eight-line variant)}{12}{appendix.A}%
+\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{12}{appendix.B}%
+\contentsline {section}{\numberline {C}Bridges (one-liners)}{12}{appendix.C}%
+\contentsline {section}{\numberline {D}Conformal normalization}{12}{appendix.D}%
+\contentsline {section}{\numberline {E}Outer/Rouch\'e certification protocol (rigorous outline)}{12}{appendix.E}%
+\contentsline {section}{\numberline {F}Toolbox (structural; not used in proofs)}{12}{appendix.F}%
+\contentsline {section}{\numberline {G}Certified first nontrivial zero}{13}{appendix.G}%
+\contentsline {section}{\numberline {H}Operator norms on Lipschitz boundaries (shape-only dependence)}{13}{appendix.H}%
+\contentsline {section}{\numberline {I}Instantiating $(C_1,C_2)$ (optional)}{13}{appendix.I}%
+\contentsline {section}{\numberline {J}A concrete Paley--Wiener weight}{13}{appendix.J}%
