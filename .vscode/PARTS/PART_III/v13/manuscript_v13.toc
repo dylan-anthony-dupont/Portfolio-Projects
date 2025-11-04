@@ -1,0 +1,33 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{2}{section*.2}%
+\contentsline {paragraph}{What this section is (and is not).}{2}{section*.3}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{3}{section*.11}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{7}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{7}{section.2}%
+\contentsline {paragraph}{Short boxes stay in $\operatorname {Re}v>0$.}{7}{section*.13}%
+\contentsline {paragraph}{De-singularization on $\partial B$.}{7}{section*.14}%
+\contentsline {paragraph}{Boundary contact convention.}{8}{section*.15}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Two-point Schur/outer criterion}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Outer/Rouch\'e Certification Path}{9}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Corner outer interpolation}{9}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Analytic tail (uniform in $\alpha $)}{9}{section.4}%
+\contentsline {paragraph}{Setup.}{9}{section*.16}%
+\contentsline {subsection}{\numberline {4.1}Upper envelope via a disc-based $L^2$ route}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lower envelope via forcing, allocation, and Jensen}{10}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Tail comparison (symbolic constants)}{11}{subsection.4.3}%
+\contentsline {paragraph}{Choice of $M_0(\eta )$.}{11}{section*.17}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{11}{section*.18}%
+\contentsline {paragraph}{Standing context.}{11}{section*.19}%
+\contentsline {section}{\numberline {A}Hinge--Unitarity: Detailed Proof}{13}{appendix.A}%
+\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{13}{appendix.B}%
+\contentsline {section}{\numberline {C}Bridges (one-liners)}{13}{appendix.C}%
+\contentsline {section}{\numberline {D}Conformal normalization}{13}{appendix.D}%
+\contentsline {section}{\numberline {E}Outer/Rouch\'e certification protocol (rigorous outline)}{13}{appendix.E}%
+\contentsline {section}{\numberline {F}Certified first nontrivial zero}{13}{appendix.F}%
+\contentsline {section}{\numberline {G}Operator norms on Lipschitz boundaries (shape-only dependence)}{14}{appendix.G}%
+\contentsline {section}{\numberline {H}Instantiating $(C_1,C_2)$ (optional)}{14}{appendix.H}%
+\contentsline {section}{\numberline {I}Pinned constants and closure at the base height}{14}{appendix.I}%
+\contentsline {paragraph}{Existence for small $\eta $.}{14}{section*.22}%
+\contentsline {paragraph}{Courtesy instantiation.}{14}{section*.23}%
+\contentsline {section}{References}{14}{section*.23}%
+\contentsline {section}{Authorship and AI-use disclosure}{15}{section*.24}%
