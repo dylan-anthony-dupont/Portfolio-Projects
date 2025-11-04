@@ -18,16 +18,17 @@
 \contentsline {paragraph}{Choice of $M_0(\eta )$.}{11}{section*.17}%
 \contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{11}{section*.18}%
 \contentsline {paragraph}{Standing context.}{11}{section*.19}%
-\contentsline {section}{\numberline {A}Hinge--Unitarity: Detailed Proof}{13}{appendix.A}%
-\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{13}{appendix.B}%
-\contentsline {section}{\numberline {C}Bridges (one-liners)}{13}{appendix.C}%
-\contentsline {section}{\numberline {D}Conformal normalization}{13}{appendix.D}%
-\contentsline {section}{\numberline {E}Outer/Rouch\'e certification protocol (rigorous outline)}{13}{appendix.E}%
-\contentsline {section}{\numberline {F}Certified first nontrivial zero}{13}{appendix.F}%
-\contentsline {section}{\numberline {G}Operator norms on Lipschitz boundaries (shape-only dependence)}{14}{appendix.G}%
-\contentsline {section}{\numberline {H}Instantiating $(C_1,C_2)$ (optional)}{14}{appendix.H}%
-\contentsline {section}{\numberline {I}Pinned constants and closure at the base height}{14}{appendix.I}%
-\contentsline {paragraph}{Existence for small $\eta $.}{14}{section*.22}%
-\contentsline {paragraph}{Courtesy instantiation.}{14}{section*.23}%
-\contentsline {section}{References}{14}{section*.23}%
-\contentsline {section}{Authorship and AI-use disclosure}{15}{section*.24}%
+\contentsline {paragraph}{Standing corollaries given the Main Theorem of Part\nobreakspace {}II}{13}{section*.21}%
+\contentsline {section}{\numberline {A}Hinge--Unitarity: Detailed Proof}{14}{appendix.A}%
+\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{14}{appendix.B}%
+\contentsline {section}{\numberline {C}Bridges (one-liners)}{15}{appendix.C}%
+\contentsline {section}{\numberline {D}Conformal normalization}{15}{appendix.D}%
+\contentsline {section}{\numberline {E}Outer/Rouch\'e certification protocol (rigorous outline)}{15}{appendix.E}%
+\contentsline {section}{\numberline {F}Certified first nontrivial zero}{15}{appendix.F}%
+\contentsline {section}{\numberline {G}Operator norms on Lipschitz boundaries (shape-only dependence)}{15}{appendix.G}%
+\contentsline {section}{\numberline {H}Instantiating $(C_1,C_2)$ (optional)}{15}{appendix.H}%
+\contentsline {section}{\numberline {I}Pinned constants and closure at the base height}{16}{appendix.I}%
+\contentsline {paragraph}{Existence for small $\eta $.}{16}{section*.22}%
+\contentsline {paragraph}{Courtesy instantiation.}{16}{section*.23}%
+\contentsline {section}{References}{16}{section*.23}%
+\contentsline {section}{Authorship and AI-use disclosure}{17}{section*.24}%

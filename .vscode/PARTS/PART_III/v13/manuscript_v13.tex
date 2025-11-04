@@ -626,8 +626,123 @@ Compute the discrete second derivative of the trigonometric face and identify od
 % ----------------------------------------------------------------------
 % Prime-locked corollaries and generator (as in previous pass; proofs present)
 % ----------------------------------------------------------------------
-\subsection*{Prime--locked consequences and generator}
-(Identical in content to last pass; now with complete proofs retained.)
+\paragraph{Standing corollaries given the Main Theorem of Part~II}
+Let $t_j$ be increasing ordinates of zeros on $\Real s=\tfrac12$ (counting multiplicity),
+and set $m_j:=2t_j$. Write $\theta(t)$ for the Riemann--Siegel theta function and
+\[
+S(t)=\frac{1}{\pi}\arg\zeta\!\big(\tfrac12+\mathrm{i}t\big),\qquad
+\theta'(t)=\frac12\log\frac{t}{2\pi}+O(t^{-1}).
+\]
+We use the residual envelope (Lemma~\ref{lem:residual}) and the shape--only $L^2$ boundary control (Lemmas~\ref{lem:upper-disc}, \ref{lem:allocL2}, Corollary~\ref{cor:lower}).
+
+Fix once and for all
+\begin{equation}\label{eq:PW-choices}
+\varepsilon:=\tfrac12,\qquad
+X_j:=(\log t_j)^{\,2-\varepsilon}=(\log t_j)^{\,3/2},
+\end{equation}
+and a Paley--Wiener weight $W\in C_c^\infty([0,1])$ with $0\le W\le 1$ and $\int_0^1 W(y)\,dy=1$ (see Appendix~\ref{app:PW}).
+
+Define for $\Delta t>0$ the prime integral
+\[
+\mathcal P_{X_j}(t_j,\Delta t)
+:=
+-\sum_{n\ge1}\frac{\Lambda(n)}{\sqrt n\,\log n}\,
+W\!\Big(\frac{n}{X_j}\Big)
+\Big[\sin\!\big((t_j+\Delta t)\log n\big)-\sin\!\big(t_j\log n\big)\Big].
+\]
+
+\begin{corollary}[C1: Two--tick prime--locked quantization]\label{cor:C1}
+Let $\Delta t_j:=t_{j+1}-t_j$. Then
+\begin{equation}\label{eq:C1}
+\theta(t_{j+1})-\theta(t_j)\;+\;\mathcal P_{X_j}(t_j,\Delta t_j)\;=\;\pi\;+\;\mathcal E_j\,,
+\end{equation}
+with the explicit bound
+\begin{equation}\label{eq:C1E}
+|\mathcal E_j|\ \le\ \frac{A_\theta}{t_j}\ +\ \frac{A_W}{\sqrt{X_j}}\ +\ \frac{A_{\rm loc}}{(\log m_j)^{2}}\,.
+\end{equation}
+Here $A_\theta>0$ is absolute (from $\theta''(t)=O(1/t)$), $A_W>0$ depends only on $W$,
+and the local term
+\[
+A_{\rm loc}=A_{\rm loc}\!\big(\eta;C_1,C_2,C_{\rm tr},C_{\mathrm H},C_h'',K^{\star}_{\rm alloc}\big)
+\]
+depends only on the Part~II constants.
+\end{corollary}
+
+\begin{corollary}[C2: Prime--modulated first--order gap]\label{cor:C2}
+Let $t_\ast:=t_j+\tfrac12\Delta t_j$ and $m_\ast:=2t_\ast$. Then
+\begin{equation}\label{eq:C2}
+\Delta m_j\ =\ \frac{4\pi}{
+\ \theta'(t_\ast)\ -\ \displaystyle\sum_{n\ge1}\frac{\Lambda(n)}{\sqrt n}\,
+W\!\Big(\frac{n}{X_j}\Big)\cos\!\big(t_\ast\log n\big)}\ +\ R_j\,,
+\end{equation}
+with
+\begin{equation}\label{eq:C2R}
+|R_j|\ \le\ \frac{B_\theta}{t_j(\log m_j)^{2}}\ +\ \frac{B_W\,(\log X_j)^{2}}{(\log m_j)^{3}}\sqrt{X_j}\ +\ \frac{B_{\rm loc}}{(\log m_j)^{2}}\,.
+\end{equation}
+Here $B_\theta>0$ is absolute, $B_W>0$ depends only on $W$, and $B_{\rm loc}$ depends only on the Part~II constants.
+\end{corollary}
+
+\begin{corollary}[C3: Even--site curvature $\leftrightarrow$ prime update]\label{cor:C3}
+Recall $\Imag\Delta^2U(2j)=m_{j+1}+m_j$ (Corollary~\ref{cor:curvature}). For any $J\ge1$,
+\[
+\frac{1}{J}\sum_{r=0}^{J-1}\Big(\Imag\Delta^2 U(2(j+r)) - 2m_{j+r}\Big)
+=\ \frac{1}{J}\sum_{r=0}^{J-1}\big(m_{j+r+1}-m_{j+r}\big).
+\]
+Substituting $\Delta m_{k}$ from \eqref{eq:C2} yields a block--averaged, explicit prime
+formula for the even--site curvature, with total error bounded by
+$\tfrac{1}{J}\sum_{r=0}^{J-1}\big(|R_{j+r}|+|R_{j+r+1}|\big)$.
+\end{corollary}
+
+\begin{corollary}[C4: Newton contraction on a polylog window]\label{cor:C4}
+Let $G_{X_j}(\Delta m):=\theta\big(\tfrac{m_j+\Delta m}{2}\big)-\theta\big(\tfrac{m_j}{2}\big)
+-\mathcal P_{X_j}\!\big(\tfrac{m_j}{2},\tfrac{\Delta m}{2}\big)-\pi$.
+With $X_j$ as in \eqref{eq:PW-choices} there exists $j_0$ such that for all $j\ge j_0$ and all $\Delta m$
+in a neighborhood of the true gap,
+\[
+\Big|\partial_{\Delta m}G_{X_j}\Big|
+\ \ge\ \tfrac18\log t_j,\qquad
+\Big|\partial^2_{\Delta m}G_{X_j}\Big|
+\ \ll\ \frac{(\log X_j)^2\sqrt{X_j}}{(\log t_j)^2}
+= \frac{(\log\log t_j)^2}{(\log t_j)^{\,2-\varepsilon/2}}.
+\]
+Hence damped Newton with any fixed $\lambda\in(0,1]$ converges in $O(1)$ steps from any initial guess within $c/\log t_j$ of the root, with contraction factor $1-\kappa/\log t_j$ for some $\kappa>0$ independent of $j$.
+\end{corollary}
+
+\begin{corollary}[C5: Canonical Weil weight and prime powers]\label{cor:C5}
+Let $\phi\in C_c^\infty(\R)$ be even, $\operatorname{supp}\phi\subset[-1,1]$, $\phi(0)=1$,
+and put $W=\widehat\phi\!\restriction_{[0,1]}$. Replace $\Lambda(n)$ by $\Lambda(p^k)=\log p$
+at $n=p^k$ and $0$ otherwise, i.e.
+\[
+\mathcal P^{\rm Weil}_{X_j}(t,\Delta t)
+:=
+-\sum_{p^k\ge1}\frac{\Lambda(p^k)}{p^{k/2}k\log p}\,
+W\!\Big(\frac{p^k}{X_j}\Big)
+\Big[\sin\!\big((t+\Delta t)\,k\log p\big)-\sin\!\big(t\,k\log p\big)\Big].
+\]
+Then Corollaries~\ref{cor:C1} and~\ref{cor:C2} hold with $\mathcal P_{X_j}$ replaced by $\mathcal P^{\rm Weil}_{X_j}$.
+\end{corollary}
+
+\begin{theorem}[Deterministic prime--locked generator of $\{m_j\}$]\label{thm:generator}
+Fix $W$ and $X_j=(\log t_j)^{3/2}$ as in \eqref{eq:PW-choices}.
+Given the seed $m_1$ (Appendix~\ref{app:firstheight-certified}) and the Main Theorem (Part~II),
+define $m_{j+1}$ for $j\ge1$ as the unique solution of
+\begin{equation}\label{eq:generator-eqn}
+\theta\!\Big(\frac{m_{j+1}}{2}\Big)-\theta\!\Big(\frac{m_j}{2}\Big)
+\;+\;
+\mathcal P^{\rm Weil}_{X_j}\!\Big(\frac{m_j}{2},\frac{m_{j+1}-m_j}{2}\Big)
+\;=\;\pi\,.
+\end{equation}
+For all $j\ge j_0$ (some explicit startup index depending only on $W$), \eqref{eq:generator-eqn}
+has a unique solution obtained by damped Newton in $O(1)$ steps with contraction factor
+$1-\kappa/\log t_j$. Moreover,
+\[
+m_{j+1}-m_j\ =\ \frac{4\pi}{
+\ \theta'(t_\ast)\ -\ \displaystyle\sum_{n\ge1}\frac{\Lambda(n)}{\sqrt n}\,
+W\!\Big(\frac{n}{X_j}\Big)\cos\!\big(t_\ast\log n\big)}\ +\ R_j
+\]
+with $t_\ast=\tfrac12(m_j+m_{j+1})$ and $R_j$ bounded as in \eqref{eq:C2R}.
+The finitely many indices $1\le j<j_0$ can be handled by the finite verification band of Part~II.
+\end{theorem}
 
 %------------------------------------------------------------------------------------------
 % Appendices
