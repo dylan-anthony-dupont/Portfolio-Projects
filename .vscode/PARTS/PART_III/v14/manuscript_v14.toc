@@ -1,0 +1,27 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{2}{section*.2}%
+\contentsline {paragraph}{What this section is (and is not).}{2}{section*.3}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{3}{section*.11}%
+\contentsline {section}{Symbols \& Provenance (at a glance)}{5}{section*.12}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{6}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{6}{section.2}%
+\contentsline {paragraph}{De--singularization on \(\partial B\).}{6}{section*.13}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Two-point Schur/outer criterion (boundary-only)}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Outer/Rouch\'e Certification Path}{7}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Analytic tail (uniform in $\alpha $)}{8}{section.4}%
+\contentsline {paragraph}{Setup.}{8}{section*.14}%
+\contentsline {subsection}{\numberline {4.1}Upper envelope via a disc-based \(L^2\) route}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lower envelope via forcing, \(L^2\) allocation, and Jensen}{8}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Tail comparison (symbolic and pinned constants)}{9}{section.5}%
+\contentsline {paragraph}{Choice of \(M_0(\eta )\) (symbolic criterion).}{9}{section*.15}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{9}{section*.16}%
+\contentsline {paragraph}{Standing basis for this part.}{9}{section*.17}%
+\contentsline {section}{\numberline {A}Hinge--Unitarity: a short proof}{11}{appendix.A}%
+\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{11}{appendix.B}%
+\contentsline {section}{\numberline {C}Bridges (one–liners)}{12}{appendix.C}%
+\contentsline {section}{\numberline {D}Conformal normalization}{12}{appendix.D}%
+\contentsline {section}{\numberline {E}Corner interpolation (detail)}{12}{appendix.E}%
+\contentsline {section}{\numberline {F}Outer/Rouch\'e certification protocol (rigorous outline)}{12}{appendix.F}%
+\contentsline {section}{\numberline {G}Certified first nontrivial zero}{12}{appendix.G}%
+\contentsline {section}{References}{14}{section*.22}%
+\contentsline {section}{Authorship and AI--Use Disclosure}{15}{section*.24}%
