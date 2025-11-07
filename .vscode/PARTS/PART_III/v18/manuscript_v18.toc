@@ -1,0 +1,32 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{1}{section*.3}%
+\contentsline {paragraph}{What this section is (and is not).}{1}{section*.4}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{3}{section*.13}%
+\contentsline {section}{Symbols \& Provenance (at a glance)}{4}{section*.15}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{5}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{5}{section.2}%
+\contentsline {paragraph}{De--singularization on \(\partial B\).}{5}{section*.16}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Two-point Schur/outer criterion (boundary-only)}{6}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Outer/Rouch\'e Certification Path}{7}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Analytic tail (uniform in $\alpha $)}{7}{section.4}%
+\contentsline {paragraph}{Setup.}{7}{section*.17}%
+\contentsline {subsection}{\numberline {4.1}Upper envelope via a disc-based \(L^2\) route}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lower envelope via forcing, \(L^2\) allocation, and Jensen}{8}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Tail comparison (symbolic and pinned constants)}{8}{section.5}%
+\contentsline {paragraph}{Choice of \(M_0(\eta )\) (symbolic criterion).}{9}{section*.18}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{9}{section*.20}%
+\contentsline {paragraph}{Standing basis for this part.}{9}{section*.21}%
+\contentsline {section}{Part III (continued) --- Prime--Locked Corollaries and Generator}{10}{section*.23}%
+\contentsline {section}{\numberline {A}Hinge--Unitarity: a short proof}{12}{appendix.A}%
+\contentsline {section}{\numberline {B}Constants ledger (sources \& transport)}{13}{appendix.B}%
+\contentsline {section}{\numberline {C}Bridges (one–liners)}{13}{appendix.C}%
+\contentsline {section}{\numberline {D}Conformal normalization}{13}{appendix.D}%
+\contentsline {section}{\numberline {E}Corner interpolation (detail)}{13}{appendix.E}%
+\contentsline {section}{\numberline {F}Outer/Rouch\'e certification protocol (rigorous outline)}{13}{appendix.F}%
+\contentsline {section}{\numberline {G}Certified first nontrivial zero}{13}{appendix.G}%
+\contentsline {section}{Appendix S.1. Operator norms on Lipschitz boundaries (shape-only dependence)}{14}{section*.27}%
+\contentsline {section}{Appendix S.2. Instantiating $(C_1,C_2)$ from explicit literature bounds (optional)}{14}{section*.29}%
+\contentsline {section}{Appendix S.3. Pinned constants closing the band}{14}{section*.31}%
+\contentsline {section}{Appendix PW. A concrete Paley--Wiener weight}{14}{section*.33}%
+\contentsline {section}{References}{16}{section*.34}%
+\contentsline {section}{Authorship and AI--Use Disclosure}{17}{section*.37}%
