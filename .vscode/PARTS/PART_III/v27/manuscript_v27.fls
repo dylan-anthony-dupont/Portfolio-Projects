@@ -276,6 +276,8 @@ INPUT /usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotmark
 INPUT /usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryplotmarks.code.tex
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdfmode.def
+INPUT /workspaces/Portfolio-Projects/.vscode/PARTS/PART_III/v27/manuscript_v27.aux
+INPUT /workspaces/Portfolio-Projects/.vscode/PARTS/PART_III/v27/manuscript_v27.aux
 OUTPUT /workspaces/Portfolio-Projects/.vscode/PARTS/PART_III/v27/manuscript_v27.aux
 INPUT /usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg

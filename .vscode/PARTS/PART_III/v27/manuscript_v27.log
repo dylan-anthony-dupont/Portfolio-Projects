@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2025.10.27)  12 DEC 2025 22:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2025.10.27)  12 DEC 2025 22:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -628,8 +628,7 @@ and deduce the truth by order and method.
 File: l3backend-pdfmode.def 2020-02-03 L3 backend support: PDF mode
 \l__kernel_color_stack_int=\count318
 \l__pdf_internal_box=\box68
-)
-No file manuscript_v27.aux.
+) (/workspaces/Portfolio-Projects/.vscode/PARTS/PART_III/v27/manuscript_v27.aux)
 \openout1 = `manuscript_v27.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 77.
@@ -648,6 +647,7 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 77.
 LaTeX Font Info:    ... okay on input line 77.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 77.
 LaTeX Font Info:    ... okay on input line 77.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -1218,8 +1218,8 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1020.
 ### semi simple group (level 1) entered at line 530 (\begingroup)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 31459 strings out of 483183
- 733562 string characters out of 5966291
+ 31461 strings out of 483183
+ 733714 string characters out of 5966291
  1163120 words of memory out of 5000000
  45706 multiletter control sequences out of 15000+600000
  549464 words of font info for 126 fonts, out of 8000000 for 9000
