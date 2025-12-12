@@ -1,0 +1,23 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{1}{section*.3}%
+\contentsline {paragraph}{What this section is (and is not).}{1}{section*.4}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{3}{section*.13}%
+\contentsline {section}{Symbols \& Provenance (at a glance)}{3}{section*.15}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{4}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{4}{section.2}%
+\contentsline {paragraph}{De--singularization on \(\partial B\).}{4}{section*.16}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Outer/Rouch\'e Certification Path (optional)}{5}{subsection.3.1}%
+\contentsline {section}{\numberline {4}Analytic tail (uniform in $\alpha $)}{5}{section.4}%
+\contentsline {paragraph}{Upper/lower envelope constants are shape-only.}{5}{section*.17}%
+\contentsline {section}{\numberline {5}Tail comparison and global closure}{6}{section.5}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{6}{section*.19}%
+\contentsline {paragraph}{Standing basis for this part.}{6}{section*.20}%
+\contentsline {section}{Part III (continued) --- Prime--Locked Tick Generator (supplementary)}{7}{section*.22}%
+\contentsline {paragraph}{Notation (true zeros vs generated ticks).}{7}{section*.23}%
+\contentsline {section}{\numberline {A}Hinge--Unitarity: a short proof}{9}{appendix.A}%
+\contentsline {section}{\numberline {B}Outer/Rouch\'e certification protocol (rigorous outline)}{9}{appendix.B}%
+\contentsline {section}{\numberline {C}Certified first nontrivial zero}{9}{appendix.C}%
+\contentsline {paragraph}{Truth ordinates.}{10}{section*.31}%
+\contentsline {paragraph}{Reference script (Python 3).}{10}{section*.32}%
+\contentsline {section}{References}{16}{section*.33}%
+\contentsline {section}{Authorship and AI--Use Disclosure}{17}{section*.36}%

@@ -1,0 +1,27 @@
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{2}{section*.3}%
+\contentsline {paragraph}{What this section is (and is not).}{2}{section*.4}%
+\contentsline {section}{Part II --- Analytic Core and Certified Criterion on Aligned Boxes}{4}{section*.11}%
+\contentsline {paragraph}{Standing objects.}{4}{section*.12}%
+\contentsline {section}{Symbols \& provenance (at a glance)}{4}{section*.14}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{4}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{5}{section.2}%
+\contentsline {paragraph}{De--singularization.}{5}{section*.15}%
+\contentsline {section}{\numberline {3}Boundary-only criteria: Schur route and certified Rouch\'e route}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Two-point Schur/outer criterion (boundary-only)}{6}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Outer/Rouch\'e certification route (rigorous and checkable)}{7}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Corner interpolation (regularity reminder)}{7}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Analytic tail: symbolic inequalities and pinned constants (programmatic)}{8}{section.4}%
+\contentsline {paragraph}{Purpose of this section.}{8}{section*.16}%
+\contentsline {section}{Part III --- Structural Corollaries (supplementary)}{8}{section*.18}%
+\contentsline {paragraph}{Standing basis.}{8}{section*.19}%
+\contentsline {section}{Part III (continued) --- Prime--Locked Tick Generator (audited; supplementary)}{9}{section*.21}%
+\contentsline {paragraph}{Notation (true zeros vs.\ generated ticks).}{9}{section*.22}%
+\contentsline {section}{\numberline {A}Corner interpolation (detail)}{10}{appendix.A}%
+\contentsline {section}{\numberline {B}Outer/Rouch\'e certification protocol (rigorous outline)}{11}{appendix.B}%
+\contentsline {section}{\numberline {C}Certified first nontrivial zero and verified band}{11}{appendix.C}%
+\contentsline {paragraph}{Purpose.}{12}{section*.29}%
+\contentsline {paragraph}{Truth ordinates.}{12}{section*.30}%
+\contentsline {paragraph}{Audit protocol.}{12}{section*.31}%
+\contentsline {paragraph}{Reference script (Python 3).}{12}{section*.32}%
+\contentsline {section}{References}{18}{section*.33}%
+\contentsline {section}{Authorship and AI--Use Disclosure}{19}{section*.36}%

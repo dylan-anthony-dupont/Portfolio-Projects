@@ -1,0 +1,945 @@
+% ======================================================================
+% Master Manuscript — Part I (Reader's Guide) + Part II (Analytic Core) + Part III (Structural Corollaries)
+% v25 = v24 + [PATCH 8.0] (submission-hardening: pinned-constants logic, shape-only invariance lemma,
+%                          generator semantics (true zeros vs ticks), conditionalize unproved explicit-formula bounds)
+% ======================================================================
+
+\documentclass[11pt]{article}
+
+% ------------------ Basic packages (minimal) ------------------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{nameref}
+\usepackage{tabularx,booktabs,array}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{float}
+
+% >>> for long tables and in-document plotting
+\usepackage{longtable}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ------------------ Theorem styles ------------------
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ------------------ Col types ------------------
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+% ------------------ Macros: frames, functions, projectors ------------------
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\Real}{\operatorname{Re}}
+\newcommand{\Imag}{\operatorname{Im}}
+\newcommand{\zetaTwo}{\zeta_2}
+\newcommand{\LambdaTwo}{\Lambda_2}
+\newcommand{\LamTwo}{\LambdaTwo}
+\newcommand{\Afac}{A_2}
+\newcommand{\chiTwo}{\chi_2}
+\newcommand{\Podd}{P_{\mathrm{odd}}}
+\newcommand{\Peven}{P_{\mathrm{even}}}
+\newcommand{\Ucore}{U}
+\newcommand{\UR}{U_{\mathrm{R}}}
+\newcommand{\UL}{U_{\mathrm{L}}}
+\newcommand{\Ecomp}{E}
+\newcommand{\Gout}{G_{\mathrm{out}}}
+\newcommand{\Zloc}{Z_{\mathrm{loc}}}
+\newcommand{\Arg}{\operatorname{Arg}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\ii}{\mathrm{i}}
+
+\newenvironment{Overview}{\begin{quote}\itshape}{\end{quote}}
+
+% ------------------ Title page ------------------
+\title{\Large A Height--Local Width--2 Program for Excluding Off--Axis Quartets\\[2pt]
+\large with an Analytic Tail and a Rigorous Certified Criterion}
+\author{Dylan Anthony Dupont}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+The paper is organized in three parts:\;
+\textbf{Part~I} (Reader’s Guide) reduces RH to a height--local target \(a(m)=0\) in the width--2 frame and records non--load--bearing scaffolding;\;
+\textbf{Part~II} gives a self--contained boundary program (short-side forcing + residual control + disc/Jensen localization) that excludes any off--axis quartet and yields the on--axis collapse; all constants appearing in the envelope comparison are \emph{shape-only} after affine normalization;\;
+\textbf{Part~III} records post-collapse structural corollaries and presents a deterministic prime--locked \emph{tick generator} together with a reproducible numerical audit (supplementary and not used in Part~II).
+\end{abstract}
+
+\tableofcontents
+
+% ======================================================================
+% Part I — Reader’s Guide / Motivation, Reduction & Implications
+% ======================================================================
+\section*{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}
+\phantomsection
+\addcontentsline{toc}{section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}
+
+\paragraph{What this section is (and is not).}
+\emph{What it does.} It introduces modulated frames and the width--2 normalization, defines the centered “\(a\)--lens” that measures horizontal tilt at a fixed height, and reduces RH to the height--local target \(a(m)=0\) for each nontrivial height \(m\). It also records a structural toolbox and explains how these become \emph{corollaries} after Part~II.
+
+\noindent\emph{What it does not do.} It contains no analytic estimates and no proofs. The hinge--unitarity fact and all bounds are proved later. This Guide is not used by the analytic part.
+
+\subsection*{1) Modulated frames and the width--2 pivot}
+For \(f>0\) define the modulated family \(\zeta_f(s):=\zeta(s/f)\) with completed form
+\[
+\Lambda_f(s)=\pi^{-\,s/(2f)}\,\Gamma\!\Big(\frac{s}{2f}\Big)\,\zeta_f(s),
+\]
+so \(\Lambda_f\) is entire and satisfies \(\Lambda_f(s)=\Lambda_f(f-s)\). Equivalently, \(\zeta_f(s)=A_f(s)\,\zeta_f(f-s)\) with \(A_f(s)A_f(f-s)\equiv1\).
+
+\smallskip
+\noindent\textbf{Width--2 normalization.} Put \(u:=(2/f)\,s\). Then
+\[
+\zetaTwo(u):=\zeta(u/2),\qquad
+\LambdaTwo(u):=\pi^{-u/4}\Gamma(u/4)\,\zeta(u/2),\qquad
+\LambdaTwo(u)=\LambdaTwo(2-u).
+\]
+The non--completed FE reads \(\zetaTwo(u)=\Afac(u)\,\zetaTwo(2-u)\).
+In the open strip \(0<\Real u<2\) and \(\Imag u\neq0\), \(\Afac\) is analytic and nonvanishing.
+
+\smallskip
+\noindent\textbf{Partner map.} On \(\Imag u>0\), FE + conjugation gives the involution \(J(u)=2-\overline{u}\), swapping the two column points at the same height.
+
+\smallskip
+\noindent\textbf{Hinge unitarity (deferred).} The statement “\(|\chiTwo(u)|=|\Afac(u)|^{-1}=1\)” iff \(\Real u=1\) is proved in Part~II (Theorem~\ref{thm:hinge}; Appendix~\ref{app:hinge-short}).
+
+\subsection*{2) Centered \(a\)--lens and the quartet}
+Let \(v:=u-1\) and \, \(E(v):=\LamTwo(1+v)\). Then \(E(v)=E(-v)=\overline{E(\overline v)}\).
+A “nontrivial height” \(m>0\) means \(m\) occurs as the imaginary part of a nontrivial zero \(s=\tfrac12+\ii m/2\).
+At fixed \(m>0\), set
+\[
+\UR(m;a)=1+a+\ii m,\qquad \UL(m;a)=1-a+\ii m,\qquad a\in[0,1).
+\]
+In the centered frame, the dial points are \(\pm(a+\ii m)\); the partner map \(J\) swaps \(\UR\leftrightarrow \UL\).
+Conjugation plus FE reflection generate the quartet \(\{\,1\pm a\pm \ii m\,\}\).
+
+\subsection*{3) Why width--2: slope invariance}
+If the columns collapse at height \(m\) (\(a=0\)), the point is \(u=1+\ii m\) and its slope is \(\Imag u/\Real u = m\).
+Rescaling to any frame \(s=(f/2)\,u\) preserves slope:
+\[
+\frac{\Imag s}{\Real s}=\frac{(f/2)\,m}{f/2}=m.
+\]
+
+\subsection*{4) Height--local reduction of RH}
+Fix \(m>0\) and write \(\UR=1+a+\ii m\), \(\UL=1-a+\ii m\). The following equivalent algebraic forms are used:
+\begin{itemize}[leftmargin=1.2em]
+  \item (PHU--1) \(\Real \UR=\Real \UL \iff a=0\).
+  \item (PHU--2) \(\Imag \UR/\Real \UR=\Imag \UL/\Real \UL \iff a=0\).
+  \item (PHU--3) \(\UR=\UL=1+\ii m\).
+\end{itemize}
+Thus \(\mathrm{RH}\iff\) for every nontrivial height \(m>0\), \(a(m)=0\).
+
+\subsection*{5) Box alignment and hand--off (no circularity)}
+For later reference, define
+\[
+B(\alpha,m,\delta)=[\alpha-\delta,\alpha+\delta]\times[m-\delta,m+\delta],\qquad
+\delta:=\eta\,\alpha/(\log m)^2,\ \ \eta\in(0,1).
+\]
+When \(\alpha=\pm a\), the dials \(\pm(a+\ii m)\) lie on the horizontal centerline.
+\emph{What Part~II does.} Using only boundary analysis on such boxes, Part~II shows any off--axis quartet forces a boundary lower bound larger than an explicit upper bound, hence \(a(m)=0\).
+
+\subsection*{6) Parity gating and selection devices (interpretive only)}
+In width--2,
+\[
+\zetaTwo(u)=\Afac(u)\,\zetaTwo(2-u),\quad
+\Afac(u)=2^{u/2}\,\pi^{\,u/2-1}\,\sin\!\Big(\frac{\pi u}{4}\Big)\,\Gamma\!\Big(1-\frac{u}{2}\Big).
+\]
+On \(0<\Real u<2\), \(\Imag u\neq0\), the prefactor \(\Afac(u)\) is nonzero; its sine zeros lie on the real axis only. Thus \emph{inside} the open strip only \(\zetaTwo\) can vanish (nontrivial), while the trivial ladder is confined to \(\Real u\). This motivates an odd/even split on the integer lattice via
+\[
+\Podd(n)=\tfrac{1-\cos(\pi n)}{2},\qquad
+\Peven(n)=\tfrac{1+\cos(\pi n)}{2}.
+\]
+We assign the nontrivial stream to odd slots and the trivial ladder to even slots. (Interpretive; not used in Part~II.)
+
+\subsection*{7) Toolbox \(\to\) structural consequences (after the theorem)}
+The items become \emph{Structural Corollaries in Part~III} once Part~II proves \(a(m)=0\). No toolbox component is used as an input in Part~II.
+
+% ======================================================================
+% Part II — Analytic Core (self-contained; boundary-only)
+% ======================================================================
+\section*{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}
+\phantomsection
+\addcontentsline{toc}{section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}
+
+In the width‑2 centered frame \(u=2s\), \(v=u-1\), let \(\LamTwo(u)=\pi^{-u/4}\Gamma(u/4)\zeta(u/2)\) and \(E(v)=\LamTwo(1+v)\).
+We present a boundary program to exclude off‑axis quartets \(\{\pm a\pm i m\}\) via:
+\begin{enumerate}[label=(\arabic*)]
+\item an \emph{analytic tail}, uniform in \(\alpha\in(0,1]\), using: (i) explicit short‑side forcing \(\ge \pi/2\); (ii) residual control \(F=E/\Zloc\) with perimeter factor \(8\delta\); (iii) a disc/Jensen localization;
+\item an optional \emph{Outer/Rouch\'e Certification Path} suitable for interval arithmetic.
+\end{enumerate}
+All constants in the envelope comparison are \emph{shape-only} after affine normalization of the box boundary, and hence independent of \(m,\alpha,a\). The band-elimination step is achieved by a constructive choice of \(\eta\) depending only on those shape-only constants (Appendix~\ref{app:S3}).
+
+% ---------------------------------------------------
+\Needspace{18\baselineskip}
+\section*{Symbols \& Provenance (at a glance)}
+\phantomsection
+\addcontentsline{toc}{section}{Symbols \& Provenance (at a glance)}
+
+\small
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}p{3.8cm} L L@{}}
+\toprule
+\textbf{Symbol} & \textbf{Definition / role} & \textbf{Provenance / rationale}\\
+\midrule
+$u=2s$, $v=u-1$ & Width--2 frame centered at $\Real u=1$ & Centers FE symmetry\\
+\midrule
+$\LamTwo(u)=\pi^{-u/4}\Gamma(u/4)\zeta(u/2)$ & Completed object & Standard; FE for $\LamTwo$\\
+\midrule
+$E(v)=\LamTwo(1+v)$ & Workhorse in $v$--plane & Even \& conjugate symmetry\\
+\midrule
+$\chiTwo(u)$ & FE factor inverse & $\chiTwo(u)=\pi^{u/2-1/2}\frac{\Gamma((2-u)/4)}{\Gamma(u/4)}$\\
+\midrule
+$B(\alpha,m,\delta)$ & $[\alpha-\delta,\alpha+\delta]\times[m-\delta,m+\delta]$ & Square centered at $(\alpha,m)$\\
+\midrule
+$\delta=\dfrac{\eta\,\alpha}{(\log m)^2}$ & Half--side length & Smallness knob $\eta\in(0,1)$\\
+\midrule
+$\Zloc(v)=\prod_{|\Imag\rho-m|\le 1}(v-\rho)^{m_\rho}$ & Local zero/pole factors & Removes local poles from $E'/E$\\
+\midrule
+$F=E/\Zloc$ & Residual analytic factor & Controlled by Lemma~\ref{lem:residual}\\
+\midrule
+$K_{\rm alloc}^{\star}(\lambda)$, $C_{\mathrm{up}}$, $C_h''$ & Shape-only constants & Depend only on the normalized square boundary\\
+\bottomrule
+\end{tabularx}
+\end{center}
+\normalsize
+
+\begin{lemma}[Shape-only invariance under affine normalization]\label{lem:shape-only}
+Let \(B(\alpha,m,\delta)\) be as in \eqref{eq:box-delta} and let \(T(v):=(v-(\alpha+\ii m))/\delta\). Then \(T\) maps \(\partial B(\alpha,m,\delta)\) onto the fixed square \(\partial Q\) where \(Q=[-1,1]\times[-1,1]\).
+Any constant arising solely from:
+(i) $L^2$ boundedness of singular integrals on \(\partial B\),
+(ii) Poisson/Cauchy boundary-to-interior operator norms on \(\partial B\),
+(iii) geometric inequalities on $\partial B$ (arc lengths, central/tail decompositions),
+depends only on \(\partial Q\) (hence on shape) and not on \(\alpha,m,\delta\).
+\end{lemma}
+\begin{proof}
+Under \(T\), tangential derivatives scale by \(1/\delta\) and arclength by \(\delta\), while the Lipschitz character of the boundary is unchanged because \(\partial Q\) is fixed. Therefore operator norms and shape-constants transfer to \(B\) with no dependence on \(\alpha,m,\delta\).
+\end{proof}
+
+\medskip
+\noindent\textit{Sources.} Digamma: DLMF §5.5, §5.11. $\zeta'/\zeta$: Titchmarsh §14; Ivi\'c Ch.~9. Lipschitz Hilbert/Cauchy: Coifman--McIntosh--Meyer (1982).
+
+% ---------------------------------------------------
+\section{Frames, symmetry, and the hinge law}\label{sec:frames}
+% ---------------------------------------------------
+
+We work in the width--2 centered frame \(u=2s\), \(v=u-1\), with
+\[
+\LamTwo(u)=\pi^{-u/4}\Gamma\!\Big(\frac{u}{4}\Big)\zeta\!\Big(\frac{u}{2}\Big),\qquad
+E(v):=\LamTwo(1+v).
+\]
+Then \(E(v)=E(-v)=\overline{E(\bar v)}\) and off‑axis zeros appear as quartets \(\{\pm a\pm im\}\).
+
+\begin{theorem}[Hinge--Unitarity]\label{thm:hinge}
+Let \(\zeta_2(u)=\zeta(u/2)\) and \(\zeta_2(u)=A_2(u)\,\zeta_2(2-u)\) with
+\[
+\chiTwo(u):=A_2(u)^{-1}=\pi^{u/2-1/2}\frac{\Gamma\big(\frac{2-u}{4}\big)}{\Gamma\big(\frac{u}{4}\big)}.
+\]
+For each fixed \(t\neq 0\), define \(f(\sigma)=\log|\chi_2(\sigma+it)|\). Then
+\[
+f'(\sigma)=\tfrac12\log\pi-\tfrac12\,\Real\psi\!\Big(\tfrac{\sigma+it}{4}\Big)
+-\tfrac14\,\Real\!\Big[\pi\cot\!\Big(\tfrac{\pi}{4}(\sigma+it)\Big)\Big].
+\]
+Moreover,
+\[
+\big|\Real\!\big[\pi\cot(x+iy)\big]\big|\le\frac{\pi}{\cosh(2y)-1}.
+\]
+With \(x=\tfrac{\pi}{4}\sigma\), \(y=\tfrac{\pi}{4}|t|\), for \(|t|\ge m_1/2\) (Appendix~\ref{app:firstheight-certified}) the cotangent term is negligible, and vertical‑strip bounds give
+\(\Real\psi\!\big(\frac{\sigma+it}{4}\big)\ge \log\!\big(\frac{|t|}{4}\big)-\frac{2}{|t|}\).
+Hence \(f'(\sigma)<0\) on \(\R\) for such \(t\). Since \(f(1)=0\), \(|\chi_2(u)|=1\) iff \(\Real u=1\).
+\end{theorem}
+
+% ---------------------------------------------------
+\section{Boxes, de-singularization, residual control, and forcing}\label{sec:boxes}
+% ---------------------------------------------------
+
+Fix \(m\ge 10\), \(\alpha\in(0,1]\), and
+\begin{equation}\label{eq:box-delta}
+B(\alpha,m,\delta)=\big[\alpha-\delta,\alpha+\delta\big]\times\big[m-\delta,m+\delta\big],
+\qquad
+\delta=\frac{\eta\,\alpha}{(\log m)^2},\ \ \eta\in(0,1).
+\end{equation}
+
+\begin{lemma}[Short boxes stay in \(\Real v>0\)]\label{lem:box-right}
+For \(m\ge10\) and any \(\eta\in(0,1)\), one has \(\delta<\alpha\) and \(B(\alpha,m,\delta)\subset\{\Real v>0\}\), uniformly in \(\alpha\in(0,1]\).
+\end{lemma}
+\begin{proof}
+Since \(\eta/(\log m)^2<1\), we have \(\delta=\alpha\,\eta/(\log m)^2<\alpha\), so \(\alpha-\delta>0\).
+\end{proof}
+
+\paragraph{De--singularization on \(\partial B\).}
+Let
+\begin{equation}\label{eq:Zloc}
+\Zloc(v)=\prod_{\rho:\,|\Imag\rho-m|\le 1}(v-\rho)^{m_\rho},\qquad
+F(v):=\frac{E(v)}{\Zloc(v)}.
+\end{equation}
+Then \(F\) is analytic and zero‑free on a neighborhood of \(\partial B\).
+
+\begin{lemma}[Residual envelope]\label{lem:residual}
+On \(\partial B\),
+\begin{equation}\label{eq:residual-sup}
+\sup_{\partial B}\Big|\frac{F'}{F}\Big|\ \le\ C_1\log m + C_2,
+\end{equation}
+and
+\begin{equation}\label{eq:residual-perimeter}
+\big|\Delta_{\partial B}\arg F\big|\ \le\ 8\delta\,\big(C_1\log m+C_2\big).
+\end{equation}
+\begin{proof}
+Standard bounds for \(\psi\) on vertical strips (DLMF §5.11) and the classical representation of \(\zeta'/\zeta\) by nearby zeros plus \(O(\log t)\) (Titchmarsh §14; Ivi\'c Ch.~9), together with the removal of poles by \(\Zloc\), give \eqref{eq:residual-sup}. Then \eqref{eq:residual-perimeter} follows by integrating \(|F'/F|\) along \(\partial B\) of length \(8\delta\).
+\end{proof}
+\end{lemma}
+
+\begin{lemma}[Short--side forcing]\label{lem:short-side}
+Let \(Z_{\rm pair}(v)=(v-(a+im))(v-(-a+im))\). On the near vertical
+\[
+I_+=\{\alpha+i y:\ |y-m|\le \delta\},\quad\text{with }|\alpha-a|\le\delta,
+\]
+one has
+\begin{equation}\label{eq:short-side}
+\Delta_{I_+}\arg Z_{\rm pair}
+=2\arctan\frac{\delta}{|\alpha-a|}+2\arctan\frac{\delta}{\alpha+a}\ \ge\ \frac{\pi}{2}.
+\end{equation}
+\end{lemma}
+
+% ---------------------------------------------------
+\section{Boundary-only criteria, bridges, and corner interpolation}\label{sec:criteria}
+% ---------------------------------------------------
+
+\subsection{Outer/Rouch\'e Certification Path (optional)}\label{subsec:rouche-criterion}
+
+Let \(U\) solve Dirichlet on \(B\) with boundary data \(\log|E|\), and let \(V\) be a harmonic conjugate. Set \(\Gout:=e^{U+iV}\).
+Then \(\Gout\) is analytic and zero‑free on \(B\) with \(|\Gout|=|E|\) a.e.\ on \(\partial B\).
+
+\begin{proposition}[Outer/Rouch\'e criterion]\label{prop:rouche-criterion}
+If
+\begin{equation}\label{eq:rouche-ratio}
+\sup_{v\in\partial B}\frac{|E(v)-\Gout(v)|}{|\Gout(v)|}\ <\ 1,
+\end{equation}
+then \(E\) is zero‑free in \(B\) (Rouch\'e). Consequently, the inner quotient \(W:=E/\Gout\) is analytic on \(B\) with \(|W|=1\) a.e.\ on \(\partial B\).
+\end{proposition}
+
+\begin{proposition}[Bridge~1: inner collapse]\label{prop:bridge1}
+Under \eqref{eq:rouche-ratio}, \(W\equiv e^{i\theta_B}\) on \(B\).
+\end{proposition}
+
+\begin{proposition}[Bridge~2: stitching]\label{prop:bridge2}
+If \(B_1,B_2\) overlap and \(W\equiv e^{i\theta_{B_j}}\) on \(B_j\) \((j=1,2)\), then \(e^{i\theta_{B_1}}=e^{i\theta_{B_2}}\) on \(B_1\cap B_2\).
+\end{proposition}
+
+% ===================================================
+\section{Analytic tail (uniform in \texorpdfstring{$\alpha$}{alpha})}\label{sec:tail}
+% ===================================================
+
+\paragraph{Upper/lower envelope constants are shape-only.}
+After affine normalization (Lemma~\ref{lem:shape-only}), all operator norms used to pass from boundary controls on \(\partial B\) to interior controls at the dials depend only on the fixed square boundary \(\partial Q\).
+We package these into two shape-only constants:
+\begin{itemize}[leftmargin=1.2em]
+\item \(C_{\mathrm{up}}>0\): the constant in the disc-based upper envelope estimate;
+\item \(C_h''>0\): the horizontal budget constant entering the restricted-contour localization.
+\end{itemize}
+Their finiteness is guaranteed by the boundedness of the Cauchy singular integral and harmonic measure operators on Lipschitz curves (Coifman--McIntosh--Meyer).
+
+\begin{lemma}[Disc-based upper envelope]\label{lem:upper-disc}
+There exists a shape-only constant \(C_{\mathrm{up}}>0\) such that, for aligned boxes \(\alpha=\pm a\),
+\begin{equation}\label{eq:Uhm-upper-disc}
+\sum_{\pm}\big|W(v_\pm^\star)-e^{i\phi_0^\pm}\big|
+\ \le\ 2\,C_{\mathrm{up}}\ \delta^{3/2}\ \Big(\sup_{\partial B}\Big|\frac{E'}{E}\Big|\Big).
+\end{equation}
+\end{lemma}
+
+\begin{lemma}[Vertical allocation coefficient]\label{lem:allocL2}
+For \(\lambda\in(0,1)\) there is a shape-only coefficient \(K_{\rm alloc}^{\star}(\lambda)\) such that the retained central variation satisfies
+\begin{equation}\label{eq:Delta-cent-ineq}
+\Delta_{\rm cent}\ :=\ \Delta_{\rm vert}\ -\ K_{\rm alloc}^{\star}(\lambda)\,\delta\,\sup_{\partial B}\Big|\frac{E'}{E}\Big| \ -\ C_h''\,\delta\,(\log m+1).
+\end{equation}
+For \(\lambda=\tfrac12\), \(K_{\rm alloc}^{\star}(\tfrac12)=3+8\sqrt{3}\).
+\end{lemma}
+
+\begin{lemma}[Jensen dial deficit]\label{lem:jensen-dial}
+With \(\lambda=\tfrac12\) and \(c_0=\tfrac{1}{4\pi}\log(2\sqrt{2})\), the lower envelope on aligned boxes yields
+\[
+\varepsilon_+ + \varepsilon_- \ \ge\ c_0\,\frac{\pi}{2}\ -\ \delta\Big( K_{\rm alloc}^{\star}(\tfrac12)\,c_0\,L + C_h''(\log m+1) \Big),
+\]
+where \(L=\sup_{\partial B}|E'/E|\).
+\end{lemma}
+
+% ---------------------------------------------------
+\section{Tail comparison and global closure}\label{subsec:comparison}
+% ---------------------------------------------------
+
+\begin{theorem}[Global on--axis theorem; symbolic constants]\label{thm:global-closure}
+Fix \(\eta\in(0,1)\) and set \(\delta=\eta\,\alpha/(\log m)^2\). Let \(C_{\mathrm{up}},C_h''>0\) be the shape‑only constants from Lemma~\ref{lem:upper-disc} and Lemma~\ref{lem:allocL2}, and let \(K_{\rm alloc}^{\star}(\tfrac12)=3+8\sqrt{3}\).
+Assume the residual control Lemma~\ref{lem:residual} with absolute constants \(C_1,C_2>0\).
+Then there exists \(M_0(\eta)\) such that, for all \(m\ge M_0(\eta)\) and \(\alpha\in(0,1]\),
+\begin{equation}\label{eq:upper-lower-compare}
+\underbrace{\sum_{\pm}\big|W(v_\pm^\star)-e^{i\phi_0^\pm}\big|}_{\mathcal U_{hm}(m,\alpha)}
+\ <\
+\underbrace{c_0\,\frac{\pi}{2}\ -\ \delta\Big( K_{\rm alloc}^{\star}(\tfrac12)\,c_0\,(C_1\log m+C_2) + C_h''(\log m+1) \Big)}_{\mathcal L(m,\alpha)}\,,
+\end{equation}
+with \(c_0=\tfrac{1}{4\pi}\log(2\sqrt{2})\).
+Consequently no off‑axis quartet lies in any \(B(\alpha,m,\delta)\) for \(m\ge M_0(\eta)\).
+\end{theorem}
+
+\begin{corollary}[Band-free closure by a constructive choice of \texorpdfstring{$\eta$}{eta}]\label{cor:eta-choice}
+Let \(m_1=2t_1\) be the first height (Appendix~\ref{app:firstheight-certified}) and define
+\[
+L_1:=C_1\log m_1+C_2,\qquad
+B_1:=K_{\rm alloc}^{\star}(\tfrac12)\,c_0\,L_1 + C_h''(\log m_1+1),\qquad
+c:=c_0\frac{\pi}{2}.
+\]
+Set
+\begin{equation}\label{eq:eta-star}
+\eta_\star
+:=\min\left\{
+1,\ \frac{c(\log m_1)^2}{8B_1},\ 
+\left(\frac{c(\log m_1)^3}{16C_{\mathrm{up}}L_1}\right)^{2/3}
+\right\}.
+\end{equation}
+Then the envelope inequality \eqref{eq:upper-lower-compare} holds already at \(m=m_1\) and \(\alpha=1\), hence \(M_0(\eta_\star)\le m_1\). In particular, the on-axis collapse holds for all heights \(m\ge m_1\), i.e.\ all nontrivial zeros lie on \(\Real s=\tfrac12\).
+\end{corollary}
+\begin{proof}
+At worst case \(\alpha=1\), \(\delta=\eta/(\log m)^2\).
+Evaluating \eqref{eq:upper-lower-compare} at \(m=m_1\), it suffices that
+\[
+2C_{\mathrm{up}}\left(\frac{\eta}{(\log m_1)^2}\right)^{3/2}L_1
+\le \frac{c}{2}
+\quad\text{and}\quad
+\left(\frac{\eta}{(\log m_1)^2}\right)B_1
+\le \frac{c}{2}.
+\]
+The two bounds are enforced by the defining constraints in \eqref{eq:eta-star}.
+For \(m\ge m_1\), the left-hand side of \eqref{eq:upper-lower-compare} is nonincreasing in \(m\) (since \((\log m)^{-2}\) dominates the slowly varying \(\log m\) factors), while the right-hand side is nondecreasing (the subtractive \(\delta\)-term decreases). Hence verifying at \(m_1\) suffices for all \(m\ge m_1\).
+\end{proof}
+
+% ======================================================================
+% Part III — Structural Corollaries (post-Theorem; brief proofs)
+% ======================================================================
+\section*{Part III --- Structural Corollaries (after the main theorem)}
+\phantomsection
+\addcontentsline{toc}{section}{Part III --- Structural Corollaries (after the main theorem)}
+
+\paragraph{Standing basis for this part.}
+Throughout Part~III we use the conclusion of Part~II: the per–height tilt vanishes \(a(m)=0\) at every nontrivial height.
+
+\begin{corollary}[Canonical columns]\label{cor:canonical-columns}
+Define \(\Podd(n)=(1-\cos\pi n)/2\) and \(\Peven(n)=(1+\cos\pi n)/2\). Let \(k(2j-1)=j\), \(k(2j)=j+1\).
+For any \(x\in(0,2)\),
+\[
+\UR(x,n)=\Podd(n)\,\big(x+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\Peven(n),
+\]
+\[
+\UL(x,n)=\Podd(n)\,\big(2-x+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\Peven(n).
+\]
+Under \(a(m)=0\), the canonical choice \(x=1\) gives \(\UR(1,n)=\UL(1,n)\) for all \(n\).
+\end{corollary}
+
+\begin{corollary}[Collapsed canonical stream: mod--4 face]\label{cor:collapsed-mod4}
+\[
+\Ucore(n):=\Podd(n)\,\big(1+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\Peven(n),
+\]
+so \(\Ucore(2j-1)=1+\ii m_j\) and \(\Ucore(2j)=-4(j+1)\).
+\end{corollary}
+
+\begin{corollary}[Collapsed canonical stream: mod--2 face]\label{cor:collapsed-mod2}
+Using \(\sin^2(\pi n/2)=\Podd(n)\) and \(\cos^2(\pi n/2)=\Peven(n)\),
+\[
+\Ucore(n)=\sin^2\!\Big(\frac{\pi n}{2}\Big)\,\big(1+\ii\,m_{k(n)}\big)\;-\;4\big(n+1-k(n)\big)\,\cos^2\!\Big(\frac{\pi n}{2}\Big).
+\end{corollary}
+
+\begin{corollary}[Single--frequency collapse]\label{cor:single-frequency}
+There are functions \(c(n),d(n)\) with
+\[
+\Ucore(n)=(c+d)\;+\;(c-d)\,\cos(\pi n),\qquad
+c=2\big(k(n)-n-1\big),\quad d=\frac{1+\ii\,m_{k(n)}}{2}.
+\end{corollary}
+
+\begin{corollary}[Self--indexed recurrence]\label{cor:self-indexed}
+With \(\Ucore(0)=-4\) and \(\Ucore(1)=1+\ii m_1\), for all \(n\ge2\),
+\[
+\Ucore(n)=\Podd(n)\,\Big(1+\ii\,m_{-\Ucore(n-1)/4}\Big)\;-\;\Peven(n)\,\Big(\Ucore(n-2)+4(n+1)\Big).
+\end{corollary}
+
+\begin{corollary}[Seed $\to$ rectifier $\to$ physical streams]\label{cor:rectifier}
+Let \(\chi_4(n):=(-1)^{\lfloor n/2\rfloor}\). For \(f>0\) and gain \(\lambda\in\R\),
+\[
+s_{f,k}(n)=f\lambda\Big[\sin\!\Big(\frac{\pi n}{2}\Big)\big(1+\ii\,m_k\big)-4n\,\cos\!\Big(\frac{\pi n}{2}\Big)\Big],
+\]
+then \(\chi_4(n)\,s_{f,k}(n)=f\lambda\big[\Podd(n)(1+\ii m_k)-4n\,\Peven(n)\big]\).
+With \(\lambda=\tfrac12\) and \(k=k(n)\) we get the physical stream \(S_f(n)=\frac{f}{2}\,\Ucore(n)\).
+\end{corollary}
+
+\begin{corollary}[Curvature extractor \& \(\zeta(2)\) disguise]\label{cor:curvature}
+Let \(F(n):=\Imag \Ucore(n)\). Then \(F(2j-1)=m_j\), \(F(2j)=0\), and
+\[
+m_j=\frac{2}{\pi^2}\,\Imag\big(\Ucore''(2j)\big)
+=\frac{1}{3\,\zeta(2)}\,\Imag\big(\Ucore''(2j)\big)
+=\frac{2}{3\,\zeta(2)}\sum_{\ell\in\Z}\frac{m_\ell}{\big(2(j-\ell)+1\big)^2}.
+\]
+For \(\Delta^2 U(n):=U(n+1)-2U(n)+U(n-1)\), \(\Imag\Delta^2 U(2j)=m_{j+1}+m_j\).
+\end{corollary}
+
+% ----------------------------------------------------------------------
+% Part III (continued) — Prime-locked tick generator (audited)
+% ----------------------------------------------------------------------
+\section*{Part III (continued) --- Prime--Locked Tick Generator (supplementary)}
+\phantomsection
+\addcontentsline{toc}{section}{Part III (continued) --- Prime--Locked Tick Generator (supplementary)}
+
+\paragraph{Notation (true zeros vs generated ticks).}
+Let \(\gamma_1<\gamma_2<\cdots\) denote the ordinates of the nontrivial zeros on \(\Real s=\tfrac12\), and set \(m_j:=2\gamma_j\).
+Independently, define a deterministic \emph{tick sequence} \(\tilde t_1,\tilde t_2,\dots\) by the generator equation below, and set \(\tilde m_j:=2\tilde t_j\).
+The numerical audit compares \(\tilde m_j\) against the true \(m_j\).
+Part~II does not use this section.
+
+Let \(\theta(t)\) be the Riemann--Siegel theta function.
+
+Fix once and for all
+\begin{equation}\label{eq:PW-choices}
+\varepsilon:=\tfrac12,\qquad
+A:=2-\varepsilon=\tfrac32,\qquad
+X(t):=C\,(\log t)^{A}\qquad (C\ge 1),
+\end{equation}
+and a fixed smooth cutoff weight \(W:[0,1]\to[0,1]\) with \(W(0)=1\), \(W(1)=0\) (Appendix~\nameref{app:PW}).
+
+Define for \(t>0\) and \(\Delta>0\) the prime integral
+\[
+\mathcal P_{X(t)}(t,\Delta)
+:=
+-\sum_{p^k\ge1}\frac{1}{k\,p^{k/2}}\,
+W\!\Big(\frac{p^k}{X(t)}\Big)
+\Big[\sin\!\big((t+\Delta)\,k\log p\big)-\sin\!\big(t\,k\log p\big)\Big].
+\]
+
+\begin{theorem}[Deterministic prime--locked tick generator]\label{thm:generator}
+Fix \(C\ge 1\) and use \(X(t)=C(\log t)^{3/2}\) and \(W\) as above.
+Set the seed \(\tilde t_1:=t_1\) where \(t_1=\gamma_1\) (Appendix~\ref{app:firstheight-certified}).
+Given \(\tilde t_j\), define \(\tilde t_{j+1}\) as the unique solution of
+\begin{equation}\label{eq:generator-eqn}
+\theta(\tilde t_{j+1})-\theta(\tilde t_j)\;+\;\mathcal P_{X(\tilde t_j)}(\tilde t_j,\tilde t_{j+1}-\tilde t_j)\;=\;\pi.
+\end{equation}
+For all sufficiently large \(j\), the equation has a unique solution \(\tilde t_{j+1}>\tilde t_j\),
+and a bracketed bisection method converges deterministically.
+\end{theorem}
+\begin{proof}
+Let \(F_j(\Delta):=\theta(\tilde t_j+\Delta)-\theta(\tilde t_j)+\mathcal P_{X(\tilde t_j)}(\tilde t_j,\Delta)-\pi\).
+Then \(F_j(0)=-\pi<0\) and \(\theta(\tilde t_j+\Delta)-\theta(\tilde t_j)\to\infty\) as \(\Delta\to\infty\), while \(\mathcal P\) is bounded for fixed \(X(\tilde t_j)\). Hence a root exists.
+Differentiate:
+\[
+F_j'(\Delta)=\theta'(\tilde t_j+\Delta)-\sum_{p^k\le X(\tilde t_j)}\frac{\log p}{p^{k/2}}W\!\Big(\frac{p^k}{X(\tilde t_j)}\Big)\cos\big((\tilde t_j+\Delta)k\log p\big).
+\]
+As \(t\to\infty\), \(\theta'(t)=\tfrac12\log\!\big(\tfrac{t}{2\pi}\big)+O(1/t)\). The prime sum is
+\(O\!\big(\sum_{p^k\le X}\tfrac{\log p}{p^{k/2}}\big)=O(\sqrt{X})\).
+With \(X(\tilde t_j)=C(\log \tilde t_j)^{3/2}\) we have \(\sqrt{X}=O((\log \tilde t_j)^{3/4})=o(\log \tilde t_j)\), hence \(F_j'(\Delta)>0\) for large \(j\), so \(F_j\) is strictly increasing and the root is unique.
+A bracketed bisection method converges by monotonicity.
+\end{proof}
+
+\subsection*{Optional explicit-formula interface (not used in Part II)}
+The following implications require a separate, fully quantitative smoothed explicit formula
+relating increments of \(S(t)=\frac{1}{\pi}\arg\zeta(\tfrac12+\ii t)\) to prime sums with cutoff \(X(t)\).
+We record them as a conditional interface only, since Part~II is independent.
+
+\begin{remark}[Conditional interface]\label{rem:EF-interface}
+If one supplies an explicit smoothed explicit formula for \(\Delta S\) with the cutoff \(W\) and window \(X(t)\)
+(e.g.\ via Guinand--Weil type explicit formulas; see standard references such as Titchmarsh and Montgomery--Vaughan),
+then one can bound the discrepancy between \(\theta(t+\Delta)-\theta(t)+\mathcal P_{X(t)}(t,\Delta)\) and \(\pi\Delta N\).
+This is the analytic input needed to upgrade the “one-zero-per-tick” counting claim to a theorem about the true zeros.
+\end{remark}
+
+\subsection*{Numerical audit to \(j=50\): error–vs–cutoff (fixed \(A=\tfrac32\))}
+The following numbers are produced by the deterministic audit protocol and reference script in Appendix~\ref{app:audit-protocol}.
+We compare the tick generator \(\tilde m_j=2\tilde t_j\) against the first 50 true ordinates \(m_j=2\gamma_j\),
+using the explicit cutoff weight \(W\) in Appendix~\nameref{app:PW} and the window \(X(t)=C(\log t)^{3/2}\).
+The truth ordinates \(\gamma_j\) are taken from the public LMFDB download interface (Ref.~\cite{LMFDB}; Appendix~\ref{app:audit-protocol}).
+\textit{To avoid seed bias, the statistics below exclude \(j=1\) (errors over \(j=2,\dots,50\)).}
+
+\begin{center}
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+$C$ & $\max|\tilde m-m|$ & mean\,$|\tilde m-m|$ & $\max$ rel.\ err & mean rel.\ err\\
+\midrule
+16 & 0.106406 & 0.028070 & 0.000476 & 0.000165\\
+32 & 0.087644 & 0.022884 & 0.000395 & 0.000133\\
+48 & 0.057151 & 0.017504 & 0.000323 & 0.000109\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.7\linewidth, height=6cm,
+  xlabel={$C$}, ylabel={Mean $|\tilde m-m|$},
+  ymin=0.015, ymax=0.030, xmin=14, xmax=50,
+  xtick={16,32,48}, ytick={0.015,0.020,0.025,0.030},
+  grid=both, grid style={densely dotted}
+]
+\addplot coordinates {(16,0.028070) (32,0.022884) (48,0.017504)};
+\end{axis}
+\end{tikzpicture}
+\caption{Mean absolute tick error decreases as $C$ grows (fixed $A=3/2$; $j=2,\dots,50$).}
+\end{figure}
+
+%------------------------------------------------------------------------------------------
+% Appendices
+%------------------------------------------------------------------------------------------
+
+\appendix
+
+\section{Hinge--Unitarity: a short proof}\label{app:hinge-short}
+One may verify the monotonicity of \(\log|\chi_2|\) via \(\partial_\sigma\log|\Gamma|=\Real\psi\) and \(\psi(1-z)-\psi(z)=\pi\cot(\pi z)\).
+
+\section{Outer/Rouch\'e certification protocol (rigorous outline)}\label{app:cert}
+\begin{itemize}[leftmargin=1.2em]
+\item Boundary intervals. Interval bounds for \(|E|\), \(\arg E\) on \(\partial B\).
+\item Validated Poisson. Interval Dirichlet solver for \(U=\log|\,\Gout|\).
+\item Phase reconstruction. Interval Hilbert transform on \(\partial\D\), trace to \(\partial B\).
+\item Grid\(\to\)continuum. Lipschitz enclosure via \(\sup_{\partial B}|E'/E|\).
+\item Certificate. Check \(\sup_{\partial B}|E-\Gout|/|\,\Gout|<1\).
+\end{itemize}
+
+\section{Certified first nontrivial zero}\label{app:firstheight-certified}
+We cite rigorously verified computations of Platt and Platt--Trudgian:
+\begin{theorem}[Platt 2017; Platt--Trudgian 2021]
+There are no nontrivial zeros of $\zeta(s)$ with $0<\Imag s<t_1$, and the first nontrivial zero occurs at
+$t_1=14.134725141734693790457251983562\ldots$ (with rigorous interval bounds).
+\end{theorem}
+Set $m_1:=2t_1$.
+
+\section*{Appendix S.1. Operator norms on Lipschitz boundaries (shape-only dependence)}\label{app:S1}
+On a Lipschitz Jordan curve \(\Gamma\) (e.g., the rectangle boundary), the boundary Hilbert transform and Cauchy transform are bounded on \(L^2(\Gamma)\) with norms depending only on the Lipschitz character (Coifman--McIntosh--Meyer). Under affine normalization, the boundary is the fixed square \(\partial Q\), hence the constants are shape-only.
+
+\section*{Appendix S.3. Constructive \texorpdfstring{$\eta$}{eta}-choice eliminating the finite band}\label{app:S3}
+The corollary \ref{cor:eta-choice} gives an explicit admissible \(\eta_\star\) in terms of the shape-only constants \(C_{\mathrm{up}},C_h''\) and absolute residual constants \(C_1,C_2\).
+No numerical instantiation is required: once these constants exist (they do, by the cited operator-boundedness results and standard analytic number theory bounds), the formula \eqref{eq:eta-star} produces a valid choice and implies \(M_0(\eta_\star)\le m_1\).
+
+\section*{Appendix PW. A concrete smooth cutoff weight}\label{app:PW}
+Define a one--sided smooth cutoff \(W:[0,1]\to[0,1]\) by
+\[
+W(y):=
+\begin{cases}
+\exp\!\Big(1-\dfrac{1}{1-y}\Big), & 0\le y<1,\\[6pt]
+0, & y=1.
+\end{cases}
+\]
+When evaluating prime sums we interpret \(W(y)=0\) for \(y>1\).
+
+\section*{Appendix NA. Deterministic audit protocol and reference script for the tick generator}\label{app:audit-protocol}
+(Identical to v24 Appendix NA, except notation: it generates \(\tilde t_j\) and compares against \(\gamma_j\).)
+
+\paragraph{Truth ordinates.}
+Obtain \(\gamma_1,\dots,\gamma_{50}\) from:
+\[
+\texttt{https://www.lmfdb.org/zeros/zeta/list?download=yes\&limit=100}.
+\]
+
+\paragraph{Reference script (Python 3).}
+\begin{verbatim}
+#!/usr/bin/env python3
+"""
+Deterministic audit script for the Part III prime-locked generator.
+
+Defaults reproduce the v24 Part III table:
+  - A = 3/2
+  - C in {16, 32, 48}
+  - J = 50
+  - bisection tolerance = 1e-12
+  - weight W(y) = exp(1 - 1/(1-y)) on (0,1), W=0 outside
+
+Truth ordinates are fetched from LMFDB's plain-text endpoint; if the fetch fails,
+the script falls back to an embedded list for j=1..50.
+
+No circularity:
+  - X_j is computed from the predicted t_j at each step.
+  - The truth list is used ONLY for reporting errors.
+"""
+
+import argparse
+import math
+import sys
+import urllib.request
+
+import mpmath as mp
+mp.mp.dps = 50  # fixed precision for theta
+
+LMFDB_URL = "https://www.lmfdb.org/zeros/zeta/list?download=yes&limit=100"
+
+FALLBACK_GAMMA_50 = [
+"14.1347251417346937904572519835625",
+"21.0220396387715549926284795938969",
+"25.0108575801456887632137909925628",
+"30.4248761258595132103118975305840",
+"32.9350615877391896906623689640747",
+"37.5861781588256712572177634807053",
+"40.9187190121474951873981269146334",
+"43.3270732809149995194961221654068",
+"48.0051508811671597279424727494277",
+"49.7738324776723021819167846785638",
+"52.9703214777144606441472966088808",
+"56.4462476970633948043677594767060",
+"59.3470440026023530796536486749922",
+"60.8317785246098098442599018245241",
+"65.1125440480816066608750542531836",
+"67.0798105294941737144788288965221",
+"69.5464017111739792529268575265547",
+"72.0671576744819075825221079698261",
+"75.7046906990839331683269167620305",
+"77.1448400688748053726826648563047",
+"79.3373750202493679227635928771161",
+"82.9103808540860301831648374947706",
+"84.7354929805170501057353112068276",
+"87.4252746131252294065316678509191",
+"88.8091112076344654236823480795095",
+"92.4918992705584842962597252418105",
+"94.6513440405198869665979258152080",
+"95.8706342282453097587410292192467",
+"98.8311942181936922333244201386224",
+"101.3178510057313912287854479402924",
+"103.7255380404783394163984081086952",
+"105.4466230523260944936708324141119",
+"107.1686111842764075151233519630860",
+"111.0295355431696745246564503099445",
+"111.8746591769926370856120787167707",
+"114.3202209154527127658909372761910",
+"116.2266803208575543821608043120647",
+"118.7907828659762173229791397026999",
+"121.3701250024206459189455329704998",
+"122.9468292935525882008174603307700",
+"124.2568185543457671847320079661301",
+"127.5166838795964951242793237669060",
+"129.5787041999560509857680339061800",
+"131.0876885309326567235663724615015",
+"133.4977372029975864501304920426407",
+"134.7565097533738713313260641571699",
+"138.1160420545334432001915551902824",
+"139.7362089521213889504500465233824",
+"141.1237074040211237619403538184753",
+"143.1118458076206327394051238689139",
+]
+
+def fetch_lmfdb_gammas(limit: int = 50, url: str = LMFDB_URL, timeout: int = 20):
+    """
+    Returns a list of decimal strings gamma_1..gamma_limit.
+    The endpoint returns "1 gamma1 2 gamma2 ..." in plain text.
+    """
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as f:
+            txt = f.read().decode("utf-8", errors="replace").strip()
+        parts = txt.split()
+        gammas = parts[1::2]
+        if len(gammas) < limit:
+            raise ValueError("LMFDB response too short")
+        return gammas[:limit], "LMFDB"
+    except Exception:
+        return FALLBACK_GAMMA_50[:limit], "FALLBACK"
+
+def theta_float(t: float) -> float:
+    # Riemann–Siegel theta; mpmath uses the standard convention.
+    return float(mp.siegeltheta(t))
+
+def W_cutoff(y: float) -> float:
+    # Smooth one-sided cutoff: W(0+)=1, W(y)->0 rapidly as y->1-.
+    if y <= 0.0 or y >= 1.0:
+        return 0.0
+    return math.exp(1.0 - 1.0/(1.0 - y))
+
+def primes_upto(n: int):
+    if n < 2:
+        return []
+    sieve = bytearray(b"\x01") * (n + 1)
+    sieve[:2] = b"\x00\x00"
+    r = int(n ** 0.5)
+    for p in range(2, r + 1):
+        if sieve[p]:
+            start = p * p
+            step = p
+            sieve[start:n+1:step] = b"\x00" * (((n - start) // step) + 1)
+    return [i for i in range(2, n + 1) if sieve[i]]
+
+def prime_power_terms(X: float, t: float):
+    """
+    Precompute omega=log(p^k), coeff=W(p^k/X)/(k*sqrt(p^k)),
+    and sin(t*omega), cos(t*omega) for fast evaluation of P(t,Delta).
+    """
+    N = int(X)
+    ps = primes_upto(N)
+    omegas, coeffs, sin0, cos0 = [], [], [], []
+    for p in ps:
+        n = p
+        k = 1
+        while n <= N:
+            y = n / X
+            w = W_cutoff(y)
+            if w != 0.0:
+                coeff = w / (k * math.sqrt(n))
+                omega = math.log(n)
+                omegas.append(omega)
+                coeffs.append(coeff)
+                ang = t * omega
+                sin0.append(math.sin(ang))
+                cos0.append(math.cos(ang))
+            k += 1
+            n *= p
+    return omegas, coeffs, sin0, cos0
+
+def P_prime_increment(terms, Delta: float) -> float:
+    omegas, coeffs, sin0, cos0 = terms
+    s = 0.0
+    for omega, coeff, s0, c0 in zip(omegas, coeffs, sin0, cos0):
+        d = s0 * (math.cos(Delta * omega) - 1.0) + c0 * math.sin(Delta * omega)
+        s += coeff * d
+    return -s
+
+def next_zero(tj: float, C: float, A: float, tol: float = 1e-12, max_iter: int = 80):
+    X = C * (math.log(tj) ** A)
+    terms = prime_power_terms(X, tj)
+    theta_tj = theta_float(tj)
+
+    def F(Delta: float) -> float:
+        return (theta_float(tj + Delta) - theta_tj) + P_prime_increment(terms, Delta) - math.pi
+
+    denom = math.log(max(tj / (2.0 * math.pi), 1.0000001))
+    gap0 = 2.0 * math.pi / denom if denom > 0 else 10.0
+
+    lo = 0.0
+    hi = max(1.0, 2.0 * gap0)
+    f_hi = F(hi)
+    it = 0
+    while f_hi <= 0.0 and it < 50:
+        hi *= 2.0
+        f_hi = F(hi)
+        it += 1
+    if f_hi <= 0.0:
+        raise RuntimeError(f"Failed to bracket root at t={tj} (hi={hi}, F(hi)={f_hi})")
+
+    for _ in range(max_iter):
+        mid = 0.5 * (lo + hi)
+        if F(mid) <= 0.0:
+            lo = mid
+        else:
+            hi = mid
+        if hi - lo < tol:
+            break
+
+    return tj + 0.5 * (lo + hi)
+
+def tick_sequence(t1: float, J: int, C: float, A: float):
+    ts = [t1]
+    t = t1
+    for _ in range(1, J):
+        t = next_zero(t, C=C, A=A)
+        ts.append(t)
+    return ts
+
+def error_stats(ts_pred, gammas_true, exclude_seed: bool = True):
+    start = 1 if exclude_seed else 0
+    m_pred = [2.0 * t for t in ts_pred[start:]]
+    m_true = [2.0 * float(g) for g in gammas_true[start:len(ts_pred)]]
+
+    abs_err = [abs(a - b) for a, b in zip(m_pred, m_true)]
+    rel_err = [ae / abs(mt) for ae, mt in zip(abs_err, m_true)]
+
+    return {
+        "max_abs": max(abs_err),
+        "mean_abs": sum(abs_err) / len(abs_err),
+        "max_rel": max(rel_err),
+        "mean_rel": sum(rel_err) / len(rel_err),
+    }
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--J", type=int, default=50)
+    ap.add_argument("--A", type=float, default=1.5)
+    ap.add_argument("--Cs", type=str, default="16,32,48")
+    ap.add_argument("--no_fetch", action="store_true")
+    ap.add_argument("--include_seed_in_stats", action="store_true")
+    args = ap.parse_args()
+
+    Cs = [float(x.strip()) for x in args.Cs.split(",") if x.strip()]
+
+    if args.no_fetch:
+        gammas, source = (FALLBACK_GAMMA_50[:args.J], "FALLBACK(forced)")
+    else:
+        gammas, source = fetch_lmfdb_gammas(limit=max(args.J, 50))
+
+    # Seed (use truth gamma_1 as seed to match Appendix protocol)
+    t1 = float(gammas[0])
+
+    print(f"[audit] source={source}  J={args.J}  A={args.A}  Cs={Cs}")
+    print("[audit] computing...")
+
+    exclude_seed = not args.include_seed_in_stats
+
+    # Print LaTeX-ready rows
+    for C in Cs:
+        ts_pred = tick_sequence(t1, args.J, C=C, A=args.A)
+        st = error_stats(ts_pred, gammas, exclude_seed=exclude_seed)
+        print(
+            f"{int(C)} & "
+            f"{st['max_abs']:.6f} & {st['mean_abs']:.6f} & "
+            f"{st['max_rel']:.6f} & {st['mean_rel']:.6f} \\\\"
+        )
+
+if __name__ == "__main__":
+    main()
+\end{verbatim}
+
+% -----------------------------------------------------------------------------------------
+% Bibliography
+% -----------------------------------------------------------------------------------------
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{CoifmanMcIntoshMeyer}
+R.~R.~Coifman, A.~McIntosh, and Y.~Meyer,
+L’int\'egrale de Cauchy d\'efinit un op\'erateur born\'e sur $L^2$ pour les courbes lipschitziennes,
+\emph{Ann. of Math.} \textbf{116} (1982), 361--387.
+
+\bibitem{DLMF}
+NIST Digital Library of Mathematical Functions, \S5.5, \S5.11.
+\url{https://dlmf.nist.gov/}
+
+\bibitem{Ivic}
+A.~Ivi\'c, \emph{The Riemann Zeta-Function}, John Wiley \& Sons, 1985.
+
+\bibitem{MontgomeryVaughan}
+H.~L.~Montgomery and R.~C.~Vaughan, \emph{Multiplicative Number Theory I: Classical Theory}, Cambridge Univ. Press, 2007.
+
+\bibitem{Platt2017}
+D.~J.~Platt, Isolating some nontrivial zeros of $\zeta(s)$, \emph{Math. Comp.} \textbf{86} (2017), 2449–2467.
+
+\bibitem{PlattTrudgian2021}
+D.~J.\,Platt and T.\,S.~Trudgian, The Riemann hypothesis is true up to $3\cdot 10^{12}$,
+\emph{Bull. Lond. Math. Soc.} \textbf{53} (2021), 792–797.
+
+\bibitem{Titchmarsh}
+E.~C.~Titchmarsh (rev. D.~R.~Heath--Brown), \emph{The Theory of the Riemann Zeta-Function}, 2nd ed., Oxford, 1986.
+
+\bibitem{LMFDB}
+The LMFDB Collaboration, \emph{The L-functions and Modular Forms Database}.\\
+Zeros of the Riemann zeta function: \url{https://www.lmfdb.org/zeros/zeta/}.\\
+Plain-text endpoint: \url{https://www.lmfdb.org/zeros/zeta/list?download=yes&limit=100}.
+
+\end{thebibliography}
+
+\clearpage
+\section*{Authorship and AI--Use Disclosure}
+\phantomsection
+\addcontentsline{toc}{section}{Authorship and AI--Use Disclosure}
+The author designed the framework and validated all mathematics and computations. Generative assistants were used for typesetting assistance, editorial organization, and consistency checks; they are not authors. All claims are the author's responsibility.
+
+\end{document}

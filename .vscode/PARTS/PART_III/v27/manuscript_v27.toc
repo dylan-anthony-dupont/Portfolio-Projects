@@ -1,0 +1,37 @@
+\contentsline {section}{Executive Proof Status (v27)}{1}{section*.3}%
+\contentsline {section}{Part I --- Reader’s Guide / Motivation, Reduction \& Implications}{1}{section*.5}%
+\contentsline {paragraph}{What this section is (and is not).}{1}{section*.6}%
+\contentsline {section}{Part II --- Self-Contained Boundary--Only Contradiction on Aligned Boxes}{3}{section*.15}%
+\contentsline {paragraph}{Conversion box (width--2 vs classical height).}{3}{section*.16}%
+\contentsline {paragraph}{Program overview.}{3}{section*.17}%
+\contentsline {section}{Symbols \& Provenance (at a glance)}{4}{section*.19}%
+\contentsline {section}{\numberline {1}Frames, symmetry, and the hinge law}{4}{section.1}%
+\contentsline {section}{\numberline {2}Boxes, de-singularization, residual control, and forcing}{4}{section.2}%
+\contentsline {paragraph}{De--singularization on \(\partial B\).}{5}{section*.20}%
+\contentsline {section}{\numberline {3}Boundary-only criteria, bridges, and corner interpolation}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Outer/Rouch\'e Certification Path (optional)}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Corner interpolation (used only for certification bookkeeping)}{6}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Analytic tail as a finite certified closure criterion}{6}{section.4}%
+\contentsline {paragraph}{Why v27 reframes the tail.}{6}{section*.21}%
+\contentsline {subsection}{\numberline {4.1}Shape-only invariance under affine normalization}{6}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Upper envelope: disc-based control (constant ledgered)}{6}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Lower envelope: forcing with a horizontal budget constant}{6}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Envelope inequality and monotonicity}{7}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Global RH from a finite ledger + Platt--Trudgian band}{7}{subsection.4.5}%
+\contentsline {section}{Part III --- Structural Corollaries (after the main theorem)}{8}{section*.23}%
+\contentsline {paragraph}{Standing basis for this part.}{8}{section*.24}%
+\contentsline {section}{Part III (continued) --- Prime--Locked Tick Generator (supplementary)}{9}{section*.26}%
+\contentsline {paragraph}{Standing disclaimer.}{9}{section*.27}%
+\contentsline {paragraph}{Notation (true zeros vs generated ticks).}{9}{section*.28}%
+\contentsline {section}{\numberline {A}Hinge--Unitarity: a short proof}{10}{appendix.A}%
+\contentsline {section}{\numberline {B}Corner interpolation inequality}{10}{appendix.B}%
+\contentsline {section}{\numberline {C}Outer/Rouch\'e certification protocol (rigorous outline)}{10}{appendix.C}%
+\contentsline {section}{\numberline {D}Certified first nontrivial zero and verified band}{10}{appendix.D}%
+\contentsline {section}{\numberline {E}Certification ledger for tail closure (finite checklist)}{11}{appendix.E}%
+\contentsline {paragraph}{Purpose.}{11}{section*.31}%
+\contentsline {section}{\numberline {F}Appendix PW. A concrete smooth cutoff weight}{13}{appendix.F}%
+\contentsline {section}{\numberline {G}Appendix NA. Deterministic audit protocol and full reference script}{13}{appendix.G}%
+\contentsline {paragraph}{Truth ordinates.}{13}{section*.34}%
+\contentsline {paragraph}{Reference script (Python 3).}{13}{section*.35}%
+\contentsline {section}{References}{17}{section*.36}%
+\contentsline {section}{Authorship and AI--Use Disclosure}{18}{section*.39}%
