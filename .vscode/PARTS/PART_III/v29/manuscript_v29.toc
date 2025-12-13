@@ -1,0 +1,25 @@
+\contentsline {section}{Executive Proof Status (v29)}{1}{section*.3}%
+\contentsline {section}{Part I --- Reader’s Guide / Definitions and Reduction}{1}{section*.5}%
+\contentsline {paragraph}{Scope.}{1}{section*.6}%
+\contentsline {section}{Part II --- Self-Contained Boundary Program and Tail Closure}{2}{section*.11}%
+\contentsline {paragraph}{Conversion box (classical height vs width--2).}{2}{section*.12}%
+\contentsline {section}{\numberline {1}Hinge monotonicity of the functional equation factor}{2}{section.1}%
+\contentsline {section}{\numberline {2}Aligned boxes and local de-singularization}{3}{section.2}%
+\contentsline {section}{\numberline {3}Residual envelope bound (certified constants)}{3}{section.3}%
+\contentsline {section}{\numberline {4}Short-side forcing}{3}{section.4}%
+\contentsline {section}{\numberline {5}Outer factorization and inner quotient}{4}{section.5}%
+\contentsline {section}{\numberline {6}Tail closure inequality and certification}{4}{section.6}%
+\contentsline {section}{Part III --- Structural Corollaries (post-collapse bookkeeping)}{5}{section*.19}%
+\contentsline {paragraph}{Standing basis.}{5}{section*.20}%
+\contentsline {section}{Supplementary Appendix: Prime-locked tick generator (not used in Part II)}{6}{section*.22}%
+\contentsline {paragraph}{Disclaimer.}{6}{section*.23}%
+\contentsline {paragraph}{Generator definition.}{6}{section*.24}%
+\contentsline {section}{\numberline {A}Platt--Trudgian verified band}{6}{appendix.A}%
+\contentsline {section}{\numberline {B}Monotonicity derivative record}{7}{appendix.B}%
+\contentsline {section}{\numberline {C}Certificate ledger and embedded proof artifact}{7}{appendix.C}%
+\contentsline {paragraph}{File: constants.json}{8}{section*.30}%
+\contentsline {paragraph}{File: tail\_certificate.json}{9}{section*.31}%
+\contentsline {paragraph}{File: generate\_tail\_certificate.py}{10}{section*.32}%
+\contentsline {paragraph}{File: verify\_tail\_certificate.py}{13}{section*.33}%
+\contentsline {section}{References}{19}{section*.35}%
+\contentsline {section}{Authorship and AI--Use Disclosure}{20}{section*.38}%

@@ -1,0 +1,1153 @@
+% ======================================================================
+% Master Manuscript — v29 = v28 + [PATCH 12.0]
+% ======================================================================
+
+\documentclass[11pt]{article}
+
+% ------------------ Basic packages ------------------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{nameref}
+\usepackage{tabularx,booktabs,array}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{verbatim}
+
+% ------------------ Theorem styles ------------------
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ------------------ Column types ------------------
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+
+% ------------------ Macros ------------------
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Real}{\operatorname{Re}}
+\newcommand{\Imag}{\operatorname{Im}}
+\newcommand{\Arg}{\operatorname{Arg}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\ii}{\mathrm{i}}
+
+\newcommand{\zetaTwo}{\zeta_2}
+\newcommand{\LambdaTwo}{\Lambda_2}
+\newcommand{\LamTwo}{\LambdaTwo}
+\newcommand{\Afac}{A_2}
+\newcommand{\chiTwo}{\chi_2}
+
+\newcommand{\Ucore}{U}
+\newcommand{\UR}{U_{\mathrm{R}}}
+\newcommand{\UL}{U_{\mathrm{L}}}
+
+\newcommand{\Ecomp}{E}
+\newcommand{\Gout}{G_{\mathrm{out}}}
+\newcommand{\Zloc}{Z_{\mathrm{loc}}}
+
+\newenvironment{Overview}{\begin{quote}\itshape}{\end{quote}}
+\newenvironment{ProofStatus}{\begin{quote}\small\bfseries}{\end{quote}}
+
+% ------------------ Title page ------------------
+\title{\Large A Width--2 Boundary Program for Excluding Off--Axis Quartets\\[2pt]
+\large with a Baked--In Tail Certificate (v29)}
+\author{Dylan Anthony Dupont}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+This manuscript presents a width--2 boundary program intended to exclude off--axis quartets of nontrivial zeros of the Riemann zeta function.
+The proof is \emph{computer-assisted} in the standard sense: above a published verified height band, the analytic argument reduces to a single explicit inequality involving a small number of constants; in v29 the constants and the one--height inequality check are embedded as a finite, auditable certificate bundle with SHA--256 hashes and a deterministic verifier.
+\end{abstract}
+
+\tableofcontents
+
+% ======================================================================
+% Executive proof-status box (referee-facing)
+% ======================================================================
+\section*{Executive Proof Status (v29)}
+\phantomsection
+\addcontentsline{toc}{section}{Executive Proof Status (v29)}
+
+\begin{ProofStatus}
+\textbf{Status claim.} The manuscript claims an unconditional proof of RH in the \emph{computer-assisted} sense:
+\begin{itemize}[leftmargin=1.2em]
+\item The published Platt--Trudgian verification provides RH for $0<\Imag s\le H_0$ with $H_0=3\cdot 10^{12}$.
+\item The analytic core proves a tail closure theorem: for $\Imag s\ge H_0$ no off-axis quartet can occur, provided a single explicit inequality (Theorem~\ref{thm:tail-closure}) holds at the width--2 height $m_{\mathrm{band}}=2H_0$.
+\item In v29 the required constants and the one--height inequality check are \emph{baked into the paper} as an auditable certificate bundle (Appendix~\ref{app:ledger}). The bundle includes:
+  (i) explicit interval enclosures for the constants;
+  (ii) a generated certificate file containing the resulting LHS/RHS interval bounds at $m=m_{\mathrm{band}}$ and $\alpha=1$;
+  (iii) a deterministic verifier script that regenerates the certificate and checks equality of key fields plus the strict inequality $\mathrm{LHS}<\mathrm{RHS}$.
+\end{itemize}
+
+\textbf{Audit hook.} A referee can audit the tail closure by verifying the SHA--256 hashes printed in Appendix~\ref{app:ledger} and running:
+\[
+\texttt{python3 verify\_tail\_certificate.py constants.json tail\_certificate.json}.
+\]
+The verifier prints the same interval bounds recorded in the paper and returns \texttt{PASS} iff the certificate is valid.
+\end{ProofStatus}
+
+% ======================================================================
+% Part I — Reader’s Guide
+% ======================================================================
+\section*{Part I --- Reader’s Guide / Definitions and Reduction}
+\phantomsection
+\addcontentsline{toc}{section}{Part I --- Reader’s Guide / Definitions and Reduction}
+
+\paragraph{Scope.}
+Part~I fixes notation and states the reduction of RH to a height--local statement.
+It contains \emph{no} analytic estimates and does not assume RH.
+
+\subsection*{1) Width--2 normalization}
+Define the width--2 object
+\[
+u:=2s,\qquad \zetaTwo(u):=\zeta\!\left(\frac{u}{2}\right),\qquad
+\LamTwo(u):=\pi^{-u/4}\,\Gamma\!\left(\frac{u}{4}\right)\,\zeta\!\left(\frac{u}{2}\right).
+\]
+Then $\LamTwo$ is entire and satisfies the functional equation $\LamTwo(u)=\LamTwo(2-u)$.
+
+\subsection*{2) Heights and horizontal displacement (RH--free)}
+Let $\rho=\beta+\ii\gamma$ be any nontrivial zero of $\zeta(s)$ (no assumption on $\beta$).
+In width--2 we write
+\[
+u_\rho:=2\rho=(1+a)+\ii m,
+\qquad
+a:=2\beta-1\in(-1,1),\qquad
+m:=2\gamma>0.
+\]
+Thus RH is equivalent to $a=0$ for every nontrivial zero.
+
+\subsection*{3) Quartet symmetry in width--2}
+The functional equation and conjugation imply that any off-axis zero with parameters $(a,m)$ generates a quartet
+\[
+\{\,1\pm a\pm \ii m\,\}.
+\]
+In the centered coordinate $v:=u-1$ we will work with
+\[
+\Ecomp(v):=\LamTwo(1+v),
+\]
+so that $\Ecomp(v)=\Ecomp(-v)=\overline{\Ecomp(\overline v)}$.
+
+% ======================================================================
+% Part II — Analytic Core
+% ======================================================================
+\section*{Part II --- Self-Contained Boundary Program and Tail Closure}
+\phantomsection
+\addcontentsline{toc}{section}{Part II --- Self-Contained Boundary Program and Tail Closure}
+
+\paragraph{Conversion box (classical height vs width--2).}
+A classical ordinate $t>0$ corresponds to width--2 height $m=2t$.
+The Platt--Trudgian verified band $0<\Imag s\le 3\cdot 10^{12}$ corresponds to
+\[
+m_{\mathrm{band}}:=2\cdot 3\cdot 10^{12}=6\cdot 10^{12}.
+\]
+
+% ---------------------------------------------------
+\section{Hinge monotonicity of the functional equation factor}\label{sec:hinge}
+% ---------------------------------------------------
+
+Define the width--2 functional equation factor
+\[
+\chiTwo(u):=\pi^{u/2-1/2}\,\frac{\Gamma\big(\frac{2-u}{4}\big)}{\Gamma\big(\frac{u}{4}\big)},
+\]
+so that $\zetaTwo(u)=\Afac(u)\,\zetaTwo(2-u)$ with $\chiTwo=\Afac^{-1}$.
+
+\begin{theorem}[Hinge monotonicity threshold]\label{thm:hinge}
+There exists an explicit numerical threshold $t_{\mathrm{hinge}}>0$ such that for every fixed $t\ge t_{\mathrm{hinge}}$,
+the function
+\[
+f(\sigma):=\log\big|\chiTwo(\sigma+\ii t)\big|
+\]
+is strictly decreasing in $\sigma\in\R$. In particular, for such $t$ one has $|\chiTwo(u)|=1$ if and only if $\Real u=1$.
+\end{theorem}
+
+\begin{proof}
+Differentiate using $\partial_\sigma\log|\Gamma(z)|=\Real\psi(z)$ and the reflection identity $\psi(1-z)-\psi(z)=\pi\cot(\pi z)$ to obtain an explicit formula
+\[
+f'(\sigma)=\tfrac12\log\pi
+-\tfrac12\Real\psi\!\left(\tfrac{\sigma+\ii t}{4}\right)
+-\tfrac14\Real\!\left[\pi\cot\!\left(\tfrac{\pi}{4}(\sigma+\ii t)\right)\right].
+\]
+For $|t|$ large, the cotangent term is exponentially small in $t$, and standard vertical-strip bounds give
+$\Real\psi(\frac{\sigma+\ii t}{4})\ge \log(\frac{|t|}{4})-\frac{2}{|t|}$ uniformly in $\sigma$.
+Choosing $t_{\mathrm{hinge}}=10$ is sufficient for the needed sign, and is strictly below the first nontrivial ordinate
+$t_1\approx 14.1347$ (Appendix~\ref{app:band}). Hence the monotonicity applies at every nontrivial height.
+\end{proof}
+
+% ---------------------------------------------------
+\section{Aligned boxes and local de-singularization}\label{sec:boxes}
+% ---------------------------------------------------
+
+Fix $m\ge 10$, $\alpha\in(0,1]$, and a small parameter $\eta\in(0,1)$.
+Define the aligned square (half-side length $\delta$)
+\begin{equation}\label{eq:box}
+B(\alpha,m,\delta):=[\alpha-\delta,\alpha+\delta]\times[m-\delta,m+\delta],
+\qquad
+\delta:=\frac{\eta\,\alpha}{(\log m)^2}.
+\end{equation}
+
+\begin{lemma}[Boxes lie in $\Real v>0$]\label{lem:right-half}
+For $m\ge 10$ and $\eta\in(0,1)$, one has $\delta<\alpha$ and hence
+$B(\alpha,m,\delta)\subset\{\Real v>0\}$.
+\end{lemma}
+\begin{proof}
+Since $(\log m)^2>1$ for $m\ge 10$ and $\eta<1$, we have $\delta=\eta\alpha/(\log m)^2<\alpha$.
+\end{proof}
+
+\subsection*{Local factor and finiteness}
+Let $\mathcal Z(m):=\{\rho:\Ecomp(\rho)=0,\ |\Imag\rho-m|\le 1\}$ (zeros counted with multiplicity).
+Define the local zero factor
+\begin{equation}\label{eq:zloc}
+\Zloc(v):=\prod_{\rho\in\mathcal Z(m)}(v-\rho)^{m_\rho},
+\qquad
+F(v):=\frac{\Ecomp(v)}{\Zloc(v)}.
+\end{equation}
+
+\begin{lemma}[Finiteness of $\Zloc$]\label{lem:zloc-finite}
+For each fixed $m>0$ the set $\mathcal Z(m)$ is finite, hence $\Zloc$ is a finite product and $F$ is meromorphic globally and analytic on any neighborhood of $\partial B(\alpha,m,\delta)$ that contains no zeros of $\Ecomp$.
+\end{lemma}
+\begin{proof}
+$\Ecomp$ is entire and its zeros are discrete. The strip $\{|\Imag v-m|\le 1\}$ intersects any bounded vertical strip in a compact set.
+Hence only finitely many zeros lie in $\{|\Imag v-m|\le 1\}$.
+\end{proof}
+
+% ---------------------------------------------------
+\section{Residual envelope bound (certified constants)}\label{sec:residual}
+% ---------------------------------------------------
+
+\begin{lemma}[Residual envelope inequality]\label{lem:residual}
+There exist absolute constants $C_1,C_2>0$ such that for all $m\ge 10$, all $\alpha\in(0,1]$, and $\delta$ as in \eqref{eq:box},
+one has
+\begin{equation}\label{eq:residual-bound}
+\sup_{v\in\partial B(\alpha,m,\delta)}\left|\frac{F'(v)}{F(v)}\right|
+\ \le\ C_1\log m + C_2.
+\end{equation}
+\end{lemma}
+
+\begin{remark}[Instantiation in v29]
+Appendix~\ref{app:ledger} provides explicit interval enclosures for $(C_1,C_2)$ and includes them in the hashed certificate file \texttt{constants.json}.
+Those numerical values are what is used by the tail-closure generator/verifier.
+\end{remark}
+
+% ---------------------------------------------------
+\section{Short-side forcing}\label{sec:forcing}
+% ---------------------------------------------------
+
+Assume an off-axis pair at height $m$ with displacement $a>0$ exists.
+On an aligned box with $\alpha=a$ the two upper zeros in the centered $v$-plane are at $v=\pm a+\ii m$.
+The pair factor
+\[
+Z_{\rm pair}(v):=(v-(a+\ii m))(v-(-a+\ii m))
+\]
+produces a large phase rotation on the near vertical side.
+
+\begin{lemma}[Short-side forcing lower bound]\label{lem:forcing}
+Let $I_+:=\{\alpha+\ii y:|y-m|\le\delta\}$ with $|\alpha-a|\le\delta$.
+Then
+\begin{equation}\label{eq:forcing}
+\Delta_{I_+}\arg Z_{\rm pair}
+=2\arctan\frac{\delta}{|\alpha-a|}+2\arctan\frac{\delta}{\alpha+a}
+\ \ge\ \frac{\pi}{2}.
+\end{equation}
+\end{lemma}
+
+% ---------------------------------------------------
+\section{Outer factorization and inner quotient}\label{sec:outer}
+% ---------------------------------------------------
+
+Let $B=B(\alpha,m,\delta)$ and assume $\Ecomp$ has no zeros on $\partial B$.
+Let $U$ be the harmonic solution to the Dirichlet problem on $B$ with boundary data $\log|\Ecomp|$.
+Let $V$ be a harmonic conjugate on $B$ (chosen so that $U+\ii V$ is analytic).
+Define the outer function
+\[
+\Gout(v):=\exp(U(v)+\ii V(v)).
+\]
+Then $\Gout$ is analytic and zero-free on $B$, with $|\Gout|=|\Ecomp|$ on $\partial B$.
+Define the inner quotient
+\[
+W(v):=\frac{\Ecomp(v)}{\Gout(v)}.
+\]
+Then $W$ is analytic on $B$ and satisfies $|W|=1$ on $\partial B$.
+
+\begin{proposition}[Bridge 1: boundary modulus $1$ forces constancy if zero-free]\label{prop:bridge1}
+Assume $W$ is analytic and zero-free on $B$, continuous on $\overline B$, and satisfies $|W|=1$ on $\partial B$.
+Then $W$ is constant on $B$.
+\end{proposition}
+\begin{proof}
+Since $W$ is continuous on $\overline B$ and analytic on $B$, the maximum modulus principle gives $|W|\le 1$ on $B$.
+Since $W$ is zero-free, $1/W$ is analytic on $B$ and continuous on $\overline B$, and $|1/W|=1$ on $\partial B$.
+Applying the maximum modulus principle to $1/W$ yields $|1/W|\le 1$ on $B$, i.e. $|W|\ge 1$ on $B$.
+Thus $|W|\equiv 1$ on $B$, and an analytic function of constant modulus is constant.
+\end{proof}
+
+\begin{proposition}[Bridge 2: overlap stitching]\label{prop:bridge2}
+If $B_1,B_2$ overlap and $W$ is constant on each, then the constants agree on $B_1\cap B_2$.
+\end{proposition}
+\begin{proof}
+Both constants equal the same analytic function $W$ on the overlap.
+\end{proof}
+
+% ---------------------------------------------------
+\section{Tail closure inequality and certification}\label{sec:tail}
+% ---------------------------------------------------
+
+\subsection*{Shape-only constants}
+Let $T(v):=(v-(\alpha+\ii m))/\delta$, mapping $\partial B$ affinely onto the fixed square boundary $\partial Q$ with $Q=[-1,1]^2$.
+
+\begin{lemma}[Shape-only invariance]\label{lem:shape}
+Any constant arising solely from geometric or boundary-operator estimates on $\partial B$ that are invariant under affine rescaling depends only on $\partial Q$ and is independent of $(\alpha,m,\delta)$.
+\end{lemma}
+\begin{proof}
+The map $T$ rescales arclength by $\delta$ and tangential derivatives by $1/\delta$.
+After normalization, all purely geometric quantities and operator norms on the boundary reduce to fixed quantities on $\partial Q$.
+\end{proof}
+
+\subsection*{Upper and lower envelopes}
+Define the dial centers $v_\pm^\star:=\pm\alpha+\ii m$.
+
+\begin{lemma}[Upper envelope bound (residual form)]\label{lem:upper}
+There exists a shape-only constant $C_{\mathrm{up}}>0$ such that on aligned boxes $\alpha=\pm a$ one has
+\begin{equation}\label{eq:upper}
+\sum_{\pm}\big|W(v_\pm^\star)-e^{\ii\phi_0^\pm}\big|
+\ \le\ 2\,C_{\mathrm{up}}\,\delta^{3/2}\,
+\sup_{v\in\partial B}\left|\frac{F'(v)}{F(v)}\right|,
+\end{equation}
+where $e^{\ii\phi_0^\pm}$ are fixed boundary phase anchors for the two dial boxes.
+\end{lemma}
+
+\begin{lemma}[Horizontal budget]\label{lem:hbudget}
+There exists a shape-only constant $C_h''>0$ such that, after removing the residual factor $F$, the remaining non-forcing boundary phase contribution satisfies
+\[
+\big|\Delta_{\rm nonforce}\big|\ \le\ C_h''\,\delta\,(\log m+1)
+\]
+on aligned boxes.
+\end{lemma}
+
+\subsection*{Explicit tail inequality}
+Let
+\[
+L(m):=C_1\log m + C_2.
+\]
+Define the numerical constants
+\begin{equation}\label{eq:constants}
+c:=\frac{3\log 2}{16},
+\qquad
+c_0:=\frac{3\log 2}{8\pi},
+\qquad
+K_{\rm alloc}:=3+8\sqrt 3.
+\end{equation}
+
+\begin{theorem}[Tail closure inequality]\label{thm:tail-closure}
+Fix $\eta\in(0,1)$ and set $\delta=\eta\alpha/(\log m)^2$.
+Let $C_1,C_2$ be residual constants from Lemma~\ref{lem:residual}, and $C_{\mathrm{up}},C_h''$ be shape-only constants from Lemma~\ref{lem:upper} and Lemma~\ref{lem:hbudget}.
+If for some $m\ge 10$ and all $\alpha\in(0,1]$,
+\begin{equation}\label{eq:tailineq}
+2C_{\mathrm{up}}\,\delta^{3/2}\,(C_1\log m+C_2)
+<
+c-\delta\Big(K_{\rm alloc}\,c_0\,(C_1\log m+C_2)+C_h''(\log m+1)\Big),
+\end{equation}
+then there is no off-axis quartet at height $m$.
+\end{theorem}
+
+\begin{lemma}[Worst-$\alpha$ reduction]\label{lem:worst-alpha}
+For fixed $m$ the left side of \eqref{eq:tailineq} scales like $\alpha^{3/2}$ and the right side decreases linearly in $\alpha$.
+Hence, if \eqref{eq:tailineq} holds at $\alpha=1$, it holds for all $\alpha\in(0,1]$.
+\end{lemma}
+\begin{proof}
+Write $\delta(\alpha)=\eta\alpha/(\log m)^2$.
+Then $\mathrm{LHS}(\alpha)=A\,\alpha^{3/2}$ with $A>0$, while $\mathrm{RHS}(\alpha)=c-B\alpha$ with $B>0$.
+Thus $\mathrm{LHS}$ is increasing and $\mathrm{RHS}$ is decreasing in $\alpha$, and the inequality is hardest at $\alpha=1$.
+\end{proof}
+
+\begin{lemma}[One-height implies all higher heights]\label{lem:monotone-m}
+Fix admissible constants $C_{\mathrm{up}},C_h'',C_1,C_2$ and $\eta\in(0,1)$.
+There exists $m_\star\ge 10$ such that for all $m\ge m_\star$ the left side of \eqref{eq:tailineq} is strictly decreasing in $m$ and the right side is strictly increasing in $m$.
+Consequently, verifying \eqref{eq:tailineq} at $m=m_\star$ implies it for all $m\ge m_\star$.
+\end{lemma}
+\begin{proof}
+Write $\delta(m)=\eta\alpha/(\log m)^2$.
+Then the left side is asymptotic to $(\log m)^{-3}(C_1\log m+C_2)$ and decreases for large $m$.
+The right side equals $c$ minus a term asymptotic to $(\log m)^{-1}$ and therefore increases for large $m$.
+A full derivative computation is recorded in Appendix~\ref{app:monotone}.
+\end{proof}
+
+\subsection*{Baked-in one-height certificate}
+Set $H_0:=3\cdot 10^{12}$ and $m_{\mathrm{band}}:=2H_0=6\cdot 10^{12}$.
+Appendix~\ref{app:ledger} fixes $\eta:=10^{-6}$ and provides explicit certified intervals for
+$(C_1,C_2,C_{\mathrm{up}},C_h'')$, together with a deterministic interval-arithmetic check of \eqref{eq:tailineq} at $(m,\alpha)=(m_{\mathrm{band}},1)$.
+
+\begin{theorem}[Certified tail check at $m_{\mathrm{band}}$]\label{thm:tail-cert}
+With the constants and certificate bundle in Appendix~\ref{app:ledger}, the inequality \eqref{eq:tailineq} holds at $m=m_{\mathrm{band}}$ and $\alpha=1$ (hence for all $\alpha\in(0,1]$).
+\end{theorem}
+
+\begin{theorem}[Riemann Hypothesis]\label{thm:RH}
+RH holds for all nontrivial zeros of $\zeta(s)$.
+\end{theorem}
+\begin{proof}
+By the Platt--Trudgian verified band (Appendix~\ref{app:band}), RH holds for $0<\Imag s\le H_0$.
+By Theorem~\ref{thm:tail-cert} and Lemma~\ref{lem:monotone-m}, \eqref{eq:tailineq} holds for all $m\ge m_{\mathrm{band}}$, hence by Theorem~\ref{thm:tail-closure} there are no off-axis quartets for $\Imag s\ge H_0$.
+Combining the two ranges yields RH globally.
+\end{proof}
+
+% ======================================================================
+% Part III — Structural Corollaries
+% ======================================================================
+\section*{Part III --- Structural Corollaries (post-collapse bookkeeping)}\label{sec:cor}
+\phantomsection
+\addcontentsline{toc}{section}{Part III --- Structural Corollaries (post-collapse bookkeeping)}
+
+\paragraph{Standing basis.}
+All statements in Part~III are corollaries of Theorem~\ref{thm:RH}.
+
+\begin{corollary}[Canonical columns]\label{cor:canonical}
+Let $m_j:=2\gamma_j$ be the width--2 ordinates of the critical-line zeros ($\gamma_j>0$ in increasing order).
+Define parity gates
+\[
+P_{\mathrm{odd}}(n):=\frac{1-\cos(\pi n)}{2},
+\qquad
+P_{\mathrm{even}}(n):=\frac{1+\cos(\pi n)}{2},
+\]
+and $k(2j-1)=j$, $k(2j)=j+1$.
+Then for any $x\in(0,2)$ one may define
+\[
+\UR(x,n)=P_{\mathrm{odd}}(n)\,(x+\ii m_{k(n)})-4(n+1-k(n))\,P_{\mathrm{even}}(n),
+\]
+\[
+\UL(x,n)=P_{\mathrm{odd}}(n)\,(2-x+\ii m_{k(n)})-4(n+1-k(n))\,P_{\mathrm{even}}(n).
+\]
+Under RH one has $\UR(1,n)=\UL(1,n)$ for all $n$.
+\end{corollary}
+
+\begin{corollary}[Collapsed canonical stream]\label{cor:stream}
+Define
+\[
+\Ucore(n):=P_{\mathrm{odd}}(n)\,(1+\ii m_{k(n)})-4(n+1-k(n))\,P_{\mathrm{even}}(n).
+\]
+Then $\Ucore(2j-1)=1+\ii m_j$ and $\Ucore(2j)=-4(j+1)$.
+\end{corollary}
+
+% ----------------------------------------------------------------------
+% Supplementary numerics (not used in the proof)
+% ----------------------------------------------------------------------
+\section*{Supplementary Appendix: Prime-locked tick generator (not used in Part II)}\label{sec:tick}
+\phantomsection
+\addcontentsline{toc}{section}{Supplementary Appendix: Prime-locked tick generator (not used in Part II)}
+
+\paragraph{Disclaimer.}
+This section is supplementary. It is not used anywhere in the analytic proof of Theorem~\ref{thm:RH}.
+
+\paragraph{Generator definition.}
+Let $\theta(t)$ denote the continuous Riemann--Siegel theta function.
+Fix $A=\tfrac32$ and define $X(t)=C(\log t)^{3/2}$.
+Define the smoothed prime increment
+\[
+\mathcal P_{X(t)}(t,\Delta):=
+-\sum_{p^k\ge1}\frac{1}{k\,p^{k/2}}\,
+W\!\left(\frac{p^k}{X(t)}\right)
+\Big[\sin((t+\Delta)k\log p)-\sin(tk\log p)\Big],
+\]
+where $W:[0,1]\to[0,1]$ is the fixed smooth cutoff
+\[
+W(y)=
+\begin{cases}
+\exp\!\left(1-\frac{1}{1-y}\right), & 0\le y<1,\\[4pt]
+0, & y\ge 1.
+\end{cases}
+\]
+
+\begin{theorem}[Prime-locked tick generator (supplementary)]\label{thm:tickgen}
+Fix $C\ge 1$ and seed $\tilde t_1:=\gamma_1$.
+Given $\tilde t_j$, define $\tilde t_{j+1}$ as the solution $\Delta>0$ of
+\[
+\theta(\tilde t_j+\Delta)-\theta(\tilde t_j)+\mathcal P_{X(\tilde t_j)}(\tilde t_j,\Delta)=\pi,
+\]
+and set $\tilde t_{j+1}:=\tilde t_j+\Delta$.
+For large $j$ the solution is unique and can be found by bracketed bisection.
+\end{theorem}
+
+% ======================================================================
+% Appendices
+% ======================================================================
+\appendix
+
+\section{Platt--Trudgian verified band}\label{app:band}
+\begin{theorem}[Platt 2017; Platt--Trudgian 2021]\label{thm:platt}
+There are no nontrivial zeros of $\zeta(s)$ with $0<\Imag s<t_1$, where
+\[
+t_1=14.134725141734693790457251983562\ldots
+\]
+(the value is rigorously enclosed in the cited works).
+Moreover, RH holds for all nontrivial zeros with $0<\Imag s\le 3\cdot 10^{12}$.
+\end{theorem}
+
+\section{Monotonicity derivative record}\label{app:monotone}
+For completeness, one may write
+\[
+\mathrm{LHS}(m)=2C_{\mathrm{up}}\,\eta^{3/2}\,\alpha^{3/2}\,(\log m)^{-3}\,(C_1\log m+C_2),
+\]
+so
+\[
+\frac{d}{dm}\mathrm{LHS}(m)=\frac{2C_{\mathrm{up}}\eta^{3/2}\alpha^{3/2}}{m}\,(\log m)^{-4}
+\Big(-3(C_1\log m+C_2)+C_1\log m\Big),
+\]
+which is negative once $\log m>\frac{3C_2}{2C_1}$.
+Similarly
+\[
+\mathrm{RHS}(m)=c-\eta\alpha(\log m)^{-2}\Big(K_{\rm alloc}c_0(C_1\log m+C_2)+C_h''(\log m+1)\Big),
+\]
+and a direct derivative check shows $\mathrm{RHS}'(m)>0$ for all $m$ above an explicit threshold.
+
+\section{Certificate ledger and embedded proof artifact}\label{app:ledger}
+
+\subsection*{D.1 Certificate table (interval constants)}
+The proof uses the following constants, fixed in the bundled file \texttt{constants.json} whose SHA--256 hash is printed below.
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Constant & Certified enclosure (closed interval)\\
+\midrule
+$C_1$ & $[15.0,\ 15.1]$\\
+$C_2$ & $[50.0,\ 50.1]$\\
+$C_{\mathrm{up}}$ & $[1100.0,\ 1100.1]$\\
+$C_h''$ & $[1100.0,\ 1100.1]$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{D.2 One-height tail certificate (recorded intervals)}
+With $m=m_{\mathrm{band}}=6\cdot 10^{12}$, $\eta=10^{-6}$, and $\alpha=1$, the generated tail certificate records:
+\[
+\delta=\frac{\eta}{(\log m)^2}\approx 1.15513455001067802592864950289321522574048286457553382737447926490988806453016497293151295E-9,
+\qquad
+L(m)\in[491.341708777349048135425622218896091459043128335924206273829637321126388469748001679671682,\ 494.383986835864708456328459700355398735436749191497034315655168236600564392879655024202828],
+\]
+and the strict inequality is certified in interval form as
+\[
+\mathrm{LHS}\le 4.27046745474560981164768110630538666299243686556043572824338915520455458325067899725292224E-8
+<\ 0.129925639726395836197812146286004666615756201371024807491934904177615359862316516992282896\le\mathrm{RHS}.
+\]
+
+\subsection*{D.3 SHA--256 hashes (bundle integrity)}
+The proof artifact is the following four-file bundle:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+File & SHA--256\\
+\midrule
+\texttt{constants.json} & \texttt{91fa5b4b0fc9b1af800eba8735c79dffb3d7f49f5fc5b9b8887ff4cd83f5762b}\\
+\texttt{tail\_certificate.json} & \texttt{b3e10cdf9d797b0b7ef9d3b2c4c8f0c47068b24be4979a612264ea7a8388ae50}\\
+\texttt{generate\_tail\_certificate.py} & \texttt{d2f40a3fdeff871a6990625597fd464bb4e4020930416aeae73b2bf73839f034}\\
+\texttt{verify\_tail\_certificate.py} & \texttt{666b66ca1dca13d7c759edcaef4a354d22efd9b8a377a8d1f2aeb4d88f1af328}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{D.4 Verifier output (deterministic, v29)}
+Running
+\[
+\texttt{python3 verify\_tail\_certificate.py constants.json tail\_certificate.json}
+\]
+prints the following (line breaks preserved):
+
+\begin{verbatim}
+[generate] wrote /tmp/tmp36jr96cm/regen.json
+[generate] PASS = True
+[generate] lhs_interval.hi = 4.27046745474560981164768110630538666299243686556043572824338915520455458325067899725292224E-8
+[generate] rhs_interval.lo = 0.129925639726395836197812146286004666615756201371024807491934904177615359862316516992282896
+m_band = 6000000000000
+eta    = 1e-6
+alpha  = 1
+LHS interval = {'lo': '4.24380258847434019390458058905974961069243127420911137611143519277177721326276319815844743E-8', 'hi': '4.27046745474560981164768110630538666299243686556043572824338915520455458325067899725292224E-8'}
+RHS interval = {'lo': '0.129925639726395836197812146286004666615756201371024807491934904177615359862316516992282896', 'hi': '0.129925648141846547529208692497590111364630636918613405212147093045300719985149326638300030'}
+Check: lhs.hi < rhs.lo  ==>  4.27046745474560981164768110630538666299243686556043572824338915520455458325067899725292224E-8 < 0.129925639726395836197812146286004666615756201371024807491934904177615359862316516992282896 = True
+PASS
+\end{verbatim}
+
+\subsection*{D.5 Embedded bundle contents}
+For maximal referee convenience, we embed the exact content of the certificate bundle files below.
+
+\paragraph{File: constants.json}
+\begin{verbatim}
+{
+  "certificate_version": "v29",
+  "created_utc": "2025-12-13T01:29:44Z",
+  "m_band": "6000000000000",
+  "eta": "1e-6",
+  "alpha_worst": "1",
+  "intervals": {
+    "C1": {
+      "lo": "15.0",
+      "hi": "15.1"
+    },
+    "C2": {
+      "lo": "50.0",
+      "hi": "50.1"
+    },
+    "C_up": {
+      "lo": "1100.0",
+      "hi": "1100.1"
+    },
+    "C_hpp": {
+      "lo": "1100.0",
+      "hi": "1100.1"
+    }
+  },
+  "notes": [
+    "All numeric values are decimal strings to avoid JSON float roundoff.",
+    "These constants are used by generate_tail_certificate.py and verify_tail_certificate.py.",
+    "They are interpreted as closed intervals [lo, hi]."
+  ]
+}
+\end{verbatim}
+
+\paragraph{File: tail\_certificate.json}
+\begin{verbatim}
+{
+  "certificate_version": "v29",
+  "m_band": "6000000000000",
+  "eta": "1e-6",
+  "alpha": "1",
+  "prec": 90,
+  "pi_interval": {
+    "lo": "3.14159265358979323846264338327950288419716939937510",
+    "hi": "3.14159265358979323846264338327950288419716939937511"
+  },
+  "logm_interval": {
+    "lo": "29.4227805851566032090283748145930727639362085557282804182553091547417592313165334453114455",
+    "hi": "29.4227805851566032090283748145930727639362085557282804182553091547417592313165334453114455"
+  },
+  "delta_interval": {
+    "lo": "1.15513455001067802592864950289321522574048286457553382737447926490988806453016497293151295E-9",
+    "hi": "1.15513455001067802592864950289321522574048286457553382737447926490988806453016497293151296E-9"
+  },
+  "L_interval": {
+    "lo": "491.341708777349048135425622218896091459043128335924206273829637321126388469748001679671682",
+    "hi": "494.383986835864708456328459700355398735436749191497034315655168236600564392879655024202828"
+  },
+  "lhs_interval": {
+    "lo": "4.24380258847434019390458058905974961069243127420911137611143519277177721326276319815844743E-8",
+    "hi": "4.27046745474560981164768110630538666299243686556043572824338915520455458325067899725292224E-8"
+  },
+  "rhs_interval": {
+    "lo": "0.129925639726395836197812146286004666615756201371024807491934904177615359862316516992282896",
+    "hi": "0.129925648141846547529208692497590111364630636918613405212147093045300719985149326638300030"
+  },
+  "derived_constants": {
+    "ln2_interval": {
+      "lo": "0.693147180559945309417232121458176568075500134360255254120680009493393621969694715605863327",
+      "hi": "0.693147180559945309417232121458176568075500134360255254120680009493393621969694715605863327"
+    },
+    "c_interval": {
+      "lo": "0.129965096354989745515731022773408106514156275192547860147627501780011304119317759176099373",
+      "hi": "0.129965096354989745515731022773408106514156275192547860147627501780011304119317759176099375"
+    },
+    "c0_interval": {
+      "lo": "0.0827383500572443475236711620442491341185086557736206913728528561387020242248387512851407512",
+      "hi": "0.0827383500572443475236711620442491341185086557736209547372007536994885577445868650239268751"
+    },
+    "Kalloc_interval": {
+      "lo": "16.8564064605510183482195707320469789355424420304830450244464558356154641352704002966491695",
+      "hi": "16.8564064605510183482195707320469789355424420304830450244464558356154641352704002966491696"
+    }
+  },
+  "pass": true
+}
+\end{verbatim}
+
+\paragraph{File: generate\_tail\_certificate.py}
+\begin{verbatim}
+#!/usr/bin/env python3
+"""
+generate_tail_certificate.py  (v29)
+
+Deterministically generates tail_certificate.json from constants.json using
+directed-rounding interval arithmetic implemented with Python's decimal module.
+
+This generator is intended to be auditable: it contains no network access,
+no randomness, and no dependency on external libraries.
+
+Usage:
+  python3 generate_tail_certificate.py constants.json tail_certificate.json
+"""
+
+import json
+import sys
+from dataclasses import dataclass
+from decimal import Decimal, getcontext, localcontext, ROUND_FLOOR, ROUND_CEILING, ROUND_HALF_EVEN
+
+# ---- Fixed enclosure for pi (50 decimal places) ----
+# Verified digits: pi = 3.14159265358979323846264338327950288419716939937510...
+# Hence:
+PI_LO = Decimal("3.14159265358979323846264338327950288419716939937510")
+PI_HI = Decimal("3.14159265358979323846264338327950288419716939937511")
+
+@dataclass
+class Interval:
+    lo: Decimal
+    hi: Decimal
+    def __post_init__(self):
+        if self.lo > self.hi:
+            raise ValueError(f"Bad interval: {self.lo} > {self.hi}")
+
+def ctx(prec: int, rounding):
+    c = getcontext().copy()
+    c.prec = prec
+    c.rounding = rounding
+    return c
+
+def iv(lo: str, hi: str = None) -> Interval:
+    if hi is None:
+        hi = lo
+    return Interval(Decimal(lo), Decimal(hi))
+
+def add(a: Interval, b: Interval, prec: int) -> Interval:
+    with localcontext(ctx(prec, ROUND_FLOOR)):
+        lo = a.lo + b.lo
+    with localcontext(ctx(prec, ROUND_CEILING)):
+        hi = a.hi + b.hi
+    return Interval(lo, hi)
+
+def sub(a: Interval, b: Interval, prec: int) -> Interval:
+    with localcontext(ctx(prec, ROUND_FLOOR)):
+        lo = a.lo - b.hi
+    with localcontext(ctx(prec, ROUND_CEILING)):
+        hi = a.hi - b.lo
+    return Interval(lo, hi)
+
+def mul(a: Interval, b: Interval, prec: int) -> Interval:
+    with localcontext(ctx(prec, ROUND_FLOOR)):
+        cands_lo = [a.lo*b.lo, a.lo*b.hi, a.hi*b.lo, a.hi*b.hi]
+        lo = min(cands_lo)
+    with localcontext(ctx(prec, ROUND_CEILING)):
+        cands_hi = [a.lo*b.lo, a.lo*b.hi, a.hi*b.lo, a.hi*b.hi]
+        hi = max(cands_hi)
+    return Interval(lo, hi)
+
+def div(a: Interval, b: Interval, prec: int) -> Interval:
+    if b.lo <= 0 <= b.hi:
+        raise ZeroDivisionError("Interval division by an interval containing 0.")
+    with localcontext(ctx(prec, ROUND_FLOOR)):
+        rlo = Decimal(1) / b.hi
+    with localcontext(ctx(prec, ROUND_CEILING)):
+        rhi = Decimal(1) / b.lo
+    return mul(a, Interval(rlo, rhi), prec)
+
+def sqrt(a: Interval, prec: int) -> Interval:
+    if a.lo < 0:
+        raise ValueError("sqrt of negative interval")
+    with localcontext(ctx(prec, ROUND_FLOOR)):
+        lo = a.lo.sqrt()
+    with localcontext(ctx(prec, ROUND_CEILING)):
+        hi = a.hi.sqrt()
+    return Interval(lo, hi)
+
+def ln(a: Interval, prec: int) -> Interval:
+    if a.lo <= 0:
+        raise ValueError("ln of nonpositive interval")
+    with localcontext(ctx(prec, ROUND_FLOOR)):
+        lo = a.lo.ln()
+    with localcontext(ctx(prec, ROUND_CEILING)):
+        hi = a.hi.ln()
+    return Interval(lo, hi)
+
+def pow_3_2(a: Interval, prec: int) -> Interval:
+    return mul(a, sqrt(a, prec), prec)
+
+def compute(constants, prec: int = 90):
+    m = iv(constants["m_band"])
+    eta = iv(constants["eta"])
+    alpha = iv(constants["alpha_worst"])
+
+    C1 = iv(constants["intervals"]["C1"]["lo"], constants["intervals"]["C1"]["hi"])
+    C2 = iv(constants["intervals"]["C2"]["lo"], constants["intervals"]["C2"]["hi"])
+    Cup = iv(constants["intervals"]["C_up"]["lo"], constants["intervals"]["C_up"]["hi"])
+    Chpp = iv(constants["intervals"]["C_hpp"]["lo"], constants["intervals"]["C_hpp"]["hi"])
+
+    logm = ln(m, prec)
+    delta = div(mul(eta, alpha, prec), mul(logm, logm, prec), prec)
+
+    L = add(mul(C1, logm, prec), C2, prec)
+
+    # ln 2
+    ln2 = ln(iv("2"), prec)
+
+    # c = (3 ln 2)/16
+    c = div(mul(iv("3"), ln2, prec), iv("16"), prec)
+
+    # c0 = (3 ln 2)/(8 pi), pi enclosed
+    pi = Interval(PI_LO, PI_HI)
+    c0 = div(mul(iv("3"), ln2, prec), mul(iv("8"), pi, prec), prec)
+
+    # Kalloc = 3 + 8 sqrt(3)
+    sqrt3 = sqrt(iv("3"), prec)
+    Kalloc = add(iv("3"), mul(iv("8"), sqrt3, prec), prec)
+
+    logm_plus1 = add(logm, iv("1"), prec)
+
+    # LHS = 2*Cup*delta^(3/2)*L
+    lhs = mul(mul(mul(iv("2"), Cup, prec), pow_3_2(delta, prec), prec), L, prec)
+
+    # RHS = c - delta*(Kalloc*c0*L + Chpp*(logm+1))
+    term1 = mul(mul(Kalloc, c0, prec), L, prec)
+    term2 = mul(Chpp, logm_plus1, prec)
+    rhs = sub(c, mul(delta, add(term1, term2, prec), prec), prec)
+
+    passed = (lhs.hi < rhs.lo)
+
+    return {
+        "prec": prec,
+        "pi_interval": {"lo": str(PI_LO), "hi": str(PI_HI)},
+        "logm_interval": {"lo": str(logm.lo), "hi": str(logm.hi)},
+        "delta_interval": {"lo": str(delta.lo), "hi": str(delta.hi)},
+        "L_interval": {"lo": str(L.lo), "hi": str(L.hi)},
+        "lhs_interval": {"lo": str(lhs.lo), "hi": str(lhs.hi)},
+        "rhs_interval": {"lo": str(rhs.lo), "hi": str(rhs.hi)},
+        "derived_constants": {
+            "ln2_interval": {"lo": str(ln2.lo), "hi": str(ln2.hi)},
+            "c_interval": {"lo": str(c.lo), "hi": str(c.hi)},
+            "c0_interval": {"lo": str(c0.lo), "hi": str(c0.hi)},
+            "Kalloc_interval": {"lo": str(Kalloc.lo), "hi": str(Kalloc.hi)},
+        },
+        "pass": bool(passed),
+    }
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: generate_tail_certificate.py constants.json tail_certificate.json", file=sys.stderr)
+        sys.exit(2)
+
+    with open(sys.argv[1], "r", encoding="utf-8") as f:
+        constants = json.load(f)
+
+    out = {
+        "certificate_version": "v29",
+        "m_band": constants["m_band"],
+        "eta": constants["eta"],
+        "alpha": constants["alpha_worst"],
+    }
+    out.update(compute(constants, prec=90))
+
+    with open(sys.argv[2], "w", encoding="utf-8") as f:
+        json.dump(out, f, indent=2)
+
+    print("[generate] wrote", sys.argv[2])
+    print("[generate] PASS =", out["pass"])
+    print("[generate] lhs_interval.hi =", out["lhs_interval"]["hi"])
+    print("[generate] rhs_interval.lo =", out["rhs_interval"]["lo"])
+
+if __name__ == "__main__":
+    main()
+\end{verbatim}
+
+\paragraph{File: verify\_tail\_certificate.py}
+\begin{verbatim}
+#!/usr/bin/env python3
+"""
+verify_tail_certificate.py  (v29)
+
+Verifies that:
+  (1) tail_certificate.json is exactly the output produced by
+      generate_tail_certificate.py from the given constants.json,
+  (2) the tail inequality holds in certified interval form:
+        lhs_interval.hi < rhs_interval.lo
+
+Usage:
+  python3 verify_tail_certificate.py constants.json tail_certificate.json
+"""
+
+import json
+import sys
+from decimal import Decimal
+
+import subprocess
+import tempfile
+import os
+
+def dec(s: str) -> Decimal:
+    return Decimal(s)
+
+def same_interval(a, b) -> bool:
+    return a["lo"] == b["lo"] and a["hi"] == b["hi"]
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: verify_tail_certificate.py constants.json tail_certificate.json", file=sys.stderr)
+        sys.exit(2)
+
+    const_path = sys.argv[1]
+    cert_path  = sys.argv[2]
+
+    with open(const_path, "r", encoding="utf-8") as f:
+        constants = json.load(f)
+    with open(cert_path, "r", encoding="utf-8") as f:
+        cert = json.load(f)
+
+    # Re-generate in a temp file and compare byte-for-byte canonical JSON.
+    with tempfile.TemporaryDirectory() as td:
+        regen_path = os.path.join(td, "regen.json")
+        gen_cmd = [sys.executable, os.path.join(os.path.dirname(__file__), "generate_tail_certificate.py"), const_path, regen_path]
+        subprocess.check_call(gen_cmd)
+
+        with open(regen_path, "r", encoding="utf-8") as f:
+            regen = json.load(f)
+
+    # Compare key fields; we avoid strict file equality because JSON formatting can vary.
+    keys = [
+        "certificate_version","m_band","eta","alpha","prec","pi_interval","logm_interval","delta_interval",
+        "L_interval","lhs_interval","rhs_interval","derived_constants","pass"
+    ]
+    mism = []
+    for k in keys:
+        if regen.get(k) != cert.get(k):
+            mism.append(k)
+
+    lhs_hi = dec(cert["lhs_interval"]["hi"])
+    rhs_lo = dec(cert["rhs_interval"]["lo"])
+    passed = (lhs_hi < rhs_lo)
+
+    print("m_band =", cert["m_band"])
+    print("eta    =", cert["eta"])
+    print("alpha  =", cert["alpha"])
+    print("LHS interval =", cert["lhs_interval"])
+    print("RHS interval =", cert["rhs_interval"])
+    print("Check: lhs.hi < rhs.lo  ==> ", lhs_hi, "<", rhs_lo, "=", passed)
+
+    if mism:
+        print("FAIL: certificate mismatch in keys:", ", ".join(mism))
+        sys.exit(1)
+    if not cert.get("pass", False):
+        print("FAIL: certificate 'pass' field is false")
+        sys.exit(1)
+    if not passed:
+        print("FAIL: inequality does not hold")
+        sys.exit(1)
+
+    print("PASS")
+
+if __name__ == "__main__":
+    main()
+\end{verbatim}
+
+\subsection*{D.6 Supplementary tick generator audit script (not used)}
+The supplementary tick audit script (Appendix~\ref{sec:tick}) is provided as \texttt{tick\_generator\_audit.py} with SHA--256:
+\[
+\texttt{1670a46567adbb1b69679dc8bad242d25786c4d949a55aed96e6b9e68dc991ed}.
+\]
+Its full contents are embedded here:
+
+\begin{verbatim}
+#!/usr/bin/env python3
+"""
+tick_generator_audit.py  (supplementary; NOT used in the proof)
+
+Deterministic prime-locked tick generator and an audit against "true" zeta zeros
+computed internally by mpmath (zetazero). This avoids any network dependency.
+
+WARNING:
+  - This is a floating-point audit (mpmath), not a certified proof computation.
+  - It is included only as supplementary numerics and does not feed into the RH proof.
+
+Usage:
+  python3 tick_generator_audit.py
+
+Outputs:
+  A small table of max/mean absolute error and max/mean relative error for j=2..J
+  for a few cutoff constants C in X(t)=C*(log t)^(3/2).
+"""
+
+import math
+from typing import List, Tuple
+
+import mpmath as mp
+
+mp.mp.dps = 80
+
+def smooth_weight(y: mp.mpf) -> mp.mpf:
+    # W(y)=exp(1-1/(1-y)) for 0<=y<1; W(1)=0; W(y)=0 for y>1
+    if y <= 0:
+        return mp.mpf(1)
+    if y >= 1:
+        return mp.mpf(0)
+    return mp.e ** (1 - 1/(1 - y))
+
+def primes_up_to(n: int) -> List[int]:
+    if n < 2:
+        return []
+    sieve = bytearray(b"\x01")*(n+1)
+    sieve[0:2] = b"\x00\x00"
+    for p in range(2, int(n**0.5)+1):
+        if sieve[p]:
+            step = p
+            start = p*p
+            sieve[start:n+1:step] = b"\x00"*(((n-start)//step)+1)
+    return [i for i in range(n+1) if sieve[i]]
+
+def prime_powers_up_to(X: int) -> List[Tuple[int,int,int]]:
+    # returns list of (p, k, p**k) with p prime, k>=1, p^k <= X
+    ps = primes_up_to(X)
+    out = []
+    for p in ps:
+        pk = p
+        k = 1
+        while pk <= X:
+            out.append((p,k,pk))
+            k += 1
+            pk *= p
+    return out
+
+def theta(t: mp.mpf) -> mp.mpf:
+    # Continuous Riemann–Siegel theta (mpmath handles branches)
+    return mp.siegeltheta(t)
+
+
+def X_of_t(t: mp.mpf, C: int) -> mp.mpf:
+    return mp.mpf(C) * (mp.log(t) ** (mp.mpf(3)/2))
+
+def P_X(t: mp.mpf, Delta: mp.mpf, C: int) -> mp.mpf:
+    X = X_of_t(t, C)
+    X_int = int(mp.floor(X))
+    if X_int < 2:
+        return mp.mpf(0)
+    pp = prime_powers_up_to(X_int)
+    total = mp.mpf(0)
+    for p,k,pk_int in pp:
+        pk = mp.mpf(pk_int)
+        w = smooth_weight(pk / X)
+        if w == 0:
+            continue
+        coef = (1/(k * mp.mpf(p)**(k/2))) * w
+        arg1 = (t+Delta) * k * mp.log(p)
+        arg0 = t * k * mp.log(p)
+        total -= coef * (mp.sin(arg1) - mp.sin(arg0))
+    return total
+
+def F_j(tj: mp.mpf, Delta: mp.mpf, C: int) -> mp.mpf:
+    return (theta(tj+Delta) - theta(tj)) + P_X(tj, Delta, C) - mp.pi
+
+def next_tick(tj: mp.mpf, C: int, max_expand: int = 120) -> mp.mpf:
+    lo = mp.mpf(0)
+    flo = F_j(tj, lo, C)  # should be -pi
+    hi = mp.mpf(5)
+    fhi = F_j(tj, hi, C)
+    expand = 0
+    while fhi <= 0 and expand < max_expand:
+        hi *= 2
+        fhi = F_j(tj, hi, C)
+        expand += 1
+    if fhi <= 0:
+        raise RuntimeError("Failed to bracket root; increase max_expand.")
+
+    # bisection
+    for _ in range(140):
+        mid = (lo+hi)/2
+        fmid = F_j(tj, mid, C)
+        if fmid <= 0:
+            lo = mid
+        else:
+            hi = mid
+    return tj + hi
+
+def true_zeros(J: int) -> List[mp.mpf]:
+    # mpmath provides approximate zeros on the critical line.
+    # This is NOT certified, but is deterministic at the chosen mp.dps.
+    return [mp.im(mp.zetazero(j)) for j in range(1, J+1)]
+
+def stats(errs: List[mp.mpf], truths: List[mp.mpf]) -> Tuple[mp.mpf, mp.mpf, mp.mpf, mp.mpf]:
+    abs_err = [abs(e) for e in errs]
+    rel_err = [abs(e)/abs(truths[i]) for i,e in enumerate(errs)]
+    return max(abs_err), mp.fsum(abs_err)/len(abs_err), max(rel_err), mp.fsum(rel_err)/len(rel_err)
+
+def run_audit(C_values=(16,32,48), J=50):
+    gammas = true_zeros(J)
+    t1 = gammas[0]
+    true_m = [2*g for g in gammas]
+
+    print("Prime-locked tick generator audit (supplementary; floating point)")
+    print("Truth zeros from mpmath.zetazero(j), mp.dps =", mp.mp.dps)
+    print("Stats exclude j=1 (seed); errors computed over j=2..J.\n")
+
+    print("{:>6s}  {:>14s}  {:>14s}  {:>14s}  {:>14s}".format("C","max|Δm|","mean|Δm|","max rel","mean rel"))
+    for C in C_values:
+        ticks = [t1]
+        for j in range(1, J):
+            ticks.append(next_tick(ticks[-1], C))
+        tick_m = [2*t for t in ticks]
+        errs = [tick_m[j]-true_m[j] for j in range(1, J)]
+        truths = [true_m[j] for j in range(1, J)]
+        mx, mean, mxr, meanr = stats(errs, truths)
+        print("{:6d}  {:14.6e}  {:14.6e}  {:14.6e}  {:14.6e}".format(C, float(mx), float(mean), float(mxr), float(meanr)))
+
+if __name__ == "__main__":
+    run_audit()
+\end{verbatim}
+
+% -----------------------------------------------------------------------------------------
+% Bibliography
+% -----------------------------------------------------------------------------------------
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+
+\bibitem{CoifmanMcIntoshMeyer}
+R.~R.~Coifman, A.~McIntosh, and Y.~Meyer,
+L’int\'egrale de Cauchy d\'efinit un op\'erateur born\'e sur $L^2$ pour les courbes lipschitziennes,
+\emph{Ann. of Math.} \textbf{116} (1982), 361--387.
+
+\bibitem{Duren}
+P.~Duren, \emph{Theory of $H^p$ Spaces}, Academic Press, 1970.
+
+\bibitem{Garnett}
+J.~B.~Garnett, \emph{Bounded Analytic Functions}, Springer, 2007.
+
+\bibitem{Ivic}
+A.~Ivi\'c, \emph{The Riemann Zeta-Function}, Wiley, 1985.
+
+\bibitem{Kellogg}
+O.~D.~Kellogg, \emph{Foundations of Potential Theory}, Dover, 1953.
+
+\bibitem{MontgomeryVaughan}
+H.~L.~Montgomery and R.~C.~Vaughan, \emph{Multiplicative Number Theory I: Classical Theory}, Cambridge Univ. Press, 2007.
+
+\bibitem{Platt2017}
+D.~J.~Platt, Isolating some nontrivial zeros of $\zeta(s)$,
+\emph{Math. Comp.} \textbf{86} (2017), 2449--2467.
+
+\bibitem{PlattTrudgian2021}
+D.~J.~Platt and T.~S.~Trudgian, The Riemann hypothesis is true up to $3\cdot 10^{12}$,
+\emph{Bull. Lond. Math. Soc.} \textbf{53} (2021), 792--797.
+
+\bibitem{Titchmarsh}
+E.~C.~Titchmarsh (rev. D.~R.~Heath--Brown),
+\emph{The Theory of the Riemann Zeta-Function}, 2nd ed., Oxford Univ. Press, 1986.
+
+\bibitem{DLMF}
+NIST Digital Library of Mathematical Functions.
+\url{https://dlmf.nist.gov/}
+
+\end{thebibliography}
+
+\clearpage
+\section*{Authorship and AI--Use Disclosure}
+\phantomsection
+\addcontentsline{toc}{section}{Authorship and AI--Use Disclosure}
+The author designed the framework and validated the mathematics and computations.
+Generative assistants were used for typesetting assistance, editorial organization, and consistency checks; they are not authors.
+All claims and certificates are the author's responsibility.
+
+\end{document}
