@@ -1,0 +1,33 @@
+\contentsline {section}{\numberline {1}Overview and dependencies}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}High-level structure}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}What is new in v28 vs v27}{3}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Part I: Frame normalization (RH-free)}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Classical frame}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Width-2 and centered width-2 frames}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Height parameter and displacement (RH-free)}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}The completed function in the width-2 frame}{4}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Part II: Analytic core and tail closure}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Aligned boxes}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Hinge monotonicity (separating \(t_{\mathrm {hinge}}\) from \(t_{\mathrm {first}}\))}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Local product \(\mathcal {Z}_{\mathrm {loc}}\) and finiteness}{5}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Outer function and the inner quotient \(W\) (main-line definition)}{5}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Bridge 1 (fixed): Rouch\'e implies constancy via continuity + maximum principle}{5}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Residual log-derivative envelope with explicit certified constants}{6}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Shape-only constants and the tail inequality}{6}{subsection.3.7}%
+\contentsline {subsection}{\numberline {3.8}Worst-\(\alpha \) and monotonicity (now with explicit derivatives)}{6}{subsection.3.8}%
+\contentsline {subsection}{\numberline {3.9}One-height tail inequality check (deterministic, certified)}{7}{subsection.3.9}%
+\contentsline {subsection}{\numberline {3.10}Tail closure}{7}{subsection.3.10}%
+\contentsline {subsection}{\numberline {3.11}Global closure}{7}{subsection.3.11}%
+\contentsline {section}{\numberline {4}Concluding remarks}{8}{section.4}%
+\contentsline {section}{\numberline {A}Appendix A: External certified inputs}{8}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}First nontrivial zero height (reference datum)}{8}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Verified band up to \(3\cdot 10^{12}\)}{8}{subsection.A.2}%
+\contentsline {section}{\numberline {B}Appendix B: Disk-to-square map (as in v27)}{8}{appendix.B}%
+\contentsline {section}{\numberline {C}Appendix C: Worst-\(\alpha \) and monotonicity (expanded)}{8}{appendix.C}%
+\contentsline {section}{\numberline {D}Appendix D: Baked certificate (constants, one-height check, hashes)}{8}{appendix.D}%
+\contentsline {subsection}{\numberline {D.1}Certificate Table (single table; explicit numeric intervals)}{8}{subsection.D.1}%
+\contentsline {subsection}{\numberline {D.2}Pinned certificate files (embedded inline)}{9}{subsection.D.2}%
+\contentsline {paragraph}{SHA-256 hashes (v28).}{9}{section*.3}%
+\contentsline {subsection}{\numberline {D.3}Deterministic verifier script (embedded inline)}{10}{subsection.D.3}%
+\contentsline {subsection}{\numberline {D.4}Expected verifier output}{12}{subsection.D.4}%
+\contentsline {section}{\numberline {E}Appendix E: Tick generator (supplementary; unchanged)}{12}{appendix.E}%
