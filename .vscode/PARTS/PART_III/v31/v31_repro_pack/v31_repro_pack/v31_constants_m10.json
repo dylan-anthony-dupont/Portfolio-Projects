@@ -1,0 +1,31 @@
+{
+  "certificate_version": "v31",
+  "created_utc": "2026-01-17T00:00:00Z",
+  "m_band": "10",
+  "eta": "1e-6",
+  "alpha_worst": "1",
+  "intervals": {
+    "C1": {
+      "lo": "15.0",
+      "hi": "15.1"
+    },
+    "C2": {
+      "lo": "50.0",
+      "hi": "50.1"
+    },
+    "C_up": {
+      "lo": "1100.0",
+      "hi": "1100.1"
+    },
+    "C_hpp": {
+      "lo": "1100.0",
+      "hi": "1100.1"
+    }
+  },
+  "notes": [
+    "v31 derived constants file: same ledger intervals as v29_constants.json, with m_band=10 for low-anchor tail certificate.",
+    "All numeric values are decimal strings to avoid JSON float roundoff.",
+    "These constants are used by generate_tail_certificate.py and verify_tail_certificate.py.",
+    "They are interpreted as closed intervals [lo, hi]."
+  ]
+}

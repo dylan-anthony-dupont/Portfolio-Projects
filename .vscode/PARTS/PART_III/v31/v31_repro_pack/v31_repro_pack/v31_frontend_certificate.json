@@ -1,0 +1,27 @@
+{
+  "certificate_version": "v31",
+  "created_utc": "2026-01-17T15:29:50Z",
+  "needed_frontend_statement": {
+    "type": "RH_to_height",
+    "H0": 5.0,
+    "text": "All nontrivial zeros rho=beta+i gamma with 0<gamma<=H0 satisfy beta=1/2."
+  },
+  "discharged_by": {
+    "type": "literature_citation",
+    "verification_height": 3000000000000.0,
+    "reference": {
+      "authors": "D. J. Platt and T. S. Trudgian",
+      "title": "The Riemann hypothesis is true up to 3*10^12",
+      "venue": "Bulletin of the London Mathematical Society",
+      "year": 2021,
+      "doi": "10.1112/blms.12460",
+      "arxiv": "2004.09765",
+      "statement": "All zeros beta+i gamma with 0<gamma<=3*10^12 satisfy beta=1/2 (rigorous interval arithmetic)."
+    },
+    "logic": "If RH holds for 0<gamma<=H_cited and H0<=H_cited, then RH holds for 0<gamma<=H0."
+  },
+  "notes": [
+    "This JSON is not itself a computation of zeros; it is a pinned statement+reference used by v31.",
+    "For a fully self-contained proof without external computational input, one would need to implement and certify an argument-principle zero count in this region using ball arithmetic (not provided here)."
+  ]
+}
