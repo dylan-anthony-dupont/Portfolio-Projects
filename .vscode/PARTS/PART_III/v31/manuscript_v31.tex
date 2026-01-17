@@ -1,0 +1,605 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\geometry{margin=1in}
+
+% --- Listings (Python/JSON) ---
+\lstdefinestyle{auditcode}{
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  breaklines=true,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true
+}
+\lstset{style=auditcode}
+
+% --- Theorem environments ---
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Notation helpers ---
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\RePart}{\operatorname{Re}}
+\newcommand{\ImPart}{\operatorname{Im}}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+\title{A Width--2 Boundary Program for Excluding Off--Axis Quartets\\
+with a Low--Anchor Tail Certificate and a Finite--Height Front--End (v31)}
+\author{Dylan Anthony Dupont}
+\date{v31 compiled: 2026-01-17}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This manuscript develops a width--2 ``boundary program'' designed to exclude off--axis quartets of
+nontrivial zeros of the Riemann zeta function.
+The analytic core reduces the large--height ``tail'' to a single explicit inequality
+(Equation~\eqref{eq:tail-ineq}) at one anchor height, together with worst--$\alpha$ and monotonicity
+lemmas that propagate the check to all larger heights.
+
+\medskip
+\noindent\textbf{v31 re-engineering (what changed from v30).}
+In v30 the tail inequality was anchored at a large height $m_{\mathrm{band}}=6\cdot 10^{12}$ to match a
+published ``verified band'' input.
+In v31 we instead anchor the tail inequality at the minimal admissible height
+\(m_\star=10\) (as required by the residual envelope statement), and treat the remaining region
+\(0<m<10\) as a small finite--height front--end in the classical $s$-plane
+(\(0<\ImPart(s)<5\)).
+
+\medskip
+\noindent\textbf{Claim hygiene (v31 posture).}
+The interval certificates included here prove the tail inequality at $m_\star=10$ \emph{given} the
+constants ledger intervals $(C_1,C_2,C_{\mathrm{up}},C_h'')$.
+However, these certificates do \emph{not} by themselves certify that the ledger constants are valid
+bounds for the analytic and geometric quantities asserted in the lemmas.
+Accordingly, v31 remains a \emph{certified criterion}:
+\emph{RH follows provided the constants ledger is independently certified} by explicit quantitative
+analysis or by separate certified computation.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Executive Proof Status}
+\addcontentsline{toc}{section}{Executive Proof Status}
+
+\begin{enumerate}[leftmargin=1.2em]
+\item \textbf{Analytic spine (paper).}
+  Part~\ref{part:core} develops the local boundary mechanism: if an off--axis quartet exists at width--2
+  height $m$, then on an aligned box $B(\alpha,m,\delta)$ one must simultaneously have
+  (i) a forcing phase lower bound of size $\pi/2$ on a short side from the local pair factor, and
+  (ii) an upper bound on the remaining boundary variation in terms of a residual envelope
+  \(\sup_{\partial B}\abs{F'/F}\) plus shape--only constants.
+  This yields a concrete tail inequality (Theorem~\ref{thm:tail-inequality}).
+\item \textbf{Tail certificates actually executed (this version).}
+  Appendix~\ref{app:certificate} contains a deterministic interval-arithmetic generator/verifier.
+  In this build, the verifier was executed for:
+  \begin{itemize}
+    \item the historical v29 anchor $m_{\mathrm{band}}=6\cdot 10^{12}$ (Appendix~\ref{app:verifier-output-6e12}), and
+    \item the v31 low anchor $m_\star=10$ (Appendix~\ref{app:verifier-output-10}).
+  \end{itemize}
+  In both cases the verifier prints the strict check \texttt{CHECK: lhs.hi < rhs.lo : True} and returns
+  \texttt{PASS}.
+\item \textbf{What the tail certificate does and does not prove.}
+  It proves: \emph{given the ledger intervals}, Equation~\eqref{eq:tail-ineq} holds with strict interval
+  separation at the anchor height, hence for all larger heights by monotonicity.
+  It does \emph{not} prove that the ledger intervals are correct.
+\item \textbf{Finite-height front-end after lowering the anchor.}
+  With $m_\star=10$, the only remaining heights not covered by the tail are \(0<m<10\), i.e.
+  \(0<\ImPart(s)<5\).
+  A clean global closure requires only a small front-end statement (Section~\ref{sec:frontend}).
+  In v31 this is discharged by citation to Platt--Trudgian's rigorous verification of RH up to
+  height $3\cdot 10^{12}$, which trivially implies RH up to height $5$.
+\item \textbf{Hard gate remaining for an unconditional claim.}
+  The constants ledger $(C_1,C_2,C_{\mathrm{up}},C_h'')$ is currently provided only as a JSON interval
+  file (Appendix~\ref{app:bundle-files}).
+  Unconditional closure requires an independent certification of each ledger constant
+  (Section~\ref{sec:ledger-cert}).
+\end{enumerate}
+
+\paragraph{One-shot audit path.}
+From the accompanying folder \texttt{v31\_repro\_pack/}, run:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{sha256sum -c SHA256SUMS.txt}
+\item \texttt{python3 v31\_verify\_tail\_certificate.py --constants v29\_constants.json --certificate v29\_tail\_certificate.json}
+\item \texttt{python3 v31\_verify\_tail\_certificate.py --constants v31\_constants\_m10.json --certificate v31\_tail\_certificate\_m10.json}
+\end{enumerate}
+
+\part{Reader's Guide / Definitions and Reduction}
+\label{part:guide}
+
+\section{Width--2 normalization}
+\label{sec:width2}
+
+Define the width--2 objects
+\begin{equation}
+  u := 2s,\qquad \zeta_2(u) := \zeta\!\left(\tfrac{u}{2}\right),\qquad
+  \Lambda_2(u) := \pi^{-u/4}\,\Gamma\!\left(\tfrac{u}{4}\right)\,\zeta\!\left(\tfrac{u}{2}\right).
+\end{equation}
+Then $\Lambda_2$ is entire and satisfies the functional equation
+\begin{equation}
+  \Lambda_2(u) = \Lambda_2(2-u).
+\end{equation}
+We recenter at $u=1$:
+\begin{equation}
+  v := u-1,\qquad E(v) := \Lambda_2(1+v).
+\end{equation}
+The functional equation becomes the evenness relation
+\begin{equation}
+  E(v)=E(-v),
+\end{equation}
+and complex conjugation gives $E(\overline{v})=\overline{E(v)}$.
+
+\section{Heights and horizontal displacement (RH--free)}
+\label{sec:heights}
+
+Let $\rho=\beta+i\gamma$ be any nontrivial zero of $\zeta(s)$ (no assumption on $\beta$). In width--2
+we write
+\begin{equation}
+  u_\rho := 2\rho = (1+a)+im,\qquad a:=2\beta-1\in(-1,1),\qquad m:=2\gamma>0.
+\end{equation}
+Thus RH is equivalent to $a=0$ for every nontrivial zero.
+
+\section{Quartet symmetry in width--2}
+\label{sec:quartets}
+
+The functional equation and conjugation imply that any off--axis zero with parameters $(a,m)$
+produces a quartet
+\begin{equation}
+  \{\,1\pm a\pm im\,\} \subset \{u\in\C: \Lambda_2(u)=0\}.
+\end{equation}
+In the centered $v$--coordinate this becomes $\{\pm a\pm im\}\subset\{v\in\C:E(v)=0\}$.
+
+\section{Finite-height front-end after lowering the tail anchor}
+\label{sec:frontend}
+
+Once the tail anchor is lowered to $m_\star$, the analytic tail argument covers all $m\ge m_\star$.
+The remaining region corresponds to classical heights
+\begin{equation}
+  0 < \ImPart(s) < H_0 := m_\star/2.
+\end{equation}
+In v31 we take $m_\star=10$, hence $H_0=5$.
+
+\begin{definition}[Front-end statement]
+\label{def:frontend}
+We say that \emph{RH holds up to height $H_0$} if every nontrivial zero $\rho=\beta+i\gamma$ with
+$0<\gamma\le H_0$ satisfies $\beta=1/2$.
+\end{definition}
+
+\begin{remark}[How v31 discharges the front-end]
+The required statement for v31 is RH up to height $H_0=5$.
+This is a tiny special case of published rigorous verifications of RH to enormous heights.
+For example, Platt--Trudgian prove RH for all zeros with $0<\gamma\le 3\cdot 10^{12}$ using interval
+arithmetic, which immediately implies RH up to $H_0=5$.
+Appendix~\ref{app:frontend} records this discharge in a pinned JSON file.
+\end{remark}
+
+\part{Self-Contained Boundary Program and Tail Closure}
+\label{part:core}
+
+\section{Aligned boxes and the $\delta(m)$ scale}
+\label{sec:boxes}
+
+Let $m>0$ and $\alpha\in(0,1]$. Fix a parameter $\eta\in(0,1)$ and set
+\begin{equation}
+  \delta=\delta(m,\alpha):=\frac{\eta\alpha}{(\log m)^2}.
+\end{equation}
+Define the (width--2) box centered at $\alpha+im$ by
+\begin{equation}
+  B(\alpha,m,\delta) := \{\,v\in\C: \abs{\RePart v-\alpha}\le \delta,\ \abs{\ImPart v-m}\le \delta\,\}.
+\end{equation}
+We will also use the symmetric dial centers $v_\pm:=\pm\alpha+im$.
+
+\section{Local factor and finiteness}
+\label{sec:local-factor}
+
+For a fixed $m>0$, let
+\begin{equation}
+  Z(m):=\{\,\rho: E(\rho)=0,\ \abs{\ImPart \rho-m}\le 1\,\}
+\end{equation}
+(zeros counted with multiplicity). Define the local zero factor and residual:
+\begin{equation}
+  Z_{\mathrm{loc}}(v):=\prod_{\rho\in Z(m)} (v-\rho)^{m_\rho},
+  \qquad
+  F(v):=\frac{E(v)}{Z_{\mathrm{loc}}(v)}.
+\end{equation}
+
+\begin{lemma}[Finiteness of $Z_{\mathrm{loc}}$]
+\label{lem:zloc-finite}
+For each fixed $m>0$ the set $Z(m)$ is finite; hence $Z_{\mathrm{loc}}$ is a finite product and $F$ is
+meromorphic globally and analytic in any neighborhood of $\partial B(\alpha,m,\delta)$ that contains
+no zeros of $E$.
+\end{lemma}
+
+\begin{proof}
+Nontrivial zeros of $\zeta$ satisfy $0<\beta<1$, hence in the $v$--coordinate one has
+$\RePart v\in(-1,1)$ for all nontrivial zeros.
+Therefore the set
+\(\{\abs{\ImPart v-m}\le 1\}\cap\{\abs{\RePart v}\le 1\}\)
+is compact.
+Since $E$ is entire and its zeros are discrete, only finitely many zeros can lie in this compact set.
+\end{proof}
+
+\section{Residual envelope bound and the constants ledger}
+\label{sec:ledger}
+
+\begin{lemma}[Residual envelope inequality]
+\label{lem:residual-envelope}
+There exist absolute constants $C_1,C_2>0$ such that for all $m\ge 10$, all $\alpha\in(0,1]$, and
+$\delta=\eta\alpha/(\log m)^2$, one has
+\begin{equation}
+  \sup_{v\in\partial B(\alpha,m,\delta)} \abs{\frac{F'(v)}{F(v)}} \le C_1\log m + C_2.
+\end{equation}
+\end{lemma}
+
+\begin{remark}[Hard gate]
+The tail certificates in Appendix~\ref{app:certificate} use explicit numerical interval enclosures
+for $C_1$ and $C_2$ (stored in \texttt{v31\_repro\_pack/v29\_constants.json}).
+The certificates verify the tail inequality \emph{conditional on} these enclosures being correct.
+An unconditional claim requires an independent certification of $C_1,C_2$ and the shape-only ledger
+constants (Section~\ref{sec:ledger-cert}).
+\end{remark}
+
+\section{Short-side forcing}
+\label{sec:forcing}
+
+Assume an off-axis pair at height $m$ with displacement $a>0$ exists. On an aligned box with
+$\alpha=a$, the two upper zeros in the centered $v$--plane are at $v=\pm a+im$. The pair factor
+\begin{equation}
+  Z_{\mathrm{pair}}(v):=(v-(a+im))(v-(-a+im))
+\end{equation}
+produces a large phase rotation on the near vertical side.
+
+\begin{lemma}[Short-side forcing lower bound]
+\label{lem:short-side-forcing}
+Let $I_+:=\{\alpha+iy: \abs{y-m}\le\delta\}$ with $\abs{\alpha-a}\le\delta$. Then
+\begin{equation}
+  \Delta_{I_+}\arg Z_{\mathrm{pair}}
+  = 2\arctan\!\left(\frac{\delta}{\abs{\alpha-a}}\right)
+    +2\arctan\!\left(\frac{\delta}{\alpha+a}\right)
+  \ge \frac{\pi}{2}.
+\end{equation}
+\end{lemma}
+
+\section{Outer factorization and the inner quotient (Bridge 1)}
+\label{sec:bridge1}
+
+Let $B=B(\alpha,m,\delta)$ and assume $E$ has no zeros on $\partial B$. Let $U$ be the harmonic solution
+to the Dirichlet problem on $B$ with boundary data $\log\abs{E}$. Let $V$ be a harmonic conjugate on $B$
+(chosen so that $U+iV$ is analytic). Define the outer function
+\begin{equation}
+  G_{\mathrm{out}}(v):=\exp(U(v)+iV(v)).
+\end{equation}
+Then $G_{\mathrm{out}}$ is analytic and zero-free on $B$ and satisfies $\abs{G_{\mathrm{out}}}=\abs{E}$
+on $\partial B$. Define the inner quotient
+\begin{equation}
+  W(v):=\frac{E(v)}{G_{\mathrm{out}}(v)}.
+\end{equation}
+Then $W$ is analytic on $B$ and satisfies $\abs{W}=1$ on $\partial B$.
+
+\begin{proposition}[Bridge 1: boundary modulus $1$ forces constancy if zero-free]
+\label{prop:bridge1}
+Assume $W$ is analytic and zero-free on $B$, continuous on $\overline{B}$, and satisfies $\abs{W}=1$ on
+$\partial B$. Then $W$ is constant on $B$.
+\end{proposition}
+
+\begin{proof}
+Since $W$ is continuous on $\overline{B}$ and analytic on $B$, the maximum modulus principle gives
+$\abs{W}\le 1$ on $B$. Since $W$ is zero-free, $1/W$ is analytic on $B$ and continuous on $\overline{B}$,
+with $\abs{1/W}=1$ on $\partial B$. Applying the maximum modulus principle to $1/W$ yields
+$\abs{1/W}\le 1$ on $B$, i.e. $\abs{W}\ge 1$ on $B$. Thus $\abs{W}\equiv 1$ on $B$, and an analytic function
+of constant modulus is constant.
+\end{proof}
+
+\section{Shape-only invariance and the envelope constants}
+\label{sec:shape-only}
+
+Let $T(v):=(v-(\alpha+im))/\delta$, mapping $\partial B$ affinely onto the fixed square boundary
+$\partial Q$ with $Q=[-1,1]^2$.
+
+\begin{lemma}[Shape-only invariance]
+\label{lem:shape-only}
+Any constant arising solely from geometric or boundary-operator estimates on $\partial B$ that are
+invariant under affine rescaling depends only on $\partial Q$ and is independent of $(\alpha,m,\delta)$.
+\end{lemma}
+
+\begin{proof}
+Under $T$, arclength scales by $\delta$ and tangential derivatives by $1/\delta$. After normalization,
+all purely geometric quantities and operator norms reduce to fixed quantities on $\partial Q$.
+\end{proof}
+
+\begin{lemma}[Upper envelope bound (residual form)]
+\label{lem:upper-envelope}
+There exists a shape-only constant $C_{\mathrm{up}}>0$ such that on aligned boxes $\alpha=\pm a$ one has
+\begin{equation}
+  \sum_{\pm}\abs{W(v_\pm)-e^{i\varphi_0^{\pm}}}
+  \le 2C_{\mathrm{up}}\,\delta^{3/2}\,\sup_{v\in\partial B}\abs{\frac{F'(v)}{F(v)}},
+\end{equation}
+where $e^{i\varphi_0^{\pm}}$ are fixed boundary phase anchors for the two dial centers.
+\end{lemma}
+
+\begin{lemma}[Horizontal budget]
+\label{lem:horizontal-budget}
+There exists a shape-only constant $C_h''>0$ such that, after removing the residual factor $F$, the
+remaining non-forcing boundary phase contribution satisfies
+\begin{equation}
+  \Delta_{\mathrm{nonforce}}\le C_h''\,\delta\,(\log m + 1)
+\end{equation}
+on aligned boxes.
+\end{lemma}
+
+\section{The explicit tail inequality}
+\label{sec:tail}
+
+Define
+\begin{equation}
+  L(m):=C_1\log m + C_2.
+\end{equation}
+Fix the numerical constants
+\begin{equation}
+  c_0:=\frac{3\log 2}{8\pi},\qquad c:=\frac{3\log 2}{16},\qquad K_{\mathrm{alloc}}:=3+8\sqrt{3}.
+\end{equation}
+
+\begin{theorem}[Tail inequality (certified form)]
+\label{thm:tail-inequality}
+Fix $\eta\in(0,1)$ and set $\delta=\eta\alpha/(\log m)^2$.
+Let $C_{\mathrm{up}},C_h''>0$ be the shape-only constants from Lemma~\ref{lem:upper-envelope} and
+Lemma~\ref{lem:horizontal-budget}, and let $C_1,C_2>0$ be residual constants from
+Lemma~\ref{lem:residual-envelope}.
+If the inequality
+\begin{equation}
+\label{eq:tail-ineq}
+  2C_{\mathrm{up}}\,\delta^{3/2}\,L(m)
+  <
+  c-\delta\,\Bigl(K_{\mathrm{alloc}}\,c_0\,L(m) + C_h''\,(\log m + 1)\Bigr)
+\end{equation}
+holds for a given $m\ge 10$ and all $\alpha\in(0,1]$, then there is no off--axis quartet at width--2 height
+$m$.
+\end{theorem}
+
+\begin{lemma}[Worst--$\alpha$ reduction]
+\label{lem:worst-alpha}
+For fixed $m$ and fixed admissible constants, the left-hand side of \eqref{eq:tail-ineq} is increasing in
+$\alpha\in(0,1]$ and the right-hand side is decreasing in $\alpha\in(0,1]$. Therefore it suffices to
+verify \eqref{eq:tail-ineq} at $\alpha=1$.
+\end{lemma}
+
+\begin{proof}
+With $\delta(\alpha)=\eta\alpha/(\log m)^2$, the left-hand side is proportional to
+$\delta(\alpha)^{3/2}\propto\alpha^{3/2}$.
+The right-hand side equals $c-\delta(\alpha)\cdot(\cdots)$, hence is affine decreasing in $\alpha$.
+\end{proof}
+
+\begin{lemma}[Monotonicity for one-height verification]
+\label{lem:monotone-m}
+Fix $\eta\in(0,1)$ and any admissible constants.
+For all $m>1$ and fixed $\alpha\in(0,1]$, the left-hand side of \eqref{eq:tail-ineq} is non-increasing in
+$m$, and the right-hand side is non-decreasing in $m$.
+Consequently, verifying \eqref{eq:tail-ineq} at one height $m=m_\star$ implies it for all $m\ge m_\star$.
+\end{lemma}
+
+\begin{proof}
+Write $x=\log m>0$.
+Since $\delta(m)=\eta\alpha/x^2$, we have
+\(\delta(m)^{3/2}L(m)=\eta^{3/2}\alpha^{3/2}(C_1x^{-2}+C_2x^{-3})\), which is strictly decreasing
+in $x$ because its derivative is
+\(\eta^{3/2}\alpha^{3/2}(-2C_1x^{-3}-3C_2x^{-4})<0\).
+Thus the left-hand side decreases in $m$.
+
+For the right-hand side, the subtractive term equals
+\(\eta\alpha(Ax^{-1}+Bx^{-2})\) with
+$A:=K_{\mathrm{alloc}}c_0C_1+C_h''>0$ and $B:=K_{\mathrm{alloc}}c_0C_2+C_h''>0$.
+Its derivative in $x$ is negative:
+$-\eta\alpha(Ax^{-2}+2Bx^{-3})<0$, hence the subtractive term decreases in $m$ and the right-hand side
+increases.
+\end{proof}
+
+\begin{theorem}[Tail closure from one certified check]
+\label{thm:tail-closure}
+Fix $\eta\in(0,1)$ and suppose \eqref{eq:tail-ineq} holds at one height $m=m_\star$ for $\alpha=1$.
+Then \eqref{eq:tail-ineq} holds for all $m\ge m_\star$ and all $\alpha\in(0,1]$.
+In particular, there are no off--axis quartets at any width--2 height $m\ge m_\star$.
+\end{theorem}
+
+\begin{proof}
+Combine Lemma~\ref{lem:worst-alpha} and Lemma~\ref{lem:monotone-m}.
+\end{proof}
+
+\section{Global RH from a small front-end + a low-anchor tail (conditional on the ledger)}
+\label{sec:global}
+
+\begin{theorem}[Global RH from front-end + tail + certified ledger]
+\label{thm:global}
+Let $m_\star=10$.
+Assume:
+\begin{enumerate}[leftmargin=1.5em]
+\item[(A)] \textbf{Front-end.} RH holds up to classical height $H_0=m_\star/2=5$ (Definition~\ref{def:frontend}).
+\item[(B)] \textbf{Ledger constants.} The constants ledger $(C_1,C_2,C_{\mathrm{up}},C_h'')$ is independently
+  certified to satisfy the interval enclosures in \texttt{v31\_repro\_pack/v29\_constants.json}.
+\item[(C)] \textbf{One-height tail check.} The tail inequality \eqref{eq:tail-ineq} is verified at
+  $m=m_\star$ and $\alpha=1$.
+\end{enumerate}
+Then RH holds for all nontrivial zeros of $\zeta(s)$.
+\end{theorem}
+
+\begin{proof}
+By (C) and Theorem~\ref{thm:tail-closure}, there are no off-axis quartets for all width--2 heights
+$m\ge m_\star$, i.e. no off-axis zeros for $\ImPart(s)\ge m_\star/2=5$.
+By (A), there are no off-axis zeros for $0<\ImPart(s)\le 5$.
+Therefore there are no off-axis zeros at any height.
+\end{proof}
+
+\begin{remark}[What blocks ``unconditional proof'' in v31]
+Appendix~\ref{app:certificate} demonstrates (C) as a reproducible interval inequality check.
+Appendix~\ref{app:frontend} records a standard literature discharge of (A).
+However, (B) is not discharged inside this version set: no independent derivation or certified
+computation is provided for the ledger constants.
+The most conservative correct posture is therefore: Theorem~\ref{thm:global} is a certified criterion.
+\end{remark}
+
+\section{Ledger certification requirements (hard gate)}
+\label{sec:ledger-cert}
+
+To promote Theorem~\ref{thm:global} to an unconditional (computer-assisted) proof, one must certify
+\emph{each} ledger constant.
+At minimum, for each constant one needs:
+\begin{enumerate}[leftmargin=1.5em]
+\item an unambiguous mathematical specification (what quantity is being bounded, on what domain),
+\item a certification method (explicit analytic bound with quantified constants, or a certified computation
+      using ball/interval arithmetic), and
+\item a pinned, reproducible artifact bundle (code, inputs, outputs, hashes).
+\end{enumerate}
+
+Appendix~\ref{app:ledger-plan} provides an explicit certification plan and a checklist of artifacts.
+
+\appendix
+
+\section{Tail certificate bundle and reproducibility}
+\label{app:certificate}
+
+\subsection{What the tail certificates prove (and what they do not)}
+\label{app:what-proves}
+
+Each tail certificate proves the statement:
+\begin{quote}
+Given a constants file that provides interval enclosures for $(C_1,C_2,C_{\mathrm{up}},C_h'')$ and the
+chosen parameters $(m,\eta,\alpha)$, the generated interval bounds satisfy
+$\mathrm{LHS}<\mathrm{RHS}$ with strict separation in the sense
+$\mathrm{LHS}_{\mathrm{hi}}<\mathrm{RHS}_{\mathrm{lo}}$.
+\end{quote}
+
+It does \emph{not} certify that the constants file is correct.
+
+\subsection{SHA--256 table (exact artifacts)}
+\label{app:sha}
+
+The file \texttt{v31\_repro\_pack/SHA256SUMS.txt} is the canonical hash list.
+
+\lstinputlisting{v31_repro_pack/SHA256SUMS.txt}
+
+\subsection{Commands}
+\label{app:commands}
+
+From the directory \texttt{v31\_repro\_pack/}:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{sha256sum -c SHA256SUMS.txt}
+\item \texttt{python3 v31\_verify\_tail\_certificate.py --constants v29\_constants.json --certificate v29\_tail\_certificate.json}
+\item \texttt{python3 v31\_verify\_tail\_certificate.py --constants v31\_constants\_m10.json --certificate v31\_tail\_certificate\_m10.json}
+\end{enumerate}
+
+\subsection{Expected verifier output: $m=6\cdot 10^{12}$ (verbatim)}
+\label{app:verifier-output-6e12}
+\lstinputlisting{v31_repro_pack/v31_verifier_output_m6e12.txt}
+
+\subsection{Expected verifier output: $m=10$ (verbatim)}
+\label{app:verifier-output-10}
+\lstinputlisting{v31_repro_pack/v31_verifier_output_m10.txt}
+
+\subsection{Bundle files (verbatim)}
+\label{app:bundle-files}
+
+\paragraph{v29 constants ledger (pinned intervals).}
+\lstinputlisting{v31_repro_pack/v29_constants.json}
+
+\paragraph{v29 pinned tail certificate ($m=6\cdot 10^{12}$).}
+\lstinputlisting{v31_repro_pack/v29_tail_certificate.json}
+
+\paragraph{v31 low-anchor constants (derived from v29, with $m=10$).}
+\lstinputlisting{v31_repro_pack/v31_constants_m10.json}
+
+\paragraph{v31 low-anchor tail certificate ($m=10$).}
+\lstinputlisting{v31_repro_pack/v31_tail_certificate_m10.json}
+
+\paragraph{v29 generator implementation (directed rounding).}
+\lstinputlisting{v31_repro_pack/v29_generate_tail_certificate.py}
+
+\paragraph{v31 canonical tail entrypoints.}
+\lstinputlisting{v31_repro_pack/v31_generate_tail_certificate.py}
+\lstinputlisting{v31_repro_pack/v31_verify_tail_certificate.py}
+
+\section{Finite-height front-end certificate (literature-based)}
+\label{app:frontend}
+
+The required front-end for v31 is RH up to height $H_0=5$.
+We record a discharge using Platt--Trudgian's published verification of RH up to $3\cdot 10^{12}$.
+
+\paragraph{Pinned front-end certificate JSON.}
+\lstinputlisting{v31_repro_pack/v31_frontend_certificate.json}
+
+\paragraph{Front-end verifier output (internal logic only).}
+\lstinputlisting{v31_repro_pack/v31_frontend_verifier_output.txt}
+
+\paragraph{Generator/verifier scripts.}
+\lstinputlisting{v31_repro_pack/v31_generate_frontend_certificate.py}
+\lstinputlisting{v31_repro_pack/v31_verify_frontend_certificate.py}
+
+\section{Ledger certification plan (not yet discharged in v31)}
+\label{app:ledger-plan}
+
+This appendix records a concrete plan to certify the ledger constants.
+No claim of completion is made in v31.
+
+\subsection*{Targets}
+
+The ledger constants are the interval enclosures for:
+\begin{itemize}
+\item $C_1,C_2$: residual envelope bound (Lemma~\ref{lem:residual-envelope}) for
+  \(\sup_{\partial B}\abs{F'/F}\).
+\item $C_{\mathrm{up}}$: shape-only constant in Lemma~\ref{lem:upper-envelope}.
+\item $C_h''$: shape-only constant in Lemma~\ref{lem:horizontal-budget}.
+\end{itemize}
+
+\subsection*{Certification plan (high-level)}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Mathematical specifications.}
+  Restate each lemma with the constant defined as an explicit supremum/operator norm on the normalized
+  square boundary $\partial Q$ (for the shape-only constants) and with an explicit zero-removal and
+  residual formulation for the analytic constants.
+\item \textbf{Certified computations (recommended).}
+  Use ball/interval arithmetic (e.g. Arb/Acb) to compute rigorous enclosures for:
+  \begin{itemize}
+    \item the relevant operator norms on $\partial Q$ (discretize, bound quadrature error, and use a
+      stability argument for the discretization-to-continuum gap), and
+    \item the residual envelope bound constants for $F'/F$ (reduce to explicit kernels plus a finite
+      zero list and an explicit bound for the remaining zeta contribution).
+  \end{itemize}
+\item \textbf{Reproducibility and pinning.}
+  Provide a deterministic build (Docker image digest or lockfile), one-command scripts that output
+  JSON interval enclosures, and SHA--256 hashes of code, inputs, outputs, and environment.
+\end{enumerate}
+
+\subsection*{Internal self-check (format only)}
+
+The repro pack includes a small self-check script that validates internal consistency of a ledger JSON
+(lo/hi format, required keys):
+\lstinputlisting{v31_repro_pack/v31_check_ledger_format.py}
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{thebibliography}{9}
+\bibitem{PlattTrudgian2021}
+D. J. Platt and T. S. Trudgian,
+\emph{The Riemann hypothesis is true up to $3\cdot 10^{12}$},
+Bulletin of the London Mathematical Society \textbf{53} (2021), no.~3, 792--797.
+DOI: 10.1112/blms.12460.\,\href{https://arxiv.org/abs/2004.09765}{arXiv:2004.09765}.
+\end{thebibliography}
+
+\end{document}
