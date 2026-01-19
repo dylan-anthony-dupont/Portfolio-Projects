@@ -1,0 +1,23 @@
+{
+  "certificate_version": "v32",
+  "created_utc": "2026-01-19T00:00:00Z",
+  "m_band": {"lo": "10", "hi": "1e18"},
+  "alpha_band": {"lo": "0", "hi": "1"},
+  "eta": "1e-20",
+  "intervals": {
+    "C1": {"lo": "15.0", "hi": "15.1"},
+    "C2": {"lo": "50.0", "hi": "50.1"},
+    "C_up": {"lo": "1100.0", "hi": "1100.1"},
+    "C_hpp": {"lo": "1100.0", "hi": "1100.1"},
+    "A_N": {"lo": "10.0", "hi": "10.1"},
+    "B_N": {"lo": "100.0", "hi": "100.1"},
+    "kappa": {"lo": "0.1", "hi": "0.1"}
+  },
+  "notes": [
+    "v32 tail inequality constants for an optional sanity-check certificate.",
+    "All values are decimal strings to avoid JSON float roundoff.",
+    "Intervals are interpreted as closed [lo, hi].",
+    "m_band=[10, 1e18] and alpha_band=[0,1] are checked via worst-case endpoint evaluation inside the generator.",
+    "eta is chosen extremely small (eta=1e-20) so that the inequality holds with large slack even under conservative constants."
+  ]
+}

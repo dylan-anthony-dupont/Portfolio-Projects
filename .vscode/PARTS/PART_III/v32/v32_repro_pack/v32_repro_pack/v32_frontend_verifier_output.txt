@@ -1,0 +1,4 @@
+H0 (needed) = 5.0
+H_cited     = 3000000000000.0
+CHECK: H0 <= H_cited : True
+PASS
