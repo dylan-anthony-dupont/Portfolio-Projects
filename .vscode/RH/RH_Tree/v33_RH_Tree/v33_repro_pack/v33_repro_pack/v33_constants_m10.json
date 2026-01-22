@@ -1,0 +1,31 @@
+{
+  "certificate_version": "v33",
+  "created_utc": "2026-01-21T00:00:00Z",
+  "m_band": "10",
+  "eta": "1e-14",
+  "alpha_worst": "1",
+  "kappa": "0.05",
+  "intervals": {
+    "C1": {
+      "lo": "15.1",
+      "hi": "15.2"
+    },
+    "C2": {
+      "lo": "37.3",
+      "hi": "37.4"
+    },
+    "C_up": {
+      "lo": "1100",
+      "hi": "1100.5"
+    },
+    "C_hpp": {
+      "lo": "1100",
+      "hi": "1100.5"
+    }
+  },
+  "notes": [
+    "Demo-only intervals carried forward from v31-style scaffolding; replace with audit-proven enclosures when G-1/G-12 are closed.",
+    "The verifier/generator implement directed-rounding interval arithmetic with Python's decimal module.",
+    "The local-window majorant N_up(m)=1.01*log(m)+17 is hard-coded from Lemma Nloc-logm in manuscript_v33."
+  ]
+}
