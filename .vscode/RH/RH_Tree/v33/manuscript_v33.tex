@@ -1,0 +1,953 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\geometry{margin=1in}
+
+% --- Listings (Python/JSON) ---
+\lstdefinestyle{auditcode}{
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  breaklines=true,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true
+}
+\lstset{style=auditcode}
+
+% --- Theorem environments ---
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Notation helpers ---
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\RePart}{\operatorname{Re}}
+\newcommand{\ImPart}{\operatorname{Im}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\dist}{\operatorname{dist}}
+
+\title{A Width--2 Boundary Program for Excluding Off--Axis Quartets\\
+with an $\eta$--Absorption Tail Closure and a Finite--Height Front--End (v33)}
+\author{Dylan Anthony Dupont}
+\date{v33 compiled: 2026-01-21}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document is a post-pivot build (v33) of the width--2 boundary program.
+Relative to v32, the main changes are:
+\begin{enumerate}[leftmargin=1.5em]
+\item \emph{Forcing constant provenance:} the forcing allocation constant is restored to
+$K_{\rm alloc}=3+8\sqrt3$ and carried consistently through the tail inequality and certificate scaffolding.
+\item \emph{Bridge~1 hypotheses hardened:} the outer factor is constructed via the Dirichlet problem on the box,
+and the zero-free inner collapse is proved via Dirichlet uniqueness (removing boundary-regularity ambiguity).
+\item \emph{Local term made explicit:} the local window count is bounded unconditionally and explicitly:
+$N_{\rm loc}(m)\le 1.01\log m+17$ for $m\ge 10$, yielding an explicit majorant in the tail program.
+\item \emph{Admissibility / $\delta$ control:} the nominal scale $\delta_0$ is separated from the chosen
+$\kappa$--admissible $\delta\le \delta_0$, with explicit lemmas guaranteeing existence and monotone safety under
+$\delta$--shrinking.
+\end{enumerate}
+A refreshed reproducibility pack is included; numerical certificates are optional sanity checks and are not logically required
+by the $\eta$--absorption closure.
+\end{abstract}
+
+
+\tableofcontents
+
+\section*{Executive Proof Status}
+\label{sec:status}
+
+\textbf{Status (v33):} This version integrates Batch~1 patch packets into the v32 post-pivot spine.
+Concretely: (i) $K_{\rm alloc}$ is restored to its forcing-lemma value (closing G--3 at the manuscript level),
+(ii) Bridge~1 is rewritten with a Dirichlet outer factor and a Dirichlet-uniqueness inner collapse (closing G--6),
+(iii) the local window term is made explicit via an unconditional short-interval bound for $N(T)$ (closing G--8),
+and (iv) admissibility/absorption hygiene is improved by separating the nominal scale $\delta_0$ from an admissible
+$\delta\le\delta_0$ and proving monotone safety under $\delta$--shrinking (partial progress on G--4/G--5).
+
+Numerical certificates are retained as \emph{optional sanity checks} in the reproducibility pack, but are not logically required
+for tail closure under the $\eta$--absorption posture.
+
+\medskip
+\noindent\textbf{Open proof-grade blockers (tracked in \texttt{v33\_status\_decision.md}):}
+\begin{enumerate}[leftmargin=1.5em]
+\item \emph{Constant provenance and $\delta$--uniformity:} show $C_{\rm up},C_1,C_2,C_h''$ are defined and proved finite
+with no hidden dependence on $\delta$ or on unknown zeros (G--4, G--12).
+\item \emph{Upper-envelope scaling audit:} Lemma~\ref{lem:upper-envelope} must be rechecked for correct $\delta$--scaling
+(no unjustified $\sqrt{\delta}$ steps) (G--2, E--5).
+\item \emph{Residual envelope proof:} Lemma~\ref{lem:residual-envelope} requires a complete, unconditional derivation in the
+exact $v$--frame (G--1).
+\item \emph{Front-end dependence:} the finite-height hypothesis remains an external input
+(Appendix~\ref{app:frontend}) (G--11); S2 remains the audit harness.
+\end{enumerate}
+
+\medskip
+\noindent\textbf{This v33 build includes:}
+(i) a hardened Bridge~1 package, (ii) a restored forcing constant ledger, (iii) an explicit local-window bound feeding the tail,
+(iv) admissibility/absorption monotonicity lemmas, and (v) a rebuilt reproducibility pack with updated scripts.
+
+\part{Reader's Guide / Definitions and Reduction}
+\label{part:guide}
+
+\section{Width--2 normalization}
+\label{sec:width2}
+
+Define the width--2 objects
+\begin{equation}
+  u := 2s,\qquad \zeta_2(u) := \zeta\!\left(\tfrac{u}{2}\right),\qquad
+  \Lambda_2(u) := \pi^{-u/4}\,\Gamma\!\left(\tfrac{u}{4}\right)\,\zeta\!\left(\tfrac{u}{2}\right).
+\end{equation}
+Then $\Lambda_2$ is entire and satisfies the functional equation
+\begin{equation}
+  \Lambda_2(u) = \Lambda_2(2-u).
+\end{equation}
+We recenter at $u=1$:
+\begin{equation}
+  v := u-1,\qquad E(v) := \Lambda_2(1+v).
+\end{equation}
+The functional equation becomes the evenness relation
+\begin{equation}
+  E(v)=E(-v),
+\end{equation}
+and complex conjugation gives $E(\overline{v})=\overline{E(v)}$.
+
+\section{Heights and horizontal displacement (RH--free)}
+\label{sec:heights}
+
+Let $\rho=\beta+i\gamma$ be any nontrivial zero of $\zeta(s)$ (no assumption on $\beta$). In width--2
+we write
+\begin{equation}
+  u_\rho := 2\rho = (1+a)+im,\qquad a:=2\beta-1\in(-1,1),\qquad m:=2\gamma>0.
+\end{equation}
+Thus RH is equivalent to $a=0$ for every nontrivial zero.
+
+\section{Quartet symmetry in width--2}
+\label{sec:quartets}
+
+The functional equation and conjugation imply that any off--axis zero with parameters $(a,m)$
+produces a quartet
+\begin{equation}
+  \{\,1\pm a\pm im\,\} \subset \{u\in\C: \Lambda_2(u)=0\}.
+\end{equation}
+In the centered $v$--coordinate this becomes $\{\pm a\pm im\}\subset\{v\in\C:E(v)=0\}$.
+
+\section{Finite-height front-end after lowering the tail anchor}
+\label{sec:frontend}
+
+Once the tail anchor is lowered to $m_\star$, the analytic tail argument covers all $m\ge m_\star$.
+The remaining region corresponds to classical heights
+\begin{equation}
+  0 < \ImPart(s) < H_0 := m_\star/2.
+\end{equation}
+In v31 we take $m_\star=10$, hence $H_0=5$.
+
+\begin{definition}[Front-end statement]
+\label{def:frontend}
+We say that \emph{RH holds up to height $H_0$} if every nontrivial zero $\rho=\beta+i\gamma$ with
+$0<\gamma\le H_0$ satisfies $\beta=1/2$.
+\end{definition}
+
+\begin{remark}[How v31 discharges the front-end]
+The required statement for v31 is RH up to height $H_0=5$.
+This is a tiny special case of published rigorous verifications of RH to enormous heights.
+For example, Platt--Trudgian prove RH for all zeros with $0<\gamma\le 3\cdot 10^{12}$ using interval
+arithmetic, which immediately implies RH up to $H_0=5$.
+Appendix~\ref{app:frontend} records this discharge in a pinned JSON file.
+\end{remark}
+
+\part{Self-Contained Boundary Program and Tail Closure}
+\label{part:core}
+
+\section{Aligned boxes and the $\delta(m)$ scale}
+\label{sec:boxes}
+
+Let $m>0$ and $\alpha\in(0,1]$. Fix a parameter $\eta\in(0,1)$ and define the \emph{nominal} box scale
+\begin{equation}
+  \delta_0=\delta_0(m,\alpha):=\frac{\eta\alpha}{(\log m)^2}.
+\end{equation}
+We will work with aligned boxes $B(\alpha,m,\delta)$ at scales $0<\delta\le \delta_0$.
+By default one may take $\delta=\delta_0$, but later (Definition~\ref{def:collar-admissible}) we allow
+shrinking $\delta$ to enforce $\kappa$--admissibility; this is non-circular and monotone-safe
+(Lemmas~\ref{lem:collar-existence} and \ref{lem:delta-shrink-monotone}).
+
+Define the (width--2) box centered at $\alpha+im$ by
+\begin{equation}
+  B(\alpha,m,\delta) := \{\,v\in\C: \abs{\RePart v-\alpha}\le \delta,\ \abs{\ImPart v-m}\le \delta\,\}.
+\end{equation}
+We will also use the symmetric dial centers $v_\pm:=\pm\alpha+im$.
+
+\section{Local factor and finiteness}
+\label{sec:local-factor}
+
+For a fixed $m>0$, let
+\begin{equation}\label{eq:Z-window}
+  Z(m):=\{\,\rho: E(\rho)=0,\ \abs{\ImPart \rho-m}\le 1\,\}
+\end{equation}
+(zeros counted with multiplicity). Define the local zero factor and residual:
+\begin{equation}\label{eq:zloc-def}
+  Z_{\mathrm{loc}}(v):=\prod_{\rho\in Z(m)} (v-\rho)^{m_\rho}.
+\end{equation}
+\begin{equation}\label{eq:F-def}
+  F(v):=\frac{E(v)}{Z_{\mathrm{loc}}(v)}.
+\end{equation}
+
+\begin{lemma}[Finiteness of $Z_{\mathrm{loc}}$]
+\label{lem:zloc-finite}
+For each fixed $m>0$ the set $Z(m)$ is finite; hence $Z_{\mathrm{loc}}$ is a finite product and $F$ is
+meromorphic globally and analytic in any neighborhood of $\partial B(\alpha,m,\delta)$ that contains
+no zeros of $E$.
+\end{lemma}
+
+\begin{proof}
+Nontrivial zeros of $\zeta$ satisfy $0<\beta<1$, hence in the $v$--coordinate one has
+$\RePart v\in(-1,1)$ for all nontrivial zeros.
+Therefore the set
+\(\{\abs{\ImPart v-m}\le 1\}\cap\{\abs{\RePart v}\le 1\}\)
+is compact.
+Since $E$ is entire and its zeros are discrete, only finitely many zeros can lie in this compact set.
+\end{proof}
+
+\section{Residual envelope bound and the constants ledger}
+\label{sec:ledger}
+
+\begin{lemma}[Residual envelope inequality]
+\label{lem:residual-envelope}
+There exist absolute constants $C_1,C_2>0$ such that for all $m\ge 10$, all $\alpha\in(0,1]$, and
+$\delta=\eta\alpha/(\log m)^2$, one has
+\begin{equation}
+  \sup_{v\in\partial B(\alpha,m,\delta)} \abs{\frac{F'(v)}{F(v)}} \le C_1\log m + C_2.
+\end{equation}
+\end{lemma}
+
+\begin{remark}[Hard gate]
+The tail certificates in Appendix~\ref{app:certificate} use explicit numerical interval enclosures
+for the constant ledger (e.g.\ $C_1,C_2,C_{\rm up},C_h'',\kappa$), stored in
+\texttt{v33\_repro\_pack/v33\_constants\_m10.json}.
+They verify the tail inequality \emph{conditional on} these enclosures being correct.
+An unconditional claim therefore requires an independent certification of the analytic constant ledger,
+in particular Lemma~\ref{lem:residual-envelope} and the upper-envelope constant inputs
+(Lemma~\ref{lem:upper-envelope}).
+\end{remark}
+
+
+\section{Short-side forcing}
+\label{sec:forcing}
+
+Assume an off-axis pair at height $m$ with displacement $a>0$ exists. On an aligned box with
+$\alpha=a$, the two upper zeros in the centered $v$--plane are at $v=\pm a+im$. The pair factor
+\begin{equation}
+  Z_{\mathrm{pair}}(v):=(v-(a+im))(v-(-a+im))
+\end{equation}
+produces a large phase rotation on the near vertical side.
+
+\begin{lemma}[Short-side forcing lower bound]
+\label{lem:short-side-forcing}
+Let $I_+:=\{\alpha+iy: \abs{y-m}\le\delta\}$ with $\abs{\alpha-a}\le\delta$. Then
+\begin{equation}
+  \Delta_{I_+}\arg Z_{\mathrm{pair}}
+  = 2\arctan\!\left(\frac{\delta}{\abs{\alpha-a}}\right)
+    +2\arctan\!\left(\frac{\delta}{\alpha+a}\right)
+  \ge \frac{\pi}{2}.
+\end{equation}
+\end{lemma}
+
+\section{Outer factorization and the inner quotient (Bridge 1)}
+\label{sec:bridge1}
+
+We work on a fixed box $B=B(\alpha,m,\delta)$ and write $B^\circ$ for its interior.
+Assume the boundary-contact convention: $E$ has no zeros on $\partial B$.
+
+\begin{lemma}[Dirichlet outer factor on a box]
+\label{lem:outer_dirichlet_box}
+Let $B=B(\alpha,m,\delta)$ be the closed rectangle and $B^\circ$ its interior.
+Assume $E$ is holomorphic on a neighborhood of $\overline{B}$ and $E\neq 0$ on $\partial B$.
+Then $\log|E|\in C(\partial B)$.
+Let $U\in C(\overline{B})\cap \mathrm{Harm}(B^\circ)$ be the unique solution of the Dirichlet problem
+with boundary data $U|_{\partial B}=\log|E|$.
+Since $B^\circ$ is simply connected, there exists a harmonic conjugate $V$ on $B^\circ$
+(unique up to an additive constant) such that $U+iV$ is holomorphic on $B^\circ$.
+Define
+\[
+G_{\mathrm{out}}(v):=\exp(U(v)+iV(v)),\qquad v\in B^\circ.
+\]
+Then $G_{\mathrm{out}}$ is holomorphic and zero-free on $B^\circ$, satisfies $|G_{\mathrm{out}}(v)|=e^{U(v)}$ for $v\in B^\circ$, and
+\[
+\lim_{z\to\xi,\ z\in B^\circ}|G_{\mathrm{out}}(z)| = |E(\xi)|\qquad(\xi\in\partial B).
+\]
+\end{lemma}
+
+\begin{proof}
+Continuity of $\log|E|$ on $\partial B$ follows from $E\neq 0$ on $\partial B$.
+Existence and uniqueness of $U$ on a rectangle are standard.
+Since $B^\circ$ is simply connected, $U$ admits a harmonic conjugate $V$ on $B^\circ$, unique up to an additive constant.
+The function $U+iV$ is holomorphic, hence so is $G_{\mathrm{out}}=\exp(U+iV)$, and it is zero-free.
+Finally $|G_{\mathrm{out}}|=e^U$ on $B^\circ$, and by continuity of $U$ on $\overline{B}$ we have
+$e^{U(\xi)}=|E(\xi)|$ on $\partial B$, yielding the boundary modulus identity in interior-limit form.
+\end{proof}
+
+Define on $B^\circ$ the inner quotient
+\[
+W(v):=\frac{E(v)}{G_{\mathrm{out}}(v)}.
+\]
+Then $W$ is holomorphic on $B^\circ$ and $|W|=1$ on $\partial B$ in the sense of interior limits in modulus.
+
+\begin{proposition}[Bridge 1: zero-free inner collapse]
+\label{prop:bridge1}
+Assume the setup of Lemma~\ref{lem:outer_dirichlet_box} and define $W=E/G_{\mathrm{out}}$ on $B^\circ$.
+If $W$ is zero-free on $B^\circ$ (equivalently, $E$ is zero-free on $B^\circ$), then $W$ is constant on $B^\circ$; in fact
+$W\equiv e^{i\theta_B}$ for some $\theta_B\in\R$.
+\end{proposition}
+
+\begin{proof}
+Since $W$ is zero-free on $B^\circ$ and $G_{\mathrm{out}}$ is zero-free, the function $E$ is zero-free on $B^\circ$.
+Because $B^\circ$ is simply connected, $E$ admits a holomorphic logarithm on $B^\circ$, so $\log|E|$ is harmonic on $B^\circ$.
+By construction $U$ is harmonic on $B^\circ$, continuous on $\overline{B}$, and equals $\log|E|$ on $\partial B$.
+Thus $U-\log|E|$ is harmonic on $B^\circ$ with zero boundary values, so by Dirichlet uniqueness $U\equiv \log|E|$ on $B^\circ$.
+Therefore for $v\in B^\circ$,
+\[
+|W(v)|=\frac{|E(v)|}{|G_{\mathrm{out}}(v)|}=\frac{|E(v)|}{e^{U(v)}}=\frac{|E(v)|}{e^{\log|E(v)|}}=1.
+\]
+An analytic function of constant modulus on a connected open set is constant, hence $W\equiv e^{i\theta_B}$.
+\end{proof}
+
+\begin{remark}[Boundary modulus convention]
+\label{rem:boundary_modulus}
+Under boundary-contact, $U$ extends continuously to $\partial B$ and satisfies $U|_{\partial B}=\log|E|$.
+Hence $|G_{\mathrm{out}}|=|E|$ holds pointwise on $\partial B$ as interior limits in modulus, and therefore
+$|W|=1$ holds pointwise in modulus on $\partial B$.
+In boundary integral estimates this may be used in the a.e.\ sense without change.
+\end{remark}
+
+\section{Shape-only invariance and the envelope constants}
+\label{sec:shape-only}
+
+Let $T(v):=(v-(\alpha+im))/\delta$, mapping $\partial B$ affinely onto the fixed square boundary
+$\partial Q$ with $Q=[-1,1]^2$.
+
+\begin{lemma}[Shape-only invariance]
+\label{lem:shape-only}
+Any constant arising solely from geometric or boundary-operator estimates on $\partial B$ that are
+invariant under affine rescaling depends only on $\partial Q$ and is independent of $(\alpha,m,\delta)$.
+\end{lemma}
+
+\begin{proof}
+Under $T$, arclength scales by $\delta$ and tangential derivatives by $1/\delta$. After normalization,
+all purely geometric quantities and operator norms reduce to fixed quantities on $\partial Q$.
+\end{proof}
+
+\begin{lemma}[Upper envelope bound (outer-aligned form)]
+\label{lem:upper-envelope}
+Let $B=B(\pm a,m,\delta)$ be an aligned box and let $G_{\rm out}$ be the outer factor on $B$
+constructed from $\log|E|$ on $\partial B$ (Section~\ref{sec:bridge1}). Define the inner quotient
+\[
+W(v):=\frac{E(v)}{G_{\rm out}(v)}.
+\]
+Assume the boundary-contact convention: $E$ has no zeros on $\partial B$ (hence $W$ has unimodular
+boundary values a.e.). For each sign $\pm$ let $v_\pm:=\pm a+im$ and let $e^{i\varphi_0^\pm}\in\mathbb T$
+be an $L^2(\partial B,ds)$-best constant phase,
+\[
+e^{i\varphi_0^\pm}\in\arg\min_{|c|=1}\int_{\partial B}|W(v)-c|^2\,ds(v).
+\]
+Then there exists a \emph{shape-only} constant $C_{\rm up}>0$ (depending only on the normalized square
+$Q=[-1,1]^2$) such that
+\begin{equation}
+\label{eq:UE-EoverE}
+\sum_{\pm}\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\ \le\ 2\,C_{\rm up}\,\delta^{3/2}\,\sup_{v\in\partial B}\Bigl|\frac{E'(v)}{E(v)}\Bigr|.
+\end{equation}
+One admissible explicit definition is
+\[
+C_{\rm up}
+:=\Big(\sup_{\xi\in\partial Q}P_Q(0,\xi)\Big)^{1/2}\cdot \frac{4}{\pi}\cdot \sqrt{8}\cdot\bigl(1+\|H_{\partial Q}\|_{L^2\to L^2}\bigr),
+\]
+where $P_Q(0,\xi)=d\omega^Q_0/ds(\xi)$ is the Poisson kernel of $Q$ at the center $0$ with respect to
+arclength on $\partial Q$, and $H_{\partial Q}$ is the boundary conjugation (Hilbert/Cauchy) operator
+on $\partial Q$.
+\end{lemma}
+
+\begin{remark}[No residual proxying in the upper envelope]
+\label{rem:no-proxying}
+Lemma~\ref{lem:upper-envelope} controls the inner quotient $W=E/G_{\rm out}$ and therefore depends on
+$\sup_{\partial B}|E'/E|$.
+Residual bounds for $F=E/Z_{\rm loc}$ control $\sup_{\partial B}|F'/F|$ and do \emph{not} by themselves
+bound $\sup_{\partial B}|E'/E|$.
+Whenever the residual envelope is used to control dial deviation, it must be routed through the
+log-derivative split $E'/E=F'/F+Z'_{\rm loc}/Z_{\rm loc}$ (Lemma~\ref{lem:logder-split}) together with
+the collar bound (Lemma~\ref{lem:Zloc-logder-collar}), yielding Corollary~\ref{cor:UE-residual-local}.
+\end{remark}
+
+\begin{proof}
+Fix one sign and write $v_0=v_\pm$ and $B=B(\pm a,m,\delta)$.
+We record the (RH-free) chain and indicate the scale factors explicitly.
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Evaluation from the boundary (harmonic measure; produces $\delta^{-1/2}$).}
+For any constant $c\in\mathbb T$, subharmonicity of $|W-c|^2$ implies
+\[
+|W(v_0)-c|^2\le \int_{\partial B}|W(\xi)-c|^2\,d\omega_{v_0}^B(\xi)
+=\int_{\partial B}|W(\xi)-c|^2\,P_B(v_0,\xi)\,ds(\xi),
+\]
+so
+\[
+|W(v_0)-c|\le \|P_B(v_0,\cdot)\|_{L^\infty(\partial B)}^{1/2}\,\|W-c\|_{L^2(\partial B,ds)}.
+\]
+Under the similarity $T(\xi)=(\xi-v_0)/\delta$ mapping $\partial B$ onto $\partial Q$,
+Poisson kernels scale by
+$\|P_B(v_0,\cdot)\|_\infty^{1/2}=\delta^{-1/2}\,\|P_Q(0,\cdot)\|_\infty^{1/2}$.
+\item \textbf{Poincar\'e/Wirtinger on $\partial B$ (produces $\delta$).}
+For the $L^2$-best constant $c=e^{i\varphi_0^\pm}$ and $|\partial B|=8\delta$,
+periodic Poincar\'e on a loop of length $8\delta$ gives
+\[
+\|W-c\|_{L^2(\partial B)}\le \frac{|\partial B|}{2\pi}\,\|\partial_s W\|_{L^2(\partial B)}
+=\frac{4\delta}{\pi}\,\|\partial_s W\|_{L^2(\partial B)}.
+\]
+\item \textbf{Outer factor control (no $\delta$; uses bounded boundary conjugation).}
+Write $\log G_{\rm out}=U+i\widetilde U$ with $U|_{\partial B}=\log|E|$ and $\widetilde U=H_{\partial B}U$.
+Differentiating tangentially,
+$\partial_s\log G_{\rm out}=\partial_s U+i\,H_{\partial B}(\partial_s U)$.
+Since $\log W=\log E-\log G_{\rm out}$,
+\[
+\|\partial_s\log W\|_{L^2(\partial B)}
+\le \bigl(1+\|H_{\partial B}\|_{L^2\to L^2}\bigr)\,\|\partial_s\log E\|_{L^2(\partial B)}
+\le \bigl(1+\|H_{\partial B}\|_{L^2\to L^2}\bigr)\,\Big\|\frac{E'}{E}\Big\|_{L^2(\partial B)}.
+\]
+On $\partial B$ we have $|W|=1$ a.e., hence $|\partial_s W|=|\partial_s\log W|$.
+\item \textbf{$L^2$ to $\sup$ (produces $\delta^{1/2}$).}
+Using $|\partial B|=8\delta$,
+\[
+\Big\|\frac{E'}{E}\Big\|_{L^2(\partial B)}\le \sqrt{|\partial B|}\,\sup_{\partial B}\Big|\frac{E'}{E}\Big|
+=\sqrt{8\delta}\,\sup_{\partial B}\Big|\frac{E'}{E}\Big|.
+\]
+\end{enumerate}
+Combining the four steps yields
+\[
+|W(v_0)-e^{i\varphi_0^\pm}|
+\le \|P_Q(0,\cdot)\|_\infty^{1/2}\cdot \frac{4}{\pi}\cdot \sqrt{8}\cdot\bigl(1+\|H_{\partial Q}\|_{L^2\to L^2}\bigr)
+\cdot \delta^{3/2}\sup_{\partial B}\Big|\frac{E'}{E}\Big|,
+\]
+where we used the similarity invariance $\|H_{\partial B}\|_{L^2\to L^2}=\|H_{\partial Q}\|_{L^2\to L^2}$.
+Summing over $\pm$ gives \eqref{eq:UE-EoverE}.
+\end{proof}
+
+
+\subsection{Local factor split and collar control}
+\label{subsec:local-split}
+
+\begin{definition}[Collar-admissible aligned boxes]
+\label{def:collar-admissible}
+Fix once and for all a collar parameter $\kappa\in(0,1/10)$.
+An aligned box $B=B(\alpha,m,\delta)$ is called \emph{$\kappa$--admissible} if
+\[
+\dist\bigl(\partial B,\,\mathcal Z(E)\bigr)\ge \kappa\delta.
+\]
+Given any nominal scale $\delta_0>0$ and any center, there exists some $0<\delta\le \delta_0$ for which
+$\kappa$--admissibility holds (Lemma~\ref{lem:collar-existence}).
+Whenever a chosen box is not $\kappa$--admissible, we shrink $\delta$ until $\kappa$--admissibility holds.
+Moreover the assembled tail inequality is monotone-safe under such $\delta$--shrinking
+(Lemma~\ref{lem:delta-shrink-monotone}).
+\end{definition}
+
+\begin{lemma}[Existence of a $\kappa$--admissible shrink]
+\label{lem:collar-existence}
+Fix $\kappa\in(0,1/10)$ and a center $v_0\in\C$.
+For every $\delta_0>0$ there exists $\delta'\in(0,\delta_0]$ such that the closed box
+\[
+B(v_0,\delta'):=\{\,v\in\C:\ \|v-v_0\|_\infty\le \delta'\,\}
+\]
+satisfies
+\[
+\dist\bigl(\partial B(v_0,\delta'),\,\mathcal Z(E)\bigr)\ge \kappa\delta'.
+\]
+In particular, given $(\alpha,m)$ and nominal $\delta_0=\eta\alpha/(\log m)^2$, one may always choose a scale
+$0<\delta\le\delta_0$ for which $B(\alpha,m,\delta)$ is $\kappa$--admissible.
+\end{lemma}
+
+\begin{proof}
+Zeros of the entire function $E$ are isolated.
+Choose $\varepsilon>0$ such that $\mathcal Z(E)\cap \{\,0<\|v-v_0\|_\infty\le \varepsilon\,\}$ is empty
+(if $E(v_0)=0$) or such that $\mathcal Z(E)\cap \{\,\|v-v_0\|_\infty\le \varepsilon\,\}$ is empty
+(if $E(v_0)\neq 0$).
+Set $\delta':=\min\{\delta_0,\varepsilon/(1+\kappa)\}$.
+Then every boundary point satisfies $\|v-v_0\|_\infty=\delta'$.
+Any zero $\rho\in\mathcal Z(E)$ is either $\rho=v_0$ (in which case $\dist(v,\rho)=\delta'\ge \kappa\delta'$)
+or satisfies $\|\rho-v_0\|_\infty\ge \varepsilon$ (in which case $\dist(v,\rho)\ge \varepsilon-\delta'\ge \kappa\delta'$).
+Therefore $\dist(\partial B(v_0,\delta'),\mathcal Z(E))\ge \kappa\delta'$.
+\end{proof}
+
+
+
+\begin{lemma}[Log-derivative decomposition]
+\label{lem:logder-split}
+With $Z_{\rm loc}$ and $F$ as in \eqref{eq:zloc-def} and \eqref{eq:F-def}, one has on any region where
+$E$ and $Z_{\rm loc}$ are holomorphic and nonvanishing (in particular on $\partial B$ under the boundary-contact convention)
+\[
+\frac{E'}{E}=\frac{F'}{F}+\frac{Z_{\rm loc}'}{Z_{\rm loc}}.
+\]
+\end{lemma}
+
+\begin{lemma}[Buffered local factor bound on $\partial B$]
+\label{lem:Zloc-logder-collar}
+Let $B=B(\alpha,m,\delta)$ be $\kappa$--admissible in the sense of Definition~\ref{def:collar-admissible}.
+Then
+\[
+\sup_{v\in\partial B}\left|\frac{Z_{\rm loc}'(v)}{Z_{\rm loc}(v)}\right|
+\le \frac{N_{\rm loc}(m)}{\kappa\,\delta},
+\]
+where $N_{\rm loc}(m)$ counts zeros of $E$ in the local window used to define $Z_{\rm loc}$, with multiplicity.
+\end{lemma}
+
+\begin{lemma}[Explicit local window zero count]
+\label{lem:Nloc-logm}
+Let $N(T)$ denote the number of nontrivial zeros $\rho=\beta+i\gamma$ of $\zeta(s)$ with $0<\gamma\le T$,
+counted with multiplicity.
+Then for every $T\ge 5$,
+\begin{equation}
+\label{eq:two-unit-window}
+N(T+1)-N(T-1)\le 1.01\log T + 17.
+\end{equation}
+Consequently, for every $m\ge 10$,
+\begin{equation}
+\label{eq:Nloc-explicit}
+N_{\rm loc}(m)\le 1.01\log m + 17.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By \cite[Theorem~1.1]{BellottiWongZeta2024}, for every $x\ge e$,
+\[
+\Bigl|\,N(x)-\frac{x}{2\pi}\log\!\Bigl(\frac{x}{2\pi e}\Bigr)\Bigr|
+\le 0.10076\log x + 0.24460\log\log x + 8.08344.
+\]
+Let $M(x):=\frac{x}{2\pi}\log(\frac{x}{2\pi e})$, so $M'(x)=\frac{1}{2\pi}\log(\frac{x}{2\pi})$.
+For $T\ge 5$ we have $\log(T\pm 1)\le \log(2T)$ and $\log\log x\le \log x$ for $x\ge e$, hence
+\[
+N(T+1)-N(T-1)
+\le (M(T+1)-M(T-1)) + 2(0.10076+0.24460)\log(2T) + 2\cdot 8.08344.
+\]
+Moreover
+\[
+M(T+1)-M(T-1)=\int_{T-1}^{T+1}M'(x)\,dx
+\le \int_{T-1}^{T+1}\frac{1}{2\pi}\log x\,dx
+\le \frac{1}{\pi}\log(2T).
+\]
+Combining these bounds gives $N(T+1)-N(T-1)\le 1.00903\log T + 16.8663 \le 1.01\log T + 17$,
+establishing \eqref{eq:two-unit-window}.
+Finally, in width--2 one has $m=2T$.
+The local window $|\ImPart\rho-m|\le 1$ corresponds to $|\gamma-T|\le 1/2$ in the $s$--plane, so
+$N_{\rm loc}(m)=N(T+\tfrac12)-N(T-\tfrac12)\le N(T+1)-N(T-1)$, yielding \eqref{eq:Nloc-explicit}.
+\end{proof}
+
+
+
+\begin{corollary}[Outer-aligned upper envelope in residual+local form]
+\label{cor:UE-residual-local}
+Let $B$ be $\kappa$--admissible.
+Assume the residual envelope bound of Lemma~\ref{lem:residual-envelope}, i.e.
+\(\sup_{\partial B}|F'/F|\le L(m):=C_1\log m+C_2\).
+Then
+\[
+\sum_{\pm}|W(v_\pm)-e^{i\varphi_0^\pm}|
+\le 2C_{\rm up}\left(\delta^{3/2}L(m) + \delta^{1/2}\frac{N_{\rm loc}(m)}{\kappa}\right)
+\le 2C_{\rm up}\left(\delta^{3/2}L(m) + \delta^{1/2}\frac{1.01\log m + 17}{\kappa}\right).
+\]
+\end{corollary}
+
+
+\subsection{Horizontal non-forcing budget in residual form}
+\label{subsec:horizontal-budget}
+
+\begin{definition}[Horizontal non-forcing phase budget]
+\label{def:Delta-nonforce}
+Let $B=B(\pm a,m,\delta)$ be an aligned box and let $F=E/Z_{\rm loc}$ be the residual factor.
+Assume $F$ is holomorphic and zero-free on a neighborhood of $\partial B$.
+Let $H_\pm$ denote the top and bottom edges of $\partial B$:
+\[
+H_+:=\{x+i(m+\delta):\ x\in[\pm a-\delta,\pm a+\delta]\},\qquad
+H_-:=\{x+i(m-\delta):\ x\in[\pm a-\delta,\pm a+\delta]\}.
+\]
+Define
+\[
+\Delta_{\rm nonforce}(B)
+:=
+\int_{H_+}|\partial_s\arg F|\,ds + \int_{H_-}|\partial_s\arg F|\,ds.
+\]
+\end{definition}
+
+\begin{lemma}[Horizontal budget (residual form; audit-grade)]
+\label{lem:horizontal-budget}
+In the setting of Definition~\ref{def:Delta-nonforce},
+\[
+\Delta_{\rm nonforce}(B)\le 4\delta\,\sup_{v\in\partial B}\left|\frac{F'(v)}{F(v)}\right|.
+\]
+Consequently, if $\sup_{\partial B}|F'/F|\le C_1\log m+C_2$, then
+\[
+\Delta_{\rm nonforce}(B)\le C_h''\,\delta\,(\log m+1),\qquad
+C_h'':=4\max\{C_1,\,C_2\}.
+\]
+\end{lemma}
+
+\begin{proof}
+On either horizontal edge, $|\partial_s\arg F|\le |F'/F|$ pointwise.
+Each edge has length $2\delta$, hence each integral is bounded by $2\delta\sup_{\partial B}|F'/F|$.
+Summing top and bottom gives the first inequality, and the second follows from $\sup_{\partial B}|F'/F|\le C_1\log m+C_2\le \max\{C_1,C_2\}(\log m+1)$.
+\end{proof}
+
+\section{The explicit tail inequality (post-pivot)}
+\label{sec:tail}
+For $m\ge 10$ we use the growth surrogate
+\[
+L(m):=C_1\log m + C_2,
+\]
+with constants as in Lemma~\ref{lem:residual-envelope}.
+For the local window term we use the explicit majorant from Lemma~\ref{lem:Nloc-logm}:
+\[
+N_{\rm up}(m):=1.01\log m + 17\ \ \text{so that}\ \ N_{\rm loc}(m)\le N_{\rm up}(m)\quad(m\ge 10).
+\]
+
+For a parameter $\eta\in(0,1)$ and a dial displacement $\alpha\in(0,1]$ define the \emph{nominal} scale
+\[
+\delta_0:=\delta_0(m,\alpha):=\frac{\eta\alpha}{(\log m)^2}.
+\]
+Fix a collar parameter $\kappa\in(0,1/10)$ as in Definition~\ref{def:collar-admissible}.
+For each $(m,\alpha)$ we choose any scale $0<\delta\le\delta_0$ such that the aligned boxes
+$B=B(\pm\alpha,m,\delta)$ are $\kappa$--admissible; existence is guaranteed by Lemma~\ref{lem:collar-existence}.
+By Lemma~\ref{lem:delta-shrink-monotone}, shrinking $\delta$ only helps in the tail inequality, so it is safe to
+treat $\delta_0$ as the worst-case scale in one-height reductions.
+
+\begin{theorem}[Tail inequality (audit-grade post-pivot form)]
+\label{thm:tail-inequality}
+Fix $m\ge 10$ and $\eta\in(0,1)$.
+Assume:
+\begin{enumerate}[leftmargin=1.5em]
+\item the forcing lemma producing the positive constant
+\[
+ c_0:=\frac{3\log 2}{8\pi},\qquad c:=\frac{3\log 2}{16},\qquad K_{\rm alloc}:=3+8\sqrt3;
+\]
+\item the residual envelope bound (Lemma~\ref{lem:residual-envelope}) providing $C_1,C_2$;
+\item the audit-grade horizontal budget bound (Lemma~\ref{lem:horizontal-budget}), giving a constant
+$C_h''$ independent of $(\alpha,m,\delta)$;
+\item the explicit local window bound (Lemma~\ref{lem:Nloc-logm}) providing the majorant $N_{\rm up}(m)=1.01\log m+17$.
+\end{enumerate}
+Then for every $\alpha\in(0,1]$ and every $\kappa$--admissible aligned box $B=B(\pm\alpha,m,\delta)$,
+absence of off--axis quartets at height $m$ follows from the strict inequality
+\begin{equation}
+\label{eq:tail-ineq}
+2C_{\mathrm{up}}\Bigl(\delta^{3/2}L(m)\; +\; \delta^{1/2}\,\frac{N_{\rm up}(m)}{\kappa}\Bigr)
+\ <\
+ c\ -\ \delta\Bigl(K_{\rm alloc}\,c_0\,L(m)+C_h''\,(\log m+1)\Bigr).
+\end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch / bookkeeping]
+The forcing side is unchanged from v31. The only post-pivot modification is on the upper-envelope
+side: Lemma~\ref{lem:upper-envelope} bounds dial deviation in terms of $\sup_{\partial B}|E'/E|$.
+Applying the log-derivative split (Lemma~\ref{lem:logder-split}), the residual envelope for
+$\sup_{\partial B}|F'/F|\le L(m)$ (Lemma~\ref{lem:residual-envelope}), and the collar bound
+$\sup_{\partial B}|Z_{\rm loc}'/Z_{\rm loc}|\le N_{\rm loc}(m)/(\kappa\delta)$
+(Lemma~\ref{lem:Zloc-logder-collar}) yields
+\[
+\sup_{\partial B}\Big|\frac{E'}{E}\Big|\le L(m)+\frac{N_{\rm loc}(m)}{\kappa\delta}
+\le L(m)+\frac{N_{\rm up}(m)}{\kappa\delta}.
+\]
+Plugging this into Lemma~\ref{lem:upper-envelope} gives the left-hand side of
+\eqref{eq:tail-ineq}.
+The right-hand side is the forcing lower bound, with the horizontal non-forcing term bounded by
+Lemma~\ref{lem:horizontal-budget}.
+\end{proof}
+
+\begin{lemma}[Monotonicity under $\delta$--shrinking]
+\label{lem:delta-shrink-monotone}
+Fix $m\ge 10$, $\alpha\in(0,1]$, and constants $C_{\rm up},\kappa,c,c_0,K_{\rm alloc},C_h'',C_1,C_2$.
+Let $L(m)=C_1\log m + C_2$ and $N_{\rm up}(m)=1.01\log m +17$.
+For $\delta\in(0,1]$ define
+\[
+\mathrm{LHS}(\delta):=
+2C_{\mathrm{up}}\Bigl(\delta^{3/2}L(m)\; +\; \delta^{1/2}\,\frac{N_{\rm up}(m)}{\kappa}\Bigr),
+\qquad
+\mathrm{RHS}(\delta):=
+c\ -\ \delta\Bigl(K_{\rm alloc}\,c_0\,L(m)+C_h''\,(\log m+1)\Bigr).
+\]
+Then $\mathrm{LHS}(\delta)$ is (weakly) increasing in $\delta$ and $\mathrm{RHS}(\delta)$ is (weakly) decreasing.
+Consequently, if $\mathrm{LHS}(\delta_0)<\mathrm{RHS}(\delta_0)$ for some $\delta_0\in(0,1]$, then
+$\mathrm{LHS}(\delta)<\mathrm{RHS}(\delta)$ holds for every $\delta\in(0,\delta_0]$.
+\end{lemma}
+
+\begin{proof}
+For $\delta>0$, both $\delta^{3/2}$ and $\delta^{1/2}$ are increasing functions, hence so is $\mathrm{LHS}(\delta)$.
+The bracketed factor in $\mathrm{RHS}(\delta)$ is nonnegative and independent of $\delta$, so $\mathrm{RHS}(\delta)$ decreases linearly in $\delta$.
+\end{proof}
+
+
+
+\begin{lemma}[Worst case in $\alpha$ is $\alpha=1$ at the nominal scale]
+\label{lem:worst-alpha}
+Fix $m\ge 10$ and $\eta\in(0,1)$. Define the nominal scale $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$.
+Consider the tail inequality \eqref{eq:tail-ineq} evaluated at $\delta=\delta_0(m,\alpha)$.
+Then the left-hand side is (weakly) \emph{increasing} in $\alpha\in(0,1]$, while the right-hand side is (weakly)
+\emph{decreasing}.
+Therefore it suffices to verify \eqref{eq:tail-ineq} at $\alpha=1$ and $\delta=\delta_0(m,1)$.
+If one later shrinks $\delta\le\delta_0(m,\alpha)$ to enforce $\kappa$--admissibility, the inequality only becomes easier
+(Lemma~\ref{lem:delta-shrink-monotone}).
+\end{lemma}
+
+\begin{proof}
+With $\delta=\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$, both $\delta^{3/2}$ and $\delta^{1/2}$ are increasing functions of $\alpha$,
+so the left-hand side increases.
+The right-hand side equals $c-\delta\cdot\Xi(m)$ for a nonnegative factor $\Xi(m)$ independent of $\alpha$, hence it decreases.
+\end{proof}
+
+
+\begin{lemma}[Monotonicity in $m$ (including the local term)]
+\label{lem:monotone-m}
+Fix $\alpha\in(0,1]$ and $\eta\in(0,1)$ and write $x:=\log m$.
+Evaluate the tail inequality \eqref{eq:tail-ineq} at the nominal scale $\delta=\delta_0(m,\alpha)=\eta\alpha/x^2$.
+Using the bounds $L(m)=C_1x+C_2$ and $N_{\rm up}(m)=1.01x+17$, the left-hand side of \eqref{eq:tail-ineq} is (weakly)
+\emph{decreasing} in $m\ge 10$, and the right-hand side is (weakly) \emph{increasing}.
+Therefore it suffices to verify \eqref{eq:tail-ineq} at the minimal $m_\star=10$ (and nominal scale $\delta_0(10,\alpha)$).
+If one later shrinks $\delta\le\delta_0$ to enforce $\kappa$--admissibility, the inequality only becomes easier
+(Lemma~\ref{lem:delta-shrink-monotone}).
+\end{lemma}
+
+\begin{proof}
+Write $\delta=\eta\alpha/x^2$.
+The left-hand side is bounded by
+\[
+2C_{\rm up}\Bigl(\eta^{3/2}\alpha^{3/2}\,\frac{C_1x+C_2}{x^3}
++\frac{\sqrt{\eta\alpha}}{\kappa}\,\frac{1.01x+17}{x}\Bigr)
+=
+2C_{\rm up}\Bigl(\eta^{3/2}\alpha^{3/2}\,\frac{C_1x+C_2}{x^3}
++\frac{\sqrt{\eta\alpha}}{\kappa}\,(1.01+\frac{17}{x})\Bigr),
+\]
+and both $\frac{C_1x+C_2}{x^3}$ and $1.01+17/x$ decrease for $x>0$.
+Hence the left-hand side decreases as $m$ increases.
+
+For the right-hand side, the subtracted term has the form $\delta\cdot\Psi(x)$ with
+\[
+\Psi(x)=K_{\rm alloc}c_0\,(C_1x+C_2)+C_h''(x+1),
+\qquad
+\delta=\eta\alpha/x^2.
+\]
+Since both $(C_1x+C_2)/x^2$ and $(x+1)/x^2$ decrease for $x>0$, the product $\delta\,\Psi(x)$ decreases,
+and therefore the right-hand side increases in $m$.
+\end{proof}
+
+
+\begin{theorem}[Tail closure from a one-height check]
+\label{thm:tail-closure}
+Fix $\eta\in(0,1)$ and evaluate \eqref{eq:tail-ineq} at the nominal scale $\delta=\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$.
+If \eqref{eq:tail-ineq} holds at $(m,\alpha)=(10,1)$ (with $\delta=\delta_0(10,1)$ and the same constants), then it holds for
+all $m\ge 10$ and all $\alpha\in(0,1]$ at the corresponding nominal scales.
+Consequently, for every $\kappa$--admissible choice $0<\delta\le\delta_0(m,\alpha)$ the inequality also holds
+(Lemma~\ref{lem:delta-shrink-monotone}), so no off--axis quartets exist at any height $m\ge 10$.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:worst-alpha} it suffices to check $\alpha=1$ at the nominal scale.
+By Lemma~\ref{lem:monotone-m} the inequality becomes easier as $m$ increases.
+Therefore checking $(m,\alpha)=(10,1)$ implies all $m\ge 10$ and all $\alpha\in(0,1]$ at the corresponding nominal scales.
+Finally, shrinking $\delta\le\delta_0$ to enforce $\kappa$--admissibility only helps (Lemma~\ref{lem:delta-shrink-monotone}).
+The quartet exclusion is exactly the forcing-vs-envelope contradiction.
+\end{proof}
+
+
+\section{$\eta$--absorption at the low anchor}
+\label{sec:eta-absorption}
+
+The post-pivot tail inequality at $(m,\alpha)=(10,1)$ reads
+\[
+A\,\eta^{3/2}+B\,\eta^{1/2} < c - D\,\eta,
+\]
+with the explicit coefficients
+\[
+A:=\frac{2C_{\rm up}L(10)}{(\log 10)^3},\qquad
+B:=\frac{2C_{\rm up}N_{\rm up}(10)}{\kappa\,\log 10},\qquad
+D:=\frac{K_{\rm alloc}c_0L(10)+C_h''(\log 10+1)}{(\log 10)^2}.
+\]
+Since $A,B,D<\infty$ (by the lemmas cited above), the right-hand side is positive for all
+sufficiently small $\eta>0$, and the inequality is forced by choosing $\eta$ small enough.
+
+\begin{proposition}[$\eta$--absorption (explicit sufficient condition)]
+\label{prop:eta-absorption}
+Let $A,B,D$ be as above. Define
+\[
+\eta_\star:=\min\Bigl\{1,\ \Big(\frac{c}{4A}\Big)^{2/3},\ \Big(\frac{c}{4B}\Big)^2,\ \frac{c}{4D}\Bigr\}.
+\]
+Then for every $\eta\in(0,\eta_\star]$ the tail inequality \eqref{eq:tail-ineq} holds at
+$(m,\alpha)=(10,1)$, hence (by Theorem~\ref{thm:tail-closure}) at all $m\ge 10$ and all
+$\alpha\in(0,1]$.
+\end{proposition}
+
+\begin{proof}
+The definition of $\eta_\star$ ensures three inequalities simultaneously:
+\[
+A\eta^{3/2}\le c/4,\qquad B\eta^{1/2}\le c/4,\qquad D\eta\le c/4.
+\]
+Thus the left-hand side $A\eta^{3/2}+B\eta^{1/2}\le c/2$ and the right-hand side
+$c-D\eta\ge 3c/4$, yielding a strict inequality.
+\end{proof}
+
+\section{Global RH from a small front-end + an $\eta$--absorbed tail}
+\label{sec:global}
+
+\begin{theorem}[Global closure (post-pivot logical form)]
+\label{thm:global}
+Assume:
+\begin{enumerate}[leftmargin=1.5em]
+\item (Front-end) All nontrivial zeros with $0<\ImPart(s)\le 5$ lie on the critical line.
+\item (Analytic inputs) Lemmas~\ref{lem:upper-envelope}--\ref{lem:Nloc-logm} and
+Lemma~\ref{lem:horizontal-budget} hold with finite constants.
+\end{enumerate}
+Then there exists $\eta_\star>0$ (as in Proposition~\ref{prop:eta-absorption}) such that for every
+choice $\eta\in(0,\eta_\star]$ the tail program excludes off--axis zeros for all
+$\ImPart(s)\ge 5$.
+Consequently, all nontrivial zeros lie on the critical line.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:eta-absorption} and Theorem~\ref{thm:tail-closure} exclude off--axis quartets
+at all heights $m\ge 10$.
+By the front-end hypothesis there are no off-axis zeros below height $5$.
+Therefore there are no off-axis zeros at any height.
+\end{proof}
+
+\begin{remark}[Computations in v33]
+The post-pivot logical closure uses $\eta$--absorption and does not require numerical values for the
+constants, only finiteness and $\delta$--uniformity.
+Appendix~\ref{app:certificate} nevertheless provides a small interval-arithmetic tail check for one
+concrete choice of parameters as a sanity check, and Appendix~\ref{app:frontend} records a pinned
+literature front-end discharge.
+\end{remark}
+
+\appendix
+
+\section{Tail certificate bundle and reproducibility (v33)}
+\label{app:certificate}
+
+\subsection{What the tail certificates prove (and what they do not)}
+\label{app:what-proves}
+
+Each tail certificate proves the statement:
+\begin{quote}
+Given a constants file that provides interval enclosures for
+$(C_1,C_2,C_{\mathrm{up}},C_h'',\kappa)$ and the chosen parameters $(m,\eta,\alpha)$
+(with $N_{\rm up}(m)=1.01\log m+17$ hard-coded from Lemma~\ref{lem:Nloc-logm}),
+the generated interval bounds satisfy $\mathrm{LHS}<\mathrm{RHS}$ with strict separation in the
+sense $\mathrm{LHS}_{\mathrm{hi}}<\mathrm{RHS}_{\mathrm{lo}}$.
+\end{quote}
+
+
+It does \emph{not} certify that the constants file is correct.
+
+\subsection{SHA--256 table (exact artifacts)}
+\label{app:sha}
+
+The file \texttt{v33\_repro\_pack/SHA256SUMS.txt} is the canonical hash list.
+
+\lstinputlisting{v33_repro_pack/SHA256SUMS.txt}
+
+\subsection{Commands}
+\label{app:commands}
+
+From the directory \texttt{v33\_repro\_pack/}:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{sha256sum -c SHA256SUMS.txt}
+\item \texttt{python3 v33\_verify\_tail\_certificate.py --constants v33\_constants\_m10.json --certificate v33\_tail\_certificate\_m10.json}
+\item \texttt{python3 v33\_verify\_frontend\_certificate.py --certificate v33\_frontend\_certificate.json}
+\end{enumerate}
+
+\subsection{Expected verifier output: $m=10$ (verbatim)}
+\label{app:verifier-output-10}
+\lstinputlisting{v33_repro_pack/v33_verifier_output_m10.txt}
+
+\subsection{Bundle files (verbatim)}
+\label{app:bundle-files}
+
+\paragraph{v33 low-anchor constants (intervals, demo only).}
+\lstinputlisting{v33_repro_pack/v33_constants_m10.json}
+
+\paragraph{v33 low-anchor tail certificate ($m=10$).}
+\lstinputlisting{v33_repro_pack/v33_tail_certificate_m10.json}
+
+\paragraph{Generator implementation (directed rounding).}
+\lstinputlisting{v33_repro_pack/v33_generate_tail_certificate.py}
+
+\paragraph{Verifier implementation.}
+\lstinputlisting{v33_repro_pack/v33_verify_tail_certificate.py}
+
+\section{Finite-height front-end certificate (literature-based)}
+\label{app:frontend}
+
+The required front-end is RH up to height $H_0=5$.
+We record a discharge using Platt--Trudgian's published verification of RH up to
+$3\cdot 10^{12}$.
+
+\paragraph{Pinned front-end certificate JSON.}
+\lstinputlisting{v33_repro_pack/v33_frontend_certificate.json}
+
+\paragraph{Front-end verifier output (internal logic only).}
+\lstinputlisting{v33_repro_pack/v33_frontend_verifier_output.txt}
+
+\paragraph{Generator/verifier scripts.}
+\lstinputlisting{v33_repro_pack/v33_generate_frontend_certificate.py}
+\lstinputlisting{v33_repro_pack/v33_verify_frontend_certificate.py}
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{thebibliography}{99}
+
+\bibitem{CMM82}
+R.~Coifman, A.~McIntosh, and Y.~Meyer,
+\emph{L'int\'egrale de Cauchy d\'efinit un op\'erateur born\'e sur $L^2$ pour les courbes lipschitziennes},
+Annals of Mathematics (2) \textbf{116} (1982), no.~2, 361--387.
+
+\bibitem{DriscollTrefethenSC}
+T.~A. Driscoll and L.~N. Trefethen,
+\emph{Schwarz--Christoffel Mapping},
+Cambridge Monographs on Applied and Computational Mathematics, Cambridge University Press, 2002.
+
+\bibitem{DurenHp}
+P.~L. Duren,
+\emph{Theory of $H^p$ Spaces},
+Academic Press, 1970.
+
+\bibitem{GarnettBaf}
+J.~B. Garnett,
+\emph{Bounded Analytic Functions},
+Graduate Texts in Mathematics, Springer, 2007.
+
+\bibitem{Ivic}
+A.~Ivi\'c,
+\emph{The Riemann Zeta-Function: Theory and Applications},
+Wiley-Interscience, 1985.
+
+\bibitem{Titchmarsh}
+E.~C. Titchmarsh,
+\emph{The Theory of the Riemann Zeta-Function}, 2nd ed., revised by D.~R. Heath-Brown,
+Oxford University Press, 1986.
+
+\bibitem{BellottiWongZeta2024}
+A.~Bellotti and T.~Wong,
+\emph{An improved explicit bound on the argument of the Riemann zeta function on the critical line},
+arXiv:2412.15470v2 (2024).
+
+\bibitem{PlattTrudgian2021}
+D.~Platt and T.~Trudgian,
+\emph{The Riemann hypothesis is true up to $3\cdot 10^{12}$},
+Bulletin of the London Mathematical Society \textbf{53} (2021), no.~3, 792--797.
+\end{thebibliography}
+
+
+\end{document}
