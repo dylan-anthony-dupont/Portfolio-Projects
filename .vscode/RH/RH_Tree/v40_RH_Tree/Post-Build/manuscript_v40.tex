@@ -1,0 +1,2415 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\geometry{margin=1in}
+
+% --- Listings (Python/JSON) ---
+\lstdefinestyle{auditcode}{
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  breaklines=true,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true
+}
+\lstset{style=auditcode}
+
+% --- Theorem environments ---
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Notation helpers ---
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\RePart}{\operatorname{Re}}
+\newcommand{\ImPart}{\operatorname{Im}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\dist}{\operatorname{dist}}
+
+\title{A Width--2 Boundary Program for Excluding Off--Axis Quartets\\
+with a Certified Tail Criterion and a Finite--Height Front--End (v40)}
+\author{Dylan Anthony Dupont}
+\date{v40 compiled: 2026-01-28}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document is a truth--latching \emph{architecture} build (v40) of the width--2 boundary program.
+It retains the v36 NO--GO guardrails (exponent budget, UE scaling NO--GO for pointwise/sup endpoints, and constant--limited forcing)
+and it installs an S5$'$ toolkit for \emph{phase/winding} endpoints (Section~\ref{sec:S5-frontier}):
+a collar--safe phase increment calculus, a residual phase budget, and a buffered boundary phase endpoint
+$\widetilde D_B(W)$ with a direct $\pi/2$ forcing lemma via the argument principle
+(Definition~\ref{def:Db-tilde-phase}, Lemma~\ref{lem:phase-forcing-argprinciple}).
+\smallskip
+\noindent In v40 the centered defect endpoint route (S5$^{\rm def}$) is archived (Appendix~\ref{app:discarded}) and the single active open frontier is the ML-\(\Delta a\) endpoint redesign: the two-sided shift-difference phase endpoint \(\Phi^{(2\mathrm{s})}_B(a;\delta)\) (Definitions~\ref{def:two-sided-shift-diff}--\ref{def:two-sided-endpoint}, Box~\ref{box:missing-lever-v40}).
+
+
+\smallskip
+\noindent\textbf{Header note (no drift):} v40 makes \emph{no} claim of uniform tail closure and \emph{no} claim of the Riemann Hypothesis.
+The remaining analytic frontier is explicit and single: invent a budget--eligible endpoint mechanism that is simultaneously
+(i) forceable and (ii) $\delta$--shrinkable under the nominal scale (OPEN box in Section~\ref{sec:S5-frontier}).
+
+\smallskip
+For global hygiene, v35 corrected completion/holomorphy; v40 retains this convention: the working function is the entire width--2 completion
+$\Xi_2(u):=\xi(u/2)$, recentered as $E(v):=\Xi_2(1+v)$, so all uses of ``$E$ is entire'' are literally true.
+\end{abstract}
+
+
+\tableofcontents
+
+\section*{Executive Proof Status}
+\label{sec:status}
+
+\textbf{Status (v40):} v40 is an \emph{architecture} build: it preserves the decisive v36 NO--GO constraints, archives the centered defect endpoint route (Appendix~\ref{app:discarded}), and installs the ML-\(\Delta a\) two-sided shift-difference endpoint family (Definitions~\ref{def:two-sided-shift-diff}--\ref{def:two-sided-endpoint}, Box~\ref{box:missing-lever-v40}) as the single active analytic frontier.
+The main unconditional output remains the \emph{tail criterion family} (Theorem~\ref{thm:tail-inequality}) together with a finite--height front--end (Definition~\ref{def:frontend}).
+No claim of uniform tail closure is made in this version.
+
+\medskip
+\noindent\textbf{Proof--grade NO--GO constraints (now explicit):}
+\begin{enumerate}[leftmargin=1.5em]
+\item \emph{Exponent budget obstruction.} Under the nominal scaling $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$,
+a local/collar blow--up exponent $\theta$ and UE exponent $p$ must satisfy $p-\theta\ge \tfrac12$ for uniform
+$\eta$--shrinking closure (Theorem~\ref{thm:exponent-budget} and Theorem~\ref{thm:S5-budget}).
+In the present pointwise collar bound one has $\theta=1$.
+\item \emph{UE scaling obstruction (pointwise/sup).} With the pointwise/sup endpoint $\sup_{\partial B}|E'/E|$ and shape--only constants,
+one cannot achieve any UE exponent $p>1$ (Lemma~\ref{lem:UE-scaling-nogo}). The proved pointwise bound has $p=1$.
+\item \emph{Forceability gate + constant-limited forcing.} The current single--box forcing architecture forces only the dial deviation $D_B(W)$
+and the available forcing margin is $O(1)$ (Lemma~\ref{lem:force-constant-limited}). Any S5 endpoint redesign is invalid unless it
+dominates $D_B(W)$ or supplies a new forcing lemma (Remark~\ref{rem:s5-forceability-gate}).
+\item \emph{Boundary modulus has no converse.} The condition $|W|=1$ on $\partial B$ does not exclude interior zeros; Bridge~1 is strictly one--directional
+(Remark~\ref{rem:no-converse}).
+\item \emph{Absolute $L^r(\partial B)$ log-derivative endpoints are dead.} In any absolute $L^r$ endpoint class,
+the best possible UE exponent collapses to $p(r)=1-1/r$ (Lemma~\ref{lem:S5_Lp_collapse}), while the collar/local split has the same exponent
+$\theta(r)=1-1/r$ (Proposition~\ref{prop:S5_Lp_nogo}), so $p(r)-\theta(r)=0$ and the local term is $\delta$--inert.
+\item \emph{Projection endpoints are dead under current forcing.} Endpoints that annihilate the local kernel span cannot control the forced dial deviation
+$D_B(W)$ without a new forcing link (Lemma~\ref{lem:S5-projection-nogo}).
+\end{enumerate}
+
+\medskip
+\noindent\textbf{Immediate consequence:} the v33/v32 style $\eta$--absorption closure route based on the pointwise/sup upper envelope and the collar is \emph{formally discarded} in v35 and remains discarded in v36 (Appendix~\ref{app:discarded}). Any future closure must change the envelope endpoint and/or the local interface.
+
+\medskip
+\noindent\textbf{Completion / holomorphy hygiene (fixed):} the working function is the entire width--2 completion $\Xi_2(u):=\xi(u/2)$ and $E(v):=\Xi_2(1+v)$ (Section~\ref{sec:width2}). All uses of ``$E$ is entire'' are now literally correct.
+
+\medskip
+\noindent\textbf{Open proof--grade blockers (v40):}
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Missing Lever (ML-\(\Delta a\); primary frontier).} Prove the ML-\(\Delta a\) forcing/UE/resonance package for the two-sided shift-difference endpoint \(\Phi^{(2\mathrm{s})}_B(a;\delta)\) at the nominal scale \(\delta=\eta a/(\log m)^2\) (Box~\ref{box:missing-lever-v40}).  In particular, the resulting UE bound must pass the exponent-budget gate (Theorem~\ref{thm:exponent-budget}) and be robust under near-resonant quartets.  (This replaces the older S5$^{\rm def}$/transfer frontier.)
+\item \emph{Residual envelope ledger.} Lemma~\ref{lem:residual-envelope} still imports a standard RH--free bound for $\zeta'/\zeta$ with local--zero subtraction; this must be proved in--text or cited in a referee--acceptable way with explicit constants. (G--1/G--12.)
+\item \emph{Front--end dependence.} The finite--height hypothesis remains an external input (Appendix~\ref{app:frontend}). (G--11.)
+\end{enumerate}
+
+\medskip
+\noindent\textbf{Reproducibility posture (v40):} numerical artifacts remain an \emph{audit harness} only (Appendix~\ref{app:certificate}).
+The v40 repro pack is hardened to record endpoint metadata (functional class + exponent budget parameters + forceability mode). Missing fields render a certificate invalid (Appendix~\ref{app:certificate}), so future redesigns cannot silently mismatch the forcing chain.
+
+
+\part{Reader's Guide / Definitions and Reduction}
+\label{part:guide}
+
+\section{Width--2 normalization}
+\label{sec:width2}
+
+Let $s$ denote the usual complex variable for $\zeta(s)$. We pass to the width--$2$ coordinate
+\[
+u:=2s,\qquad \zeta_2(u):=\zeta(u/2).
+\]
+Define the width--$2$ completed zeta
+\[
+\Lambda_2(u):=\pi^{-u/4}\Gamma(u/4)\zeta(u/2).
+\]
+Then $\Lambda_2$ is \emph{meromorphic} (simple poles at $u=0$ and $u=2$) and satisfies the functional equation
+\[
+\Lambda_2(u)=\Lambda_2(2-u).
+\]
+Define the entire completion
+\[
+\Xi_2(u):=\xi(u/2)=\frac{u(u-2)}{8}\,\Lambda_2(u),
+\]
+so that $\Xi_2$ is entire and obeys $\Xi_2(u)=\Xi_2(2-u)$.
+
+We recenter at $u=1$:
+\[
+v:=u-1,\qquad E(v):=\Xi_2(1+v).
+\]
+Then $E$ is entire and satisfies the evenness relation
+\[
+E(v)=E(-v),
+\]
+and complex conjugation gives $E(\overline v)=\overline{E(v)}$.
+
+\begin{remark}[Zeros]
+The zeros of $\Xi_2(u)=\xi(u/2)$ are exactly the \emph{nontrivial} zeros of $\zeta(s)$ under the map $u=2s$, with multiplicity.
+All boxes used in the tail program lie at heights $m\ge 10$, so the only zeros that can occur in the relevant local windows are nontrivial zeros.
+\end{remark}
+
+\section{Heights and horizontal displacement (RH--free)}
+\label{sec:heights}
+
+Let $\rho=\beta+i\gamma$ be any nontrivial zero of $\zeta(s)$ (no assumption on $\beta$). In width--2
+we write
+\begin{equation}
+  u_\rho := 2\rho = (1+a)+im,\qquad a:=2\beta-1\in(-1,1),\qquad m:=2\gamma>0.
+\end{equation}
+Thus RH is equivalent to $a=0$ for every nontrivial zero.
+
+\section{Quartet symmetry in width--2}
+\label{sec:quartets}
+
+The functional equation and conjugation imply that any off--axis zero with parameters $(a,m)$
+produces a quartet
+\begin{equation}
+  \{\,1\pm a\pm im\,\} \subset \{u\in\C: \Xi_2(u)=0\}.
+\end{equation}
+In the centered $v$--coordinate this becomes $\{\pm a\pm im\}\subset\{v\in\C:E(v)=0\}$.
+
+\section{Finite-height front-end after lowering the tail anchor}
+\label{sec:frontend}
+
+Once the tail anchor is lowered to $m_\star$, the analytic tail argument covers all $m\ge m_\star$.
+The remaining region corresponds to classical heights
+\begin{equation}
+  0 < \ImPart(s) < H_0 := m_\star/2.
+\end{equation}
+In v31 we take $m_\star=10$, hence $H_0=5$.
+
+\begin{definition}[Front-end statement]
+\label{def:frontend}
+We say that \emph{RH holds up to height $H_0$} if every nontrivial zero $\rho=\beta+i\gamma$ with
+$0<\gamma\le H_0$ satisfies $\beta=1/2$.
+\end{definition}
+
+\begin{remark}[How v31 discharges the front-end]
+The required statement for v31 is RH up to height $H_0=5$.
+This is a tiny special case of published rigorous verifications of RH to enormous heights.
+For example, Platt--Trudgian prove RH for all zeros with $0<\gamma\le 3\cdot 10^{12}$ using interval
+arithmetic, which immediately implies RH up to $H_0=5$.
+Appendix~\ref{app:frontend} records this discharge in a pinned JSON file.
+\end{remark}
+
+\part{Self-Contained Boundary Program and Tail Closure}
+\label{part:core}
+
+\section{Aligned boxes and the $\delta(m)$ scale}
+\label{sec:boxes}
+
+Let $m>0$ and $\alpha\in(0,1]$. Fix a parameter $\eta\in(0,1)$ and define the \emph{nominal} box scale
+\begin{equation}
+  \delta_0=\delta_0(m,\alpha):=\frac{\eta\alpha}{(\log m)^2}.
+\end{equation}
+We will work with aligned boxes $B(\alpha,m,\delta)$ at scales $0<\delta\le \delta_0$.
+By default one may take $\delta=\delta_0$, but later (Definition~\ref{def:collar-admissible}) we allow
+shrinking $\delta$ to enforce $\kappa$--admissibility; this is non-circular and monotone-safe
+(Lemmas~\ref{lem:collar-existence} and \ref{lem:delta-shrink-monotone}).
+
+Define the (width--2) box centered at $\alpha+im$ by
+\begin{equation}
+  B(\alpha,m,\delta) := \{\,v\in\C: \abs{\RePart v-\alpha}\le \delta,\ \abs{\ImPart v-m}\le \delta\,\}.
+\end{equation}
+We will also use the symmetric dial centers $v_\pm:=\pm\alpha+im$.
+
+\section{Local factor and finiteness}
+\label{sec:local-factor}
+
+For a fixed $m>0$, let
+\begin{equation}\label{eq:Z-window}
+  Z(m):=\{\,\rho: E(\rho)=0,\ \abs{\ImPart \rho-m}\le 1\,\}
+\end{equation}
+(zeros counted with multiplicity). Define the local zero factor and residual:
+\begin{equation}\label{eq:zloc-def}
+  Z_{\mathrm{loc}}(v):=\prod_{\rho\in Z(m)} (v-\rho)^{m_\rho}.
+\end{equation}
+\begin{equation}\label{eq:F-def}
+  F(v):=\frac{E(v)}{Z_{\mathrm{loc}}(v)}.
+\end{equation}
+
+\begin{lemma}[Finiteness of $Z_{\mathrm{loc}}$]
+\label{lem:zloc-finite}
+For each fixed $m>0$ the set $Z(m)$ is finite; hence $Z_{\mathrm{loc}}$ is a finite product and $F$ is
+meromorphic globally and analytic in any neighborhood of $\partial B(\alpha,m,\delta)$ that contains
+no zeros of $E$.
+\end{lemma}
+
+\begin{proof}
+Nontrivial zeros of $\zeta$ satisfy $0<\beta<1$, hence in the $v$--coordinate one has
+$\RePart v\in(-1,1)$ for all nontrivial zeros.
+Therefore the set
+\(\{\abs{\ImPart v-m}\le 1\}\cap\{\abs{\RePart v}\le 1\}\)
+is compact.
+Since $E$ is entire and its zeros are discrete, only finitely many zeros can lie in this compact set.
+\end{proof}
+
+\section{Residual envelope bound and the constants ledger}
+\label{sec:ledger}
+\begin{remark}[Constant gate for the residual term (what is and is not assumed)]
+\label{rem:residual-constant-gate}
+The tail criterion uses a bound of the form
+\[
+\sup_{v\in\partial B(\alpha,m,\delta)}\Bigl|\frac{F'(v)}{F(v)}\Bigr|
+\ \le\ C_1\log m + C_2,
+\]
+with constants that must be (i) unconditional (not RH-equivalent) and (ii) uniform in
+$(\alpha,\delta,\eta,\kappa)$ once $m\ge 10$ and $0<\alpha\le 1$.
+The proof below reduces this to standard RH-free bounds for $\zeta'/\zeta$ in the critical strip with
+local-zero subtraction, plus a Stirling-type bound for $\Gamma'/\Gamma$.
+\end{remark}
+
+\begin{lemma}[Residual envelope inequality (\texorpdfstring{$\delta$}{delta}-uniform)]
+\label{lem:residual-envelope}
+Fix $m\ge 10$ and $\alpha\in(0,1]$.
+Let $\eta\in(0,1]$ and set the nominal width $\delta_0:=\eta\alpha/(\log m)^2$.
+Let $\delta\in(0,\delta_0]$ and set $B:=B(\alpha,m,\delta)$.
+
+Define $E$, $Z_{\rm loc}$ and $F:=E/Z_{\rm loc}$ as in \S\ref{sec:local-factor}
+(equations \eqref{eq:zloc-def}--\eqref{eq:F-def}).
+Assume \emph{boundary-contact} on $\partial B$ (i.e.\ $E\neq 0$ on $\partial B$; hence $F$ is holomorphic on a
+neighborhood of $\partial B$).
+Then there exist absolute constants $C_1,C_2>0$ (independent of $m,\alpha,\delta,\eta,\kappa$ and of the zero configuration) such that
+\[
+\sup_{v\in\partial B}\Bigl|\frac{F'(v)}{F(v)}\Bigr|
+\ \le\ C_1\log m + C_2.
+\]
+\end{lemma}
+
+\begin{proof}[Proof sketch with explicit dependency control]
+Write $u:=1+v$ and $s:=u/2=(1+v)/2=\sigma+it$.
+For $v\in\partial B(\alpha,m,\delta)$ we have $\RePart(s)\in[0,1]$ and
+\[
+\ImPart(s)=\frac{\ImPart(v)}{2}\in\Bigl[\frac m2-\frac\delta2,\frac m2+\frac\delta2\Bigr].
+\]
+Since $m\ge 10$ and $\delta\le \delta_0\le 1/(\log 10)^2<1/5$, we have $\ImPart(s)\asymp m$ uniformly in $\delta$.
+
+\smallskip
+\noindent\textbf{1) Log-derivative identity in the $s$-frame.}
+From $\Xi_2(u)=\frac{u(u-2)}{8}\Lambda_2(u)$ and $\Lambda_2(u)=\pi^{-u/4}\Gamma(u/4)\zeta(u/2)$ we obtain,
+for $u=1+v$,
+\[
+\frac{E'(v)}{E(v)}
+=\frac{\Xi_2'(u)}{\Xi_2(u)}
+=\Bigl(\frac{1}{u}+\frac{1}{u-2}\Bigr)\ -\ \frac14\log\pi\ +\ \frac14\frac{\Gamma'}{\Gamma}\Bigl(\frac{u}{4}\Bigr)
+\ +\ \frac12\,\frac{\zeta'}{\zeta}(s),
+\qquad (u=1+v,\ s=u/2).
+\]
+Since $u=1+v$ has $\ImPart(u)=m\ge 10$, the completion terms $(1/u+1/(u-2))$ are $O(1/m)$ on $\partial B$ and are absorbed into the absolute constants in the bound.
+
+Moreover, since $v=2s-1$, the local factor derivative satisfies
+\[
+\frac{Z_{\rm loc}'(v)}{Z_{\rm loc}(v)}=\sum_{\rho\in Z(m)}\frac{m_\rho}{v-\rho}
+=\frac12\sum_{\rho_s\in Z_s(m)}\frac{m_{\rho_s}}{s-\rho_s},
+\]
+where $Z_s(m)$ denotes the corresponding multiset of nontrivial zeros $\rho_s=\beta+i\gamma$ of $\zeta(s)$
+with $|\gamma-\tfrac m2|\le \tfrac12$.
+
+Therefore
+\[
+\frac{F'(v)}{F(v)}
+=\frac{E'(v)}{E(v)}-\frac{Z_{\rm loc}'(v)}{Z_{\rm loc}(v)}
+= -\frac14\log\pi + \frac14\frac{\Gamma'}{\Gamma}\Bigl(\frac{1+v}{4}\Bigr)
++\frac12\Biggl(\frac{\zeta'}{\zeta}(s) - \sum_{\rho_s\in Z_s(m)}\frac{m_{\rho_s}}{s-\rho_s}\Biggr).
+\]
+
+\smallskip
+\noindent\textbf{2) RH-free residual bound for $\zeta'/\zeta$ with local-zero subtraction.}
+A standard ``local-zero decomposition'' (unconditional) asserts that there exist absolute constants
+$A_\zeta,B_\zeta$ such that for $0\le\sigma\le 1$ and $t\ge 5$,
+\[
+\Bigl|\frac{\zeta'}{\zeta}(\sigma+it) - \sum_{|\gamma-t|\le 1}\frac{1}{(\sigma+it)-\rho}\Bigr|
+\ \le\ A_\zeta\log(t+2) + B_\zeta.
+\tag{$\star$}
+\]
+(For a self-contained route, ($\star$) can be derived from the Hadamard product for $\xi(s)$ plus a
+Riemann--von Mangoldt bound for $N(T)$; otherwise cite a standard reference.)
+
+For $v\in\partial B$ we have $|t-\tfrac m2|\le \delta/2<1/10$, hence every zero in $Z_s(m)$
+satisfies $|\gamma-t|\le 1$ and is included in the sum in ($\star$).
+Thus
+\[
+\frac{\zeta'}{\zeta}(s)-\sum_{\rho_s\in Z_s(m)}\frac{1}{s-\rho_s}
+=
+\Bigl(\frac{\zeta'}{\zeta}(s)-\sum_{|\gamma-t|\le 1}\frac{1}{s-\rho}\Bigr)
++\sum_{\substack{|\gamma-t|\le 1\\|\gamma-\tfrac m2|>1/2}}\frac{1}{s-\rho}.
+\]
+In the remaining sum we have $|\gamma-t|\ge 1/2-|t-\tfrac m2|\ge 2/5$, hence $|s-\rho|\ge 2/5$ and each term has modulus $\le 5/2$.
+The number of zeros with $|\gamma-t|\le 1$ is bounded by the manuscript's explicit local window majorant
+(Lemma~\ref{lem:Nloc-logm}) at height $\asymp m$, so this difference-of-windows sum is $\ll \log m$.
+
+Combining these bounds yields absolute constants $A_{\rm res},B_{\rm res}$ such that
+\[
+\Bigl|\frac{\zeta'}{\zeta}(s)-\sum_{\rho_s\in Z_s(m)}\frac{1}{s-\rho_s}\Bigr|
+\ \le\ A_{\rm res}\log m + B_{\rm res},
+\]
+uniformly for all $v\in\partial B$ and all $\delta\in(0,\delta_0]$.
+
+\smallskip
+\noindent\textbf{3) Gamma factor bound (Stirling, uniform in $\delta$).}
+For $z=(1+v)/4$ we have $\RePart(z)\in[1/4,3/4]$ and $|\ImPart(z)|\asymp m$.
+A uniform Stirling-type bound gives
+\[
+\Bigl|\frac{\Gamma'}{\Gamma}(z)\Bigr| \le \log(|\ImPart(z)|+2) + C_\Gamma
+\ \le\ \log(m+2)+C_\Gamma,
+\]
+with an absolute constant $C_\Gamma$.
+
+\smallskip
+\noindent\textbf{4) Conclusion.}
+Insert the bounds from (2)--(3) into the identity in (1), and absorb harmless constants into $(C_1,C_2)$.
+All constants are independent of $(\alpha,\delta,\eta,\kappa)$ because:
+(i) $\sigma$ ranges over a fixed compact interval $[0,1]$,
+(ii) $t\asymp m$ with $m\ge 10$ uniformly for $\delta\le\delta_0$, and
+(iii) the difference-of-windows sum is controlled by Lemma~\ref{lem:Nloc-logm}, which is unconditional.
+\end{proof}
+
+\begin{remark}[Hard gate / certificates (v40)]
+The tail harness in Appendix~\ref{app:certificate} uses explicit numerical interval enclosures for the
+constant ledger (e.g.\ $C_1,C_2,C_{\rm up},C_h'',\kappa$) stored in
+\texttt{v36\_repro\_pack/v36\_constants\_m10.json}.
+It evaluates the tail inequality for a pinned parameter choice and records the UE exponent $p$ explicitly.
+This is an \emph{audit harness} only: it does not certify that the constants file is correct, and it does not,
+by itself, yield a uniform tail closure.
+An unconditional proof therefore still requires a referee-acceptable certification of the analytic constant ledger,
+and a resolution of the UE--Gate (Remark~\ref{rem:UE-gate}).
+\end{remark}
+
+\section{Short-side forcing}
+\label{sec:forcing}
+
+Assume an off-axis pair at height $m$ with displacement $a>0$ exists. On an aligned box with
+$\alpha=a$, the two upper zeros in the centered $v$--plane are at $v=\pm a+im$. The pair factor
+\begin{equation}
+  Z_{\mathrm{pair}}(v):=(v-(a+im))(v-(-a+im))
+\end{equation}
+produces a large phase rotation on the near vertical side.
+
+\begin{lemma}[Short-side forcing lower bound]
+\label{lem:short-side-forcing}
+Let $I_+:=\{\alpha+iy: \abs{y-m}\le\delta\}$ with $\abs{\alpha-a}\le\delta$. Then
+\begin{equation}
+  \Delta_{I_+}\arg Z_{\mathrm{pair}}
+  = 2\arctan\!\left(\frac{\delta}{\abs{\alpha-a}}\right)
+    +2\arctan\!\left(\frac{\delta}{\alpha+a}\right)
+  \ge \frac{\pi}{2}.
+\end{equation}
+\end{lemma}
+
+
+\begin{lemma}[Single-box forcing is constant-limited]
+\label{lem:force-constant-limited}
+In the forcing setup of Lemma~\ref{lem:short-side-forcing}, the total phase variation of the pair factor along $I_+$ satisfies
+\[
+\Delta_{I_+}\arg Z_{\mathrm{pair}}\le 2\pi,
+\]
+uniformly in the height $m$.
+Consequently the forcing constant $c$ appearing in the tail inequality (Theorem~\ref{thm:tail-inequality}) is an absolute constant,
+independent of $m$; in particular the forcing side cannot grow like $\log m$ (or any unbounded function of $m$) as $m\to\infty$.
+\end{lemma}
+
+\begin{proof}
+On $I_+=\{\alpha+iy:\ |y-m|\le\delta\}$ one has
+\[
+Z_{\mathrm{pair}}(\alpha+iy)=\bigl((\alpha-a)+i(y-m)\bigr)\bigl((\alpha+a)+i(y-m)\bigr).
+\]
+Along $y\in[m-\delta,m+\delta]$ the argument of each linear factor varies by at most $\pi$ (it is an $\arctan$ function whose range lies in an interval of length $\le\pi$),
+so the argument of the product varies by at most $2\pi$, uniformly in $m$.
+The forcing chain converts a fixed positive portion of $\Delta_{I_+}\arg Z_{\rm pair}$ into the constant $c$ with fixed conversion scalars,
+so $c$ is necessarily $O(1)$.
+\end{proof}
+
+\section{Outer factorization and the inner quotient (Bridge 1)}
+\label{sec:bridge1}
+
+We work on a fixed box $B=B(\alpha,m,\delta)$ and write $B^\circ$ for its interior.
+Assume boundary-contact: $E\neq 0$ on $\partial B$ (this will be enforced later by $\kappa$--admissibility; see Definition~\ref{def:collar-admissible} and Lemma~\ref{lem:collar-existence}).
+
+\begin{lemma}[Dirichlet outer factor on a box]
+\label{lem:outer_dirichlet_box}
+Let $B=B(\alpha,m,\delta)$ be the closed rectangle and $B^\circ$ its interior.
+Assume $E$ is holomorphic on a neighborhood of $\overline{B}$ and $E\neq 0$ on $\partial B$.
+Then $\log|E|\in C(\partial B)$.
+Let $U\in C(\overline{B})\cap \mathrm{Harm}(B^\circ)$ be the unique solution of the Dirichlet problem
+with boundary data $U|_{\partial B}=\log|E|$.
+Since $B^\circ$ is simply connected, there exists a harmonic conjugate $V$ on $B^\circ$
+(unique up to an additive constant) such that $U+iV$ is holomorphic on $B^\circ$.
+Define
+\[
+G_{\mathrm{out}}(v):=\exp(U(v)+iV(v)),\qquad v\in B^\circ.
+\]
+Then $G_{\mathrm{out}}$ is holomorphic and zero-free on $B^\circ$, satisfies $|G_{\mathrm{out}}(v)|=e^{U(v)}$ for $v\in B^\circ$, and
+\[
+\lim_{z\to\xi,\ z\in B^\circ}|G_{\mathrm{out}}(z)| = |E(\xi)|\qquad(\xi\in\partial B).
+\]
+\end{lemma}
+
+\begin{proof}
+Continuity of $\log|E|$ on $\partial B$ follows from $E\neq 0$ on $\partial B$.
+Existence and uniqueness of $U$ on a rectangle are standard.
+Since $B^\circ$ is simply connected, $U$ admits a harmonic conjugate $V$ on $B^\circ$, unique up to an additive constant.
+The function $U+iV$ is holomorphic, hence so is $G_{\mathrm{out}}=\exp(U+iV)$, and it is zero-free.
+Finally $|G_{\mathrm{out}}|=e^U$ on $B^\circ$, and by continuity of $U$ on $\overline{B}$ we have
+$e^{U(\xi)}=|E(\xi)|$ on $\partial B$, yielding the boundary modulus identity in interior-limit form.
+\end{proof}
+
+Define on $B^\circ$ the inner quotient
+\[
+W(v):=\frac{E(v)}{G_{\mathrm{out}}(v)}.
+\]
+Then $W$ is holomorphic on $B^\circ$ and $|W|=1$ on $\partial B$ in the sense of interior limits in modulus.
+
+\begin{proposition}[Bridge 1: zero-free inner collapse]
+\label{prop:bridge1}
+Assume the setup of Lemma~\ref{lem:outer_dirichlet_box} and define $W=E/G_{\mathrm{out}}$ on $B^\circ$.
+If $W$ is zero-free on $B^\circ$ (equivalently, $E$ is zero-free on $B^\circ$), then $W$ is constant on $B^\circ$; in fact
+$W\equiv e^{i\theta_B}$ for some $\theta_B\in\R$.
+\end{proposition}
+
+\begin{proof}
+Since $W$ is zero-free on $B^\circ$ and $G_{\mathrm{out}}$ is zero-free, the function $E$ is zero-free on $B^\circ$.
+Because $B^\circ$ is simply connected, $E$ admits a holomorphic logarithm on $B^\circ$, so $\log|E|$ is harmonic on $B^\circ$.
+By construction $U$ is harmonic on $B^\circ$, continuous on $\overline{B}$, and equals $\log|E|$ on $\partial B$.
+Thus $U-\log|E|$ is harmonic on $B^\circ$ with zero boundary values, so by Dirichlet uniqueness $U\equiv \log|E|$ on $B^\circ$.
+Therefore for $v\in B^\circ$,
+\[
+|W(v)|=\frac{|E(v)|}{|G_{\mathrm{out}}(v)|}=\frac{|E(v)|}{e^{U(v)}}=\frac{|E(v)|}{e^{\log|E(v)|}}=1.
+\]
+An analytic function of constant modulus on a connected open set is constant, hence $W\equiv e^{i\theta_B}$.
+\end{proof}
+
+\begin{remark}[Boundary modulus convention]
+\label{rem:boundary_modulus}
+Under boundary-contact, $U$ extends continuously to $\partial B$ and satisfies $U|_{\partial B}=\log|E|$.
+Hence $|G_{\mathrm{out}}|=|E|$ holds pointwise on $\partial B$ as interior limits in modulus, and therefore
+$|W|=1$ holds pointwise in modulus on $\partial B$.
+In boundary integral estimates this may be used in the a.e.\ sense without change.
+\end{remark}
+
+
+\begin{remark}[No converse: boundary modulus does not exclude interior zeros]
+\label{rem:no-converse}
+Lemma~\ref{lem:outer_dirichlet_box} implies that under boundary-contact the quotient $W:=E/G_{\mathrm{out}}$ satisfies
+$|W|=1$ on $\partial B$ (in the interior boundary-limit sense of Remark~\ref{rem:boundary_modulus}).
+This condition alone does \emph{not} imply that $W$ is zero-free or constant on $B^\circ$:
+nonconstant holomorphic functions on $B^\circ$ can have $|W|=1$ on $\partial B$ and still possess prescribed interior zeros
+(e.g.\ via conformal transport of finite Blaschke products from the unit disc).
+Thus Proposition~\ref{prop:bridge1} is strictly one-directional: the additional hypothesis ``$W$ is zero-free on $B^\circ$'' is essential.
+\end{remark}
+
+\section{Shape-only invariance and the envelope constants}
+\label{sec:shape-only}
+
+Let $T(v):=(v-(\alpha+im))/\delta$, mapping $\partial B$ affinely onto the fixed square boundary
+$\partial Q$ with $Q=[-1,1]^2$.
+
+\begin{lemma}[Shape-only invariance]
+\label{lem:shape-only}
+Any constant arising solely from geometric or boundary-operator estimates on $\partial B$ that are
+invariant under affine rescaling depends only on $\partial Q$ and is independent of $(\alpha,m,\delta)$.
+\end{lemma}
+
+\begin{proof}
+Under $T$, arclength scales by $\delta$ and tangential derivatives by $1/\delta$. After normalization,
+all purely geometric quantities and operator norms reduce to fixed quantities on $\partial Q$.
+\end{proof}
+
+\begin{lemma}[Boundary-to-center evaluation in $L^2$ (sharp $\delta^{-1/2}$)]
+\label{lem:eval-L2}
+Let $B=B(\alpha,m,\delta)$ be a box and let $v_0$ be its center.
+Let $u$ be harmonic on $B^\circ$ and assume its boundary trace lies in $L^2(\partial B,ds)$.
+Then, writing $P_B(v_0,\xi)=d\omega^B_{v_0}/ds(\xi)$ for the Poisson kernel of $B$ at $v_0$,
+\[
+\abs{u(v_0)}\le \|P_B(v_0,\cdot)\|_{L^2(\partial B,ds)}\;\|u\|_{L^2(\partial B,ds)}.
+\]
+Under the similarity $T(\xi)=(\xi-v_0)/\delta$ mapping $\partial B$ onto $\partial Q$,
+\[
+\|P_B(v_0,\cdot)\|_{L^2(\partial B,ds)}=\delta^{-1/2}\,\|P_Q(0,\cdot)\|_{L^2(\partial Q,ds)}.
+\]
+In particular the exponent $\delta^{-1/2}$ is sharp (witnessed by the constant harmonic function $u\equiv 1$).
+\end{lemma}
+
+\begin{proof}
+For harmonic $u$ on $B^\circ$ with $L^2$ trace on $\partial B$, the Poisson representation gives
+\[
+u(v_0)=\int_{\partial B}u(\xi)\,d\omega^B_{v_0}(\xi)
+=\int_{\partial B}u(\xi)\,P_B(v_0,\xi)\,ds(\xi).
+\]
+Cauchy--Schwarz yields $\abs{u(v_0)}\le \|P_B(v_0,\cdot)\|_{L^2}\|u\|_{L^2}$.
+
+For the scaling: under $T$, arclength scales by $ds=\delta\,ds_Q$ and Poisson kernels scale by
+$P_B(v_0,\xi)=\delta^{-1}P_Q(0,T(\xi))$. Hence
+\[
+\int_{\partial B}P_B(v_0,\xi)^2\,ds(\xi)
+=\int_{\partial Q}\delta^{-2}P_Q(0,\zeta)^2\,\delta\,ds_Q(\zeta)
+=\delta^{-1}\int_{\partial Q}P_Q(0,\zeta)^2\,ds_Q(\zeta),
+\]
+giving $\|P_B(v_0,\cdot)\|_{L^2}=\delta^{-1/2}\|P_Q(0,\cdot)\|_{L^2}$.
+
+Sharpness: for $u\equiv 1$ we have $\abs{u(v_0)}=1$ and $\|u\|_{L^2(\partial B)}=\sqrt{|\partial B|}\asymp \delta^{1/2}$,
+so the inequality forces $\|P_B(v_0,\cdot)\|_{L^2}\gtrsim \delta^{-1/2}$.
+\end{proof}
+
+\begin{lemma}[Upper envelope bound (outer-aligned form)]
+\label{lem:upper-envelope}
+Let $B=B(\pm a,m,\delta)$ be an aligned box and let $G_{\rm out}$ be the outer factor on $B$
+constructed from $\log|E|$ on $\partial B$ (Section~\ref{sec:bridge1}). Define the inner quotient
+\[
+W(v):=\frac{E(v)}{G_{\rm out}(v)}.
+\]
+Assume the boundary-contact convention: $E$ has no zeros on $\partial B$ (hence $W$ has unimodular
+boundary values a.e.). For each sign $\pm$ let $v_\pm:=\pm a+im$ and let $e^{i\varphi_0^\pm}\in\mathbb T$
+be an $L^2(\partial B,ds)$-best constant phase,
+\[
+e^{i\varphi_0^\pm}\in\arg\min_{|c|=1}\int_{\partial B}|W(v)-c|^2\,ds(v).
+\]
+Then there exists a \emph{shape-only} constant $C_{\rm up}>0$ (depending only on the normalized square
+$Q=[-1,1]^2$) such that
+\begin{equation}
+\label{eq:UE-EoverE}
+\sum_{\pm}\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\ \le\ 2\,C_{\rm up}\,\delta\,\sup_{v\in\partial B}\Bigl|\frac{E'(v)}{E(v)}\Bigr|.
+\end{equation}
+One admissible explicit definition is
+\[
+C_{\rm up}
+:=\Big(\sup_{\xi\in\partial Q}P_Q(0,\xi)\Big)^{1/2}\cdot \frac{4}{\pi}\cdot \sqrt{8}\cdot\bigl(1+\|H_{\partial Q}\|_{L^2\to L^2}\bigr),
+\]
+where $P_Q(0,\xi)=d\omega^Q_0/ds(\xi)$ is the Poisson kernel of $Q$ at the center $0$ with respect to
+arclength on $\partial Q$, and $H_{\partial Q}$ is the boundary conjugation (Hilbert/Cauchy) operator
+on $\partial Q$.
+\end{lemma}
+
+\begin{remark}[No residual proxying in the upper envelope]
+\label{rem:no-proxying}
+Lemma~\ref{lem:upper-envelope} controls the inner quotient $W=E/G_{\rm out}$ and therefore depends on
+$\sup_{\partial B}|E'/E|$.
+Residual bounds for $F=E/Z_{\rm loc}$ control $\sup_{\partial B}|F'/F|$ and do \emph{not} by themselves
+bound $\sup_{\partial B}|E'/E|$.
+Whenever the residual envelope is used to control dial deviation, it must be routed through the
+log-derivative split $E'/E=F'/F+Z'_{\rm loc}/Z_{\rm loc}$ (Lemma~\ref{lem:logder-split}) together with
+the collar bound (Lemma~\ref{lem:Zloc-logder-collar}), yielding Corollary~\ref{cor:UE-residual-local}.
+\end{remark}
+
+\begin{proof}
+Fix one sign and write $v_0=v_\pm$ and $B=B(\pm a,m,\delta)$.
+We record the (RH-free) chain and indicate the scale factors explicitly.
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Evaluation from the boundary (harmonic measure; produces $\delta^{-1/2}$).}
+For any constant $c\in\mathbb T$, subharmonicity of $|W-c|^2$ implies
+\[
+|W(v_0)-c|^2\le \int_{\partial B}|W(\xi)-c|^2\,d\omega_{v_0}^B(\xi)
+=\int_{\partial B}|W(\xi)-c|^2\,P_B(v_0,\xi)\,ds(\xi),
+\]
+so
+\[
+|W(v_0)-c|\le \|P_B(v_0,\cdot)\|_{L^\infty(\partial B)}^{1/2}\,\|W-c\|_{L^2(\partial B,ds)}.
+\]
+Under the similarity $T(\xi)=(\xi-v_0)/\delta$ mapping $\partial B$ onto $\partial Q$,
+Poisson kernels scale by
+$\|P_B(v_0,\cdot)\|_\infty^{1/2}=\delta^{-1/2}\,\|P_Q(0,\cdot)\|_\infty^{1/2}$.
+\item \textbf{Poincar\'e/Wirtinger on $\partial B$ (produces $\delta$).}
+For the $L^2$-best constant $c=e^{i\varphi_0^\pm}$ and $|\partial B|=8\delta$,
+periodic Poincar\'e on a loop of length $8\delta$ gives
+\[
+\|W-c\|_{L^2(\partial B)}\le \frac{|\partial B|}{2\pi}\,\|\partial_s W\|_{L^2(\partial B)}
+=\frac{4\delta}{\pi}\,\|\partial_s W\|_{L^2(\partial B)}.
+\]
+\item \textbf{Outer factor control (no $\delta$; uses bounded boundary conjugation).}
+Write $\log G_{\rm out}=U+i\widetilde U$ with $U|_{\partial B}=\log|E|$ and $\widetilde U=H_{\partial B}U$.
+Differentiating tangentially,
+$\partial_s\log G_{\rm out}=\partial_s U+i\,H_{\partial B}(\partial_s U)$.
+Since $\log W=\log E-\log G_{\rm out}$,
+\[
+\|\partial_s\log W\|_{L^2(\partial B)}
+\le \bigl(1+\|H_{\partial B}\|_{L^2\to L^2}\bigr)\,\|\partial_s\log E\|_{L^2(\partial B)}
+\le \bigl(1+\|H_{\partial B}\|_{L^2\to L^2}\bigr)\,\Big\|\frac{E'}{E}\Big\|_{L^2(\partial B)}.
+\]
+On $\partial B$ we have $|W|=1$ a.e., hence $|\partial_s W|=|\partial_s\log W|$.
+\item \textbf{$L^2$ to $\sup$ (produces $\delta^{1/2}$).}
+Using $|\partial B|=8\delta$,
+\[
+\Big\|\frac{E'}{E}\Big\|_{L^2(\partial B)}\le \sqrt{|\partial B|}\,\sup_{\partial B}\Big|\frac{E'}{E}\Big|
+=\sqrt{8\delta}\,\sup_{\partial B}\Big|\frac{E'}{E}\Big|.
+\]
+\end{enumerate}
+Combining the four steps yields
+\[
+|W(v_0)-e^{i\varphi_0^\pm}|
+\le \|P_Q(0,\cdot)\|_\infty^{1/2}\cdot \frac{4}{\pi}\cdot \sqrt{8}\cdot\bigl(1+\|H_{\partial Q}\|_{L^2\to L^2}\bigr)
+\cdot \delta\sup_{\partial B}\Big|\frac{E'}{E}\Big|,
+\]
+where we used the similarity invariance $\|H_{\partial B}\|_{L^2\to L^2}=\|H_{\partial Q}\|_{L^2\to L^2}$.
+Summing over $\pm$ gives \eqref{eq:UE-EoverE}.
+\end{proof}
+
+
+\subsection{Local factor split and collar control}
+\label{subsec:local-split}
+
+\begin{definition}[Collar-admissible aligned boxes]
+\label{def:collar-admissible}
+Fix once and for all a collar parameter $\kappa\in(0,1/10)$.
+An aligned box $B=B(\alpha,m,\delta)$ is called \emph{$\kappa$--admissible} if
+\[
+\dist\bigl(\partial B,\,\mathcal Z(E)\bigr)\ge \kappa\delta.
+\]
+Given any nominal scale $\delta_0>0$ and any center, there exists some $0<\delta\le \delta_0$ for which
+$\kappa$--admissibility holds (Lemma~\ref{lem:collar-existence}).
+Whenever a chosen box is not $\kappa$--admissible, we shrink $\delta$ until $\kappa$--admissibility holds.
+Moreover the assembled tail inequality is monotone-safe under such $\delta$--shrinking
+(Lemma~\ref{lem:delta-shrink-monotone}).
+\end{definition}
+
+\begin{lemma}[Existence of a $\kappa$--admissible shrink]
+\label{lem:collar-existence}
+Fix $\kappa\in(0,1/10)$ and a center $v_0\in\C$.
+For every $\delta_0>0$ there exists $\delta'\in(0,\delta_0]$ such that the closed box
+\[
+B(v_0,\delta'):=\{\,v\in\C:\ \|v-v_0\|_\infty\le \delta'\,\}
+\]
+satisfies
+\[
+\dist\bigl(\partial B(v_0,\delta'),\,\mathcal Z(E)\bigr)\ge \kappa\delta'.
+\]
+In particular, given $(\alpha,m)$ and nominal $\delta_0=\eta\alpha/(\log m)^2$, one may always choose a scale
+$0<\delta\le\delta_0$ for which $B(\alpha,m,\delta)$ is $\kappa$--admissible.
+\end{lemma}
+
+\begin{proof}
+Zeros of the entire function $E$ are isolated.
+Choose $\varepsilon>0$ such that $\mathcal Z(E)\cap \{\,0<\|v-v_0\|_\infty\le \varepsilon\,\}$ is empty
+(if $E(v_0)=0$) or such that $\mathcal Z(E)\cap \{\,\|v-v_0\|_\infty\le \varepsilon\,\}$ is empty
+(if $E(v_0)\neq 0$).
+Set $\delta':=\min\{\delta_0,\varepsilon/(1+\kappa)\}$.
+Then every boundary point satisfies $\|v-v_0\|_\infty=\delta'$.
+Any zero $\rho\in\mathcal Z(E)$ is either $\rho=v_0$ (in which case $\dist(v,\rho)=\delta'\ge \kappa\delta'$)
+or satisfies $\|\rho-v_0\|_\infty\ge \varepsilon$ (in which case $\dist(v,\rho)\ge \varepsilon-\delta'\ge \kappa\delta'$).
+Therefore $\dist(\partial B(v_0,\delta'),\mathcal Z(E))\ge \kappa\delta'$.
+\end{proof}
+
+
+
+\begin{lemma}[Log-derivative decomposition]
+\label{lem:logder-split}
+With $Z_{\rm loc}$ and $F$ as in \eqref{eq:zloc-def} and \eqref{eq:F-def}, one has on any region where
+$E$ and $Z_{\rm loc}$ are holomorphic and nonvanishing (in particular on $\partial B$ under the boundary-contact convention)
+\[
+\frac{E'}{E}=\frac{F'}{F}+\frac{Z_{\rm loc}'}{Z_{\rm loc}}.
+\]
+\end{lemma}
+
+\begin{lemma}[Buffered local factor bound on $\partial B$]
+\label{lem:Zloc-logder-collar}
+Let $B=B(\alpha,m,\delta)$ be $\kappa$--admissible in the sense of Definition~\ref{def:collar-admissible}.
+Then
+\[
+\sup_{v\in\partial B}\left|\frac{Z_{\rm loc}'(v)}{Z_{\rm loc}(v)}\right|
+\le \frac{N_{\rm loc}(m)}{\kappa\,\delta},
+\]
+where $N_{\rm loc}(m)$ counts zeros of $E$ in the local window used to define $Z_{\rm loc}$, with multiplicity.
+\end{lemma}
+
+
+\begin{lemma}[Local log-derivative bound in $L^2(\partial B)$]
+\label{lem:Zloc-L2-collar}
+Let $B=B(\alpha,m,\delta)$ be $\kappa$--admissible (Definition~\ref{def:collar-admissible}), and let
+$Z_{\rm loc}$ be the local factor with local zero-count $N_{\rm loc}(m)$ as in Section~\ref{sec:local-factor}.
+Then
+\[
+\left\|\frac{Z'_{\rm loc}}{Z_{\rm loc}}\right\|_{L^2(\partial B)}
+\le \frac{\sqrt{8}\,N_{\rm loc}(m)}{\kappa\,\delta^{1/2}}.
+\]
+More generally, for any $1\le r\le\infty$,
+\[
+\left\|\frac{Z'_{\rm loc}}{Z_{\rm loc}}\right\|_{L^r(\partial B)}
+\le \frac{8^{1/r}N_{\rm loc}(m)}{\kappa\,\delta^{1-1/r}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Lemma~\ref{lem:Zloc-logder-collar} gives $\|Z'_{\rm loc}/Z_{\rm loc}\|_{L^\infty(\partial B)}\le N_{\rm loc}(m)/(\kappa\delta)$.
+Since $|\partial B|=8\delta$, we have $\|f\|_{L^r(\partial B)}\le |\partial B|^{1/r}\|f\|_{L^\infty(\partial B)}$ for every $1\le r\le\infty$,
+which yields the stated bounds.
+\end{proof}
+
+
+
+\begin{lemma}[Explicit local window zero count]
+\label{lem:Nloc-logm}
+Let $N(T)$ denote the number of nontrivial zeros $\rho=\beta+i\gamma$ of $\zeta(s)$ with $0<\gamma\le T$,
+counted with multiplicity.
+Then for every $T\ge 5$,
+\begin{equation}
+\label{eq:two-unit-window}
+N(T+1)-N(T-1)\le 1.01\log T + 17.
+\end{equation}
+Consequently, for every $m\ge 10$,
+\begin{equation}
+\label{eq:Nloc-explicit}
+N_{\rm loc}(m)\le 1.01\log m + 17.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By \cite[Theorem~1.1]{BellottiWongZeta2024}, for every $x\ge e$,
+\[
+\Bigl|\,N(x)-\frac{x}{2\pi}\log\!\Bigl(\frac{x}{2\pi e}\Bigr)\Bigr|
+\le 0.10076\log x + 0.24460\log\log x + 8.08344.
+\]
+Let $M(x):=\frac{x}{2\pi}\log(\frac{x}{2\pi e})$, so $M'(x)=\frac{1}{2\pi}\log(\frac{x}{2\pi})$.
+For $T\ge 5$ we have $\log(T\pm 1)\le \log(2T)$ and $\log\log x\le \log x$ for $x\ge e$, hence
+\[
+N(T+1)-N(T-1)
+\le (M(T+1)-M(T-1)) + 2(0.10076+0.24460)\log(2T) + 2\cdot 8.08344.
+\]
+Moreover
+\[
+M(T+1)-M(T-1)=\int_{T-1}^{T+1}M'(x)\,dx
+\le \int_{T-1}^{T+1}\frac{1}{2\pi}\log x\,dx
+\le \frac{1}{\pi}\log(2T).
+\]
+Combining these bounds gives $N(T+1)-N(T-1)\le 1.00903\log T + 16.8663 \le 1.01\log T + 17$,
+establishing \eqref{eq:two-unit-window}.
+Finally, in width--2 one has $m=2T$.
+The local window $|\ImPart\rho-m|\le 1$ corresponds to $|\gamma-T|\le 1/2$ in the $s$--plane, so
+$N_{\rm loc}(m)=N(T+\tfrac12)-N(T-\tfrac12)\le N(T+1)-N(T-1)$, yielding \eqref{eq:Nloc-explicit}.
+\end{proof}
+
+
+
+\begin{corollary}[Outer-aligned upper envelope in residual+local form]
+\label{cor:UE-residual-local}
+Let $B$ be $\kappa$--admissible.
+Assume the residual envelope bound of Lemma~\ref{lem:residual-envelope}, i.e.
+\(\sup_{\partial B}|F'/F|\le L(m):=C_1\log m+C_2\).
+Then
+\[
+\sum_{\pm}|W(v_\pm)-e^{i\varphi_0^\pm}|
+\le 2C_{\rm up}\left(\delta L(m) + \frac{N_{\rm loc}(m)}{\kappa}\right)
+\le 2C_{\rm up}\left(\delta L(m) + \frac{1.01\log m + 17}{\kappa}\right).
+\]
+\end{corollary}
+
+\begin{remark}[UE gate = exponent budget at the local interface]
+\label{rem:UE-gate}
+Lemma~\ref{lem:upper-envelope} is the \emph{only} step in the envelope chain that generates a positive power
+of $\delta$ in front of a boundary log-derivative endpoint.
+Abstractly, suppose an upper-envelope mechanism yields, for some $p>0$,
+\[
+\sum_{\pm}\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\le 2C_{\rm up}\,\delta^{p}\,\sup_{\partial B}\Bigl|\frac{E'}{E}\Bigr|,
+\]
+and suppose the collar/local split yields, for some $\theta>0$,
+\[
+\sup_{\partial B}\Bigl|\frac{E'}{E}\Bigr|
+\le L(m)\ +\ \frac{N_{\rm loc}(m)}{\kappa\,\delta^{\theta}}.
+\]
+Then the local contribution in the envelope side scales as $\delta^{p-\theta}N_{\rm loc}(m)/\kappa$.
+Under the nominal choice $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$ and the unconditional majorant
+$N_{\rm loc}(m)\ll\log m$, uniform $\eta$--shrinking tail closure is possible only if
+\[
+p-\theta\ \ge\ \tfrac12
+\]
+(Theorem~\ref{thm:exponent-budget}).
+
+In the \emph{proved} pointwise/sup architecture one has $p=1$ (Lemma~\ref{lem:upper-envelope}) and $\theta=1$ (Lemma~\ref{lem:Zloc-logder-collar}),
+so $p-\theta=0$ and the local term is $\delta$--inert; $\eta$--shrinking cannot suppress it (Lemma~\ref{lem:UE-d1-obstruction}).
+Moreover, within this same endpoint class, a strengthened exponent $p>1$ is impossible with shape--only constants
+(Lemma~\ref{lem:UE-scaling-nogo}).
+Thus the former $\eta$--absorption closure route based on the pointwise/sup UE endpoint is a formal NO--GO and is recorded as discarded
+(Appendix~\ref{app:discarded}).
+\end{remark}
+
+\begin{theorem}[Exponent budget for $\eta$--shrinking under $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$]
+\label{thm:exponent-budget}
+Let $m\ge 10$, $\alpha\in(0,1]$ and $\eta\in(0,1]$, and set the nominal scale
+\[
+\delta_0(m,\alpha):=\frac{\eta\alpha}{(\log m)^2}.
+\]
+Assume that for all $0<\delta\le \delta_0(m,\alpha)$ one has:
+\begin{enumerate}[leftmargin=1.5em]
+\item[(UE$_p$)] (\emph{UE exponent}) for some $p>0$,
+\[
+\mathrm{UE}(\delta)\ \le\ 2C_{\rm up}\,\delta^{p}\,\sup_{\partial B}\Bigl|\frac{E'}{E}\Bigr|;
+\]
+\item[(COL$_\theta$)] (\emph{Collar/local exponent}) for some $\theta>0$,
+\[
+\sup_{\partial B}\Bigl|\frac{E'}{E}\Bigr|
+\ \le\ L(m)\ +\ \frac{N_{\rm loc}(m)}{\kappa\,\delta^{\theta}},
+\]
+with fixed $\kappa\in(0,1/10)$;
+\item[(GROW)] (\emph{Majorants}) $L(m)\le A_L\log m+B_L$ and $N_{\rm loc}(m)\le A_N\log m+B_N$ for all $m\ge 10$;
+\item[(FORCE)] (\emph{Forcing side}) the forcing-vs-envelope tail inequality has a fixed positive forcing constant $c>0$ and only $\delta$--helpful subtractive terms on the RHS.
+\end{enumerate}
+Then at $\delta=\delta_0(m,\alpha)$ one has the explicit bound
+\begin{equation}
+\mathrm{UE}(\delta_0)\ \le\ 
+2C_{\rm up}\Bigl(\delta_0^{p}L(m)\ +\ \delta_0^{p-\theta}\frac{N_{\rm loc}(m)}{\kappa}\Bigr).
+\tag{BUDGET}
+\end{equation}
+Moreover, \emph{uniform tail closure by $\eta$--shrinking} (i.e.\ there exists $\eta_\star>0$ such that for every $\eta\le \eta_\star$ the tail inequality holds for all $m\ge 10$) is possible only if
+\begin{equation}
+p-\theta\ \ge\ \tfrac12.
+\tag{B1}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Insert (COL$_\theta$) into (UE$_p$) at $\delta=\delta_0$ to obtain (BUDGET).
+At $\alpha=1$ one has $\delta_0(m,1)=\eta/(\log m)^2$, so the local term behaves as
+\[
+\delta_0^{p-\theta}N_{\rm loc}(m)\ \ll\ \Bigl(\frac{\eta}{(\log m)^2}\Bigr)^{p-\theta}\log m
+=\eta^{p-\theta}(\log m)^{1-2(p-\theta)}.
+\]
+If $p-\theta<1/2$ then $1-2(p-\theta)>0$, so the local contribution grows without bound as $m\to\infty$,
+while the forcing side tends to the fixed constant $c$ because all RHS corrections are $\delta$--helpful and vanish as $\delta_0\to 0$.
+Hence uniform tail closure is impossible.
+If $p-\theta\ge 1/2$ then the local contribution is uniformly bounded by $O(\eta^{p-\theta})$ and tends to $0$ as $\eta\downarrow 0$,
+enabling uniform absorption once all constants are $\delta$--uniform.
+\end{proof}
+
+
+
+\begin{lemma}[$\eta$--absorption obstruction under the pointwise UE exponent $p=1$]
+\label{lem:UE-d1-obstruction}
+Assume the hypotheses of Corollary~\ref{cor:UE-residual-local}.
+Then for every $\delta\le \delta_0(m,\alpha)=\eta\alpha/(\log m)^2$,
+\[
+\sum_{\pm}\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\le 2C_{\rm up}\Bigl(\delta L(m)+\frac{N_{\rm loc}(m)}{\kappa}\Bigr).
+\]
+In particular, letting $\eta\downarrow 0$ (hence $\delta\downarrow 0$) only suppresses the residual term
+$\delta L(m)$; the local term $N_{\rm loc}(m)/\kappa$ does \emph{not} decay with $\eta$.
+Therefore any absorption-style closure that attempts to force the envelope side small by choosing $\eta$
+must additionally verify a \emph{separate} inequality of the form
+\[
+\frac{2C_{\rm up}}{\kappa}\,N_{\rm loc}(m)\ <\ c
+\]
+at the relevant anchor height(s), where $c$ is the forcing constant in \eqref{eq:tail-ineq}.
+\end{lemma}
+
+\begin{lemma}[UE scaling NO--GO for pointwise/sup endpoints]
+\label{lem:UE-scaling-nogo}
+Assume an upper-envelope bound of the form
+\[
+\sum_{\pm}\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\ \le\ 2C_{\rm up}\,\delta^{p}\,\sup_{\partial B}\Bigl|\frac{E'}{E}\Bigr|
+\qquad (p>0),
+\]
+where the constant $C_{\rm up}$ depends only on the normalized shape (Lemma~\ref{lem:shape-only}) and is independent of $\delta$.
+Then necessarily $p\le 1$.
+In particular, no pointwise/sup envelope mechanism with shape--only constants can yield any exponent $p>1$.
+\end{lemma}
+
+\begin{proof}
+Under the affine rescaling $T(v)=(v-(\alpha+im))/\delta$, the boundary $\partial B$ maps to the fixed square boundary $\partial Q$.
+If $\widetilde E(z):=E(T^{-1}(z))$, then by the chain rule
+\[
+\frac{E'}{E}(T^{-1}(z))=\frac{1}{\delta}\,\frac{\widetilde E'(z)}{\widetilde E(z)}.
+\]
+Hence $\sup_{\partial B}|E'/E|=\delta^{-1}\sup_{\partial Q}|\widetilde E'/\widetilde E|$.
+The left-hand side of the upper-envelope bound is dimensionless (it is a sum of moduli of complex numbers), and under the normalization it may be $O(1)$
+for admissible configurations on the fixed shape.
+Therefore the bound forces
+\[
+O(1)\ \le\ 2C_{\rm up}\,\delta^{p-1}\,\sup_{\partial Q}\Bigl|\frac{\widetilde E'}{\widetilde E}\Bigr|
+\qquad\text{as }\delta\downarrow 0.
+\]
+Since the normalized endpoint $\sup_{\partial Q}|\widetilde E'/\widetilde E|$ is not forced to blow up as $\delta\downarrow 0$ (it depends only on the normalized data),
+the factor $\delta^{p-1}$ cannot tend to $0$. Thus $p-1\le 0$, i.e.\ $p\le 1$.
+\end{proof}
+
+
+
+\begin{proof}
+The displayed bound is exactly Corollary~\ref{cor:UE-residual-local} with the corrected UE exponent $p=1$.
+As $\eta\to 0$ one has $\delta_0\to 0$ and hence $\delta L(m)\to 0$, while $N_{\rm loc}(m)/\kappa$ is unchanged.
+Since the forcing lower bound in the tail inequality tends to $c$ as $\delta\downarrow 0$, the strict inequality
+requires the stated necessary condition at the anchor.
+\end{proof}
+
+
+\subsection{Horizontal non-forcing budget in residual form}
+\label{subsec:horizontal-budget}
+
+\begin{definition}[Horizontal non-forcing phase budget]
+\label{def:Delta-nonforce}
+Let $B=B(\pm a,m,\delta)$ be an aligned box and let $F=E/Z_{\rm loc}$ be the residual factor.
+Assume $F$ is holomorphic and zero-free on a neighborhood of $\partial B$.
+Let $H_\pm$ denote the top and bottom edges of $\partial B$:
+\[
+H_+:=\{x+i(m+\delta):\ x\in[\pm a-\delta,\pm a+\delta]\},\qquad
+H_-:=\{x+i(m-\delta):\ x\in[\pm a-\delta,\pm a+\delta]\}.
+\]
+Define
+\[
+\Delta_{\rm nonforce}(B)
+:=
+\int_{H_+}|\partial_s\arg F|\,ds + \int_{H_-}|\partial_s\arg F|\,ds.
+\]
+\end{definition}
+
+\begin{lemma}[Horizontal budget (residual form; audit-grade)]
+\label{lem:horizontal-budget}
+In the setting of Definition~\ref{def:Delta-nonforce},
+\[
+\Delta_{\rm nonforce}(B)\le 4\delta\,\sup_{v\in\partial B}\left|\frac{F'(v)}{F(v)}\right|.
+\]
+Consequently, if $\sup_{\partial B}|F'/F|\le C_1\log m+C_2$, then
+\[
+\Delta_{\rm nonforce}(B)\le C_h''\,\delta\,(\log m+1),\qquad
+C_h'':=4\max\{C_1,\,C_2\}.
+\]
+\end{lemma}
+
+\begin{proof}
+On either horizontal edge, $|\partial_s\arg F|\le |F'/F|$ pointwise.
+Each edge has length $2\delta$, hence each integral is bounded by $2\delta\sup_{\partial B}|F'/F|$.
+Summing top and bottom gives the first inequality, and the second follows from $\sup_{\partial B}|F'/F|\le C_1\log m+C_2\le \max\{C_1,C_2\}(\log m+1)$.
+\end{proof}
+
+\section{The explicit tail inequality (post-pivot)}
+\label{sec:tail}
+For $m\ge 10$ we use the growth surrogate
+\[
+L(m):=C_1\log m + C_2,
+\]
+with constants as in Lemma~\ref{lem:residual-envelope}.
+For the local window term we use the explicit majorant from Lemma~\ref{lem:Nloc-logm}:
+\[
+N_{\rm up}(m):=1.01\log m + 17\ \ \text{so that}\ \ N_{\rm loc}(m)\le N_{\rm up}(m)\quad(m\ge 10).
+\]
+
+For a parameter $\eta\in(0,1)$ and a dial displacement $\alpha\in(0,1]$ define the \emph{nominal} scale
+\[
+\delta_0:=\delta_0(m,\alpha):=\frac{\eta\alpha}{(\log m)^2}.
+\]
+Fix a collar parameter $\kappa\in(0,1/10)$ as in Definition~\ref{def:collar-admissible}.
+For each $(m,\alpha)$ we choose any scale $0<\delta\le\delta_0$ such that the aligned boxes
+$B=B(\pm\alpha,m,\delta)$ are $\kappa$--admissible; existence is guaranteed by Lemma~\ref{lem:collar-existence}.
+By Lemma~\ref{lem:delta-shrink-monotone}, shrinking $\delta$ only helps in the tail inequality, so it is safe to
+treat $\delta_0$ as the worst-case scale in one-height reductions.
+
+\begin{theorem}[Tail inequality (criterion form; pointwise UE exponent $p=1$)]
+\label{thm:tail-inequality}
+Fix $m\ge 10$ and $\eta\in(0,1)$.
+Assume:
+\begin{enumerate}[leftmargin=1.5em]
+\item the forcing lemma producing the positive constant
+\[
+ c_0:=\frac{3\log 2}{8\pi},\qquad c:=\frac{3\log 2}{16},\qquad K_{\rm alloc}:=3+8\sqrt3;
+\]
+\item the residual envelope bound (Lemma~\ref{lem:residual-envelope}) providing $C_1,C_2$;
+\item the audit-grade horizontal budget bound (Lemma~\ref{lem:horizontal-budget}), giving a constant
+$C_h''$ independent of $(\alpha,m,\delta)$;
+\item the explicit local window bound (Lemma~\ref{lem:Nloc-logm}) providing the majorant $N_{\rm up}(m)=1.01\log m+17$.
+\end{enumerate}
+Then for every $\alpha\in(0,1]$ and every $\kappa$--admissible aligned box $B=B(\pm\alpha,m,\delta)$,
+absence of off--axis quartets at height $m$ follows from the strict inequality
+\begin{equation}
+\label{eq:tail-ineq}
+2C_{\mathrm{up}}\Bigl(\delta L(m)\; +\; \frac{N_{\rm up}(m)}{\kappa}\Bigr)
+\ <\
+ c\ -\ \delta\Bigl(K_{\rm alloc}\,c_0\,L(m)+C_h''\,(\log m+1)\Bigr).
+\end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch / bookkeeping]
+The forcing side is unchanged from v31. The only post-pivot modification is on the upper-envelope
+side: Lemma~\ref{lem:upper-envelope} bounds dial deviation in terms of $\sup_{\partial B}|E'/E|$.
+Applying the log-derivative split (Lemma~\ref{lem:logder-split}), the residual envelope for
+$\sup_{\partial B}|F'/F|\le L(m)$ (Lemma~\ref{lem:residual-envelope}), and the collar bound
+$\sup_{\partial B}|Z_{\rm loc}'/Z_{\rm loc}|\le N_{\rm loc}(m)/(\kappa\delta)$
+(Lemma~\ref{lem:Zloc-logder-collar}) yields
+\[
+\sup_{\partial B}\Big|\frac{E'}{E}\Big|\le L(m)+\frac{N_{\rm loc}(m)}{\kappa\delta}
+\le L(m)+\frac{N_{\rm up}(m)}{\kappa\delta}.
+\]
+Plugging this into Lemma~\ref{lem:upper-envelope} gives the left-hand side of
+\eqref{eq:tail-ineq}.
+The right-hand side is the forcing lower bound, with the horizontal non-forcing term bounded by
+Lemma~\ref{lem:horizontal-budget}.
+\end{proof}
+
+\begin{lemma}[Monotonicity under $\delta$--shrinking]
+\label{lem:delta-shrink-monotone}
+Fix $m\ge 10$, $\alpha\in(0,1]$, and constants $C_{\rm up},\kappa,c,c_0,K_{\rm alloc},C_h'',C_1,C_2$.
+Let $L(m)=C_1\log m + C_2$ and $N_{\rm up}(m)=1.01\log m +17$.
+For $\delta\in(0,1]$ define
+\[
+\mathrm{LHS}(\delta):=
+2C_{\mathrm{up}}\Bigl(\delta L(m)\; +\; \frac{N_{\rm up}(m)}{\kappa}\Bigr),
+\qquad
+\mathrm{RHS}(\delta):=
+c\ -\ \delta\Bigl(K_{\rm alloc}\,c_0\,L(m)+C_h''\,(\log m+1)\Bigr).
+\]
+Then $\mathrm{LHS}(\delta)$ is (weakly) increasing in $\delta$ and $\mathrm{RHS}(\delta)$ is (weakly) decreasing.
+Consequently, if $\mathrm{LHS}(\delta_0)<\mathrm{RHS}(\delta_0)$ for some $\delta_0\in(0,1]$, then
+$\mathrm{LHS}(\delta)<\mathrm{RHS}(\delta)$ holds for every $\delta\in(0,\delta_0]$.
+\end{lemma}
+
+\begin{proof}
+For $\delta>0$, the map $\delta\mapsto \delta L(m)$ is increasing and the term $N_{\rm up}(m)/\kappa$ is independent of $\delta$, hence $\mathrm{LHS}(\delta)$ is (weakly) increasing.
+The bracketed factor in $\mathrm{RHS}(\delta)$ is nonnegative and independent of $\delta$, so $\mathrm{RHS}(\delta)$ decreases linearly in $\delta$.
+\end{proof}
+
+
+
+\begin{lemma}[Worst case in $\alpha$ is $\alpha=1$ at the nominal scale]
+\label{lem:worst-alpha}
+Fix $m\ge 10$ and $\eta\in(0,1)$. Define the nominal scale $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$.
+Consider the tail inequality \eqref{eq:tail-ineq} evaluated at $\delta=\delta_0(m,\alpha)$.
+Then the left-hand side is (weakly) \emph{increasing} in $\alpha\in(0,1]$, while the right-hand side is (weakly)
+\emph{decreasing}.
+Therefore it suffices to verify \eqref{eq:tail-ineq} at $\alpha=1$ and $\delta=\delta_0(m,1)$.
+If one later shrinks $\delta\le\delta_0(m,\alpha)$ to enforce $\kappa$--admissibility, the inequality only becomes easier
+(Lemma~\ref{lem:delta-shrink-monotone}).
+\end{lemma}
+
+\begin{proof}
+With $\delta=\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$, the only $\alpha$-dependence in the left-hand side is through the factor $\delta L(m)$, which is increasing in $\alpha$,
+so the left-hand side increases.
+The right-hand side equals $c-\delta\cdot\Xi(m)$ for a nonnegative factor $\Xi(m)$ independent of $\alpha$, hence it decreases.
+\end{proof}
+
+
+\begin{remark}[No one-height reduction in $m$ under the pointwise UE exponent $p=1$]
+\label{rem:no-one-height}
+In v33, the (claimed) $\delta^{3/2}$ prefactor in Lemma~\ref{lem:upper-envelope} made the local contribution
+scale like $\delta^{1/2}N_{\rm up}(m)$ at the nominal choice $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$,
+leading to an expression essentially independent of $m$ and enabling a one-height reduction.
+After the UE--Gate audit, Lemma~\ref{lem:upper-envelope} provides only the pointwise exponent $p=1$,
+so the tail left-hand side contains the $\delta$--inert term $(2C_{\rm up}/\kappa)\,N_{\rm up}(m)$.
+With the explicit majorant $N_{\rm up}(m)=1.01\log m+17$, this term is \emph{increasing} in $m$.
+Therefore a one-height reduction in $m$ is not available under the current pointwise envelope mechanism:
+the tail criterion must be controlled as a family in $m$, or the UE--Gate must be cleared by a strengthened
+envelope mechanism (Remark~\ref{rem:UE-gate}).
+\end{remark}
+
+\section{S5\(\Delta a\) frontier: two-sided endpoint redesign (open)}
+\label{sec:S5-frontier}
+
+% ============================================================
+% v40: defect endpoint primitives (Q_a, L_a) + local cancellation + ML-\(\Delta a\) redesign
+% ============================================================
+
+\subsection{Defect quotient primitives and cancellation mechanism (v40)}
+\label{subsec:defect-primitives}
+
+\begin{definition}[Defect quotient and defect log-derivative]
+\label{def:defect-quotient}
+Fix $a\in(0,1)$ and let $E$ be the even entire width--2 completion (Section~\ref{sec:width2}).
+Define the \emph{defect quotient} and its logarithmic derivative by
+\[
+\mathcal Q_a(v)\ :=\ \frac{E(v+a)}{E(v-a)},\qquad
+\mathcal L_a(v)\ :=\ \frac{\mathcal Q_a'(v)}{\mathcal Q_a(v)}
+\ =\ \frac{E'}{E}(v+a)-\frac{E'}{E}(v-a),
+\]
+whenever the expressions are defined.  The function $\mathcal L_a$ is holomorphic on any domain
+where $E(v\pm a)\neq 0$.
+\end{definition}
+
+\begin{definition}[Defect phase endpoint on a $\kappa$--admissible box]
+\label{def:defect-endpoint}
+Let $B=B(\alpha,m,\delta)$ be a $\kappa$--admissible aligned box and let $\partial B_{\kappa/2}$
+denote its buffered contour as in Definition~\ref{def:Db-tilde-phase}.
+Define the \emph{defect phase endpoint} by
+\[
+\Phi^{\rm def}_B(a)\ :=\
+\max_{I\in \mathrm{Sides}(\partial B_{\kappa/2})}\ \left|\Im\int_I \mathcal L_a(v)\,dv\right|.
+\]
+(Here $\mathrm{Sides}(\partial B_{\kappa/2})$ denotes the four oriented sides of the rectangle.)
+\end{definition}
+
+\begin{lemma}[Side-length ceiling for the defect phase endpoint]\label{lem:defect-p-ceiling}
+Fix \(a\in(0,1]\) and let \(B=B(\alpha,m,\delta)\) be a \(\kappa\)-admissible aligned box with buffered contour \(\partial B_{\kappa/2}\).
+Assume \(\mathcal L_a\) is holomorphic on an open neighborhood of \(\partial B_{\kappa/2}\).
+Then
+\[
+  \Phi_B^{\rm def}(a)\ \le\ C_{\rm geom}\,\delta\cdot \sup_{v\in\partial B_{\kappa/2}}|\mathcal L_a(v)|,
+\]
+where \(C_{\rm geom}>0\) is an absolute rectangle-shape constant.
+In particular, any estimate of the form \(\Phi_B^{\rm def}(a)\ll \delta^p(\cdots)\) obtained solely from
+\(\delta\)-uniform pointwise bounds on \(\sup_{\partial B_{\kappa/2}}|\mathcal L_a|\) cannot have \(p>1\).
+\end{lemma}
+
+\begin{proof}
+By Definition~\ref{def:defect-endpoint} and the triangle inequality,
+\[
+\left|\Im\int_I \mathcal L_a(v)\,dv\right|
+\le \int_I |\mathcal L_a(v)|\,|dv|
+\le |I|\cdot \sup_{v\in\partial B_{\kappa/2}}|\mathcal L_a(v)|.
+\]
+Each side length satisfies \(|I|\le C_{\rm geom}\,\delta\) for an absolute constant depending only on the rectangle shape (and the fixed buffering policy), hence the claim.
+\end{proof}
+
+\begin{definition}[Two-sided shift-difference defect operator]\label{def:two-sided-shift-diff}
+Let \(E\) be the even entire completion in the \(v\)-plane, and define the defect quotient and defect log-derivative
+\[
+\mathcal Q_a(v):=\frac{E(v+a)}{E(v-a)},\qquad
+\mathcal L_a(v):=\frac{\mathcal Q_a'(v)}{\mathcal Q_a(v)}
+=\frac{E'}{E}(v+a)-\frac{E'}{E}(v-a).
+\]
+For a shift step \(h>0\), define the two-sided shift-difference operator
+\[
+\mathcal D_{a,h}(v):=\mathcal L_{a+h}(v)-\mathcal L_{a-h}(v).
+\]
+Equivalently,
+\[
+\mathcal D_{a,h}(v)=\frac{E'}{E}(v+a+h)-\frac{E'}{E}(v+a-h)-\frac{E'}{E}(v-a+h)+\frac{E'}{E}(v-a-h).
+\]
+\end{definition}
+
+\begin{definition}[Two-sided shift-difference phase endpoint]\label{def:two-sided-endpoint}
+Fix \(\kappa\in(0,1/10)\). For a \(\kappa\)-admissible aligned box \(B=B(\alpha,m,\delta)\) and parameters \((a,h)\), define
+\[
+\Phi^{(2\mathrm{s})}_B(a;h)
+:=\max_{I\in\mathrm{Sides}(\partial B_{\kappa/2})}
+\left|\Im\int_I \mathcal D_{a,h}(v)\,dv\right|.
+\]
+In the nominal coupling used in this program we take \(h=\delta\) and \(\delta=\delta_0(m,a):=\eta a/(\log m)^2\).
+\end{definition}
+
+\begin{lemma}[Local defect cancellation for a forced top pair]
+\label{lem:defect-cancellation}
+Assume $E$ has a nontrivial quartet at height $m$ with displacement $a>0$, so that
+$E(\pm a \pm i m)=0$ (with multiplicity $r\ge 1$ at each of $\pm a+i m$).
+Let $B=B(0,m,\delta)$ with $0<\delta\le a/4$, and assume $B$ is $\kappa$--admissible.
+Then $\mathcal Q_a$ has a removable singularity at $v=i m$, $\mathcal L_a$ is holomorphic on $B_{\kappa/2}$,
+and the pure--pair contribution to $\Phi^{\rm def}_B(a)$ is $O(r\,\delta/a)$.
+More precisely, writing
+\[
+\frac{E'}{E}(v)=\frac{r}{v-(a+i m)}+\frac{r}{v-(-a+i m)}+H(v),
+\]
+with $H$ holomorphic on $B_{\kappa/2}$, one has on $\partial B_{\kappa/2}$:
+\[
+\mathcal L_a(v)= r\Bigl(\frac{1}{v-(2a+i m)}-\frac{1}{v-(-2a+i m)}\Bigr)\ +\ \bigl(H(v+a)-H(v-a)\bigr).
+\]
+Consequently,
+\[
+\max_{v\in \partial B_{\kappa/2}}
+\left|r\Bigl(\frac{1}{v-(2a+i m)}-\frac{1}{v-(-2a+i m)}\Bigr)\right|
+\ \le\ \frac{C\,r}{a},
+\qquad
+\Rightarrow\qquad
+\Phi^{\rm def}_B(a)\ \le\ C\,r\,\frac{\delta}{a}\ +\ \delta\,\|H(\cdot+a)-H(\cdot-a)\|_{L^\infty(\partial B_{\kappa/2})}.
+\]
+\end{lemma}
+
+\begin{proof}
+Factor $E(v)=(v-(a+i m))^r(v-(-a+i m))^r\cdot \widetilde E(v)$ locally near $v=i m$ with $\widetilde E$
+holomorphic and nonzero on $B_{\kappa/2}$ (possible since $B$ is $\kappa$--admissible and $\delta\le a/4$ keeps the other zeros away).
+Then $\mathcal Q_a(v)=E(v+a)/E(v-a)$ has the same power of $(v-i m)^r$ in numerator and denominator, so $v=i m$ is removable and
+$\mathcal L_a$ is holomorphic on $B_{\kappa/2}$.
+
+For the displayed decomposition, write $\frac{E'}{E}(v)=\sum_{\rho\in Z(E)}\frac{m(\rho)}{v-\rho}$ and isolate the
+two terms at $\rho=\pm a+i m$, absorbing all other contributions into a holomorphic $H$ on $B_{\kappa/2}$.
+Shift by $\pm a$ and subtract to obtain the identity for $\mathcal L_a(v)$.
+Finally,
+\[
+\frac{1}{v-(2a+i m)}-\frac{1}{v-(-2a+i m)}
+=\frac{4a}{(v-(2a+i m))(v-(-2a+i m))},
+\]
+and on $\partial B_{\kappa/2}$ we have $|v-(\pm 2a+i m)|\ge a$ when $\delta\le a/4$, giving the $O(r/a)$ bound.
+The endpoint bound follows by integrating along a side of length $O(\delta)$ and taking the maximum over the four sides.
+\end{proof}
+
+\begin{lemma}[Shift stability of the defect endpoint]
+\label{lem:defect-shift-stability}
+Let $C$ be any rectifiable contour such that $E(v\pm a)\neq 0$ for all $v\in C$.
+Then
+\[
+\sup_{v\in C}|\mathcal L_a(v)|
+\le
+\sup_{w\in C+a}\Bigl|\frac{E'(w)}{E(w)}\Bigr|
++\sup_{w\in C-a}\Bigl|\frac{E'(w)}{E(w)}\Bigr|.
+\]
+In particular, any collar bound for $E'/E$ on buffered contours transfers verbatim to $\mathcal L_a$
+on the corresponding shifted buffered contours.
+\end{lemma}
+
+\begin{proof}
+This is immediate from Definition~\ref{def:defect-quotient} and the triangle inequality.
+\end{proof}
+
+\begin{definition}[Horizontal resonance sum (local window)]
+\label{def:resonance-sum}
+For $a\in(0,1]$ and $m\ge 10$, define the \emph{horizontal resonance sum}
+\[
+\mathcal R_a(m)\ :=\ \sum_{\substack{\rho:\ E(\rho)=0\\ |\Im(\rho)-m|\le 1}}
+\frac{1}{|\Re(\rho)-a|+a},
+\]
+where each zero is counted with multiplicity.  This sum is finite and satisfies
+$\mathcal R_a(m)\le \frac{1}{a}\,N_{\rm loc}(m)$.
+\end{definition}
+
+\begin{remark}[Target defect UE bound (OPEN; S5$^{\rm def}$ candidate)]
+\label{rem:defect-UE-target}
+The intended S5$^{\rm def}$ upper envelope is a phase-class bound of the schematic form
+\[
+\Phi^{\rm def}_B(a)\ \le\ C_0\,\delta\,\log m\ +\ C_1\,\delta\,a\,\mathcal R_a(m),
+\qquad
+\text{uniformly for }0<\delta\le \delta_0(m,a)=\eta\,\frac{a}{(\log m)^2}.
+\]
+Proving such an inequality \emph{with $\delta$--uniform constants} is one of the three explicit components
+of the Missing Lever (Box~\ref{box:missing-lever-v40}).
+
+\medskip
+\noindent\emph{Status (v40).} This S5$^{\rm def}$ target is retained as a historical benchmark only; the active frontier is the non-pointwise two-sided endpoint (Box~\ref{box:missing-lever-v40}).
+\end{remark}
+
+\begin{definition}[$\delta$-aware resonance sum]\label{def:resonance-sum-delta}
+For $a\in(0,1]$, $m\ge 10$, and $0<\delta\le 1$, define the \emph{$\delta$-aware resonance sum}
+\[
+\mathcal R_{a,\delta}(m)\ :=\ \sum_{\substack{\rho:\ E(\rho)=0\\ |\Im(\rho)-m|\le 1}}
+\frac{1}{|\Re(\rho)-a|+\delta},
+\]
+where each zero is counted with multiplicity.  This sum is finite and satisfies
+\(
+\mathcal R_{a,\delta}(m)\le \delta^{-1}N_{\rm loc}(m).
+\)
+\end{definition}
+
+\begin{remark}[$\delta$-aware defect UE target (archived benchmark)]
+\label{rem:defect-UE-target-delta}
+A $\delta$-uniform defect UE bound that explicitly accounts for resonance should be formulated in terms of
+$\mathcal R_{a,\delta}(m)$ rather than the $\delta$-blind sum $\mathcal R_a(m)$.
+A schematic form is
+\[
+\Phi^{\rm def}_B(a)\ \le\ C_0\,\delta\,\log m\ +\ C_1\,\delta\,a\,\mathcal R_{a,\delta}(m),
+\qquad
+0<\delta\le \delta_0(m,a)=\eta\,\frac{a}{(\log m)^2}.
+\]
+This inequality is \emph{not} claimed here; it is recorded as the correct resonance-aware target should one revisit
+the defect endpoint class in future work.
+\end{remark}
+
+\begin{definition}[Near-resonance count]\label{def:near-resonance-count}
+For $a\in(0,1]$, $m\ge 10$, and $0<\delta\le 1$, define the near-resonance count
+\[
+N_{\rm near}(m;a,\delta)\ :=\ \#\{\rho:\ E(\rho)=0,\ |\Im(\rho)-m|\le 1,\ |\Re(\rho)-a|\le \delta\},
+\]
+counted with multiplicity.
+\end{definition}
+
+\begin{remark}[$\mathcal R_a(m)$ is $\delta$-blind]
+\label{rem:Ra-deltablind}
+The $\delta$-blind sum $\mathcal R_a(m)$ (Definition~\ref{def:resonance-sum}) cannot rule out near-resonance:
+one may have $N_{\rm near}(m;a,\delta)\ge 1$ with $\delta\ll a$ while still having $\mathcal R_a(m)\asymp a^{-1}$.
+By contrast, $\mathcal R_{a,\delta}(m)\gtrsim \delta^{-1}$ whenever $N_{\rm near}(m;a,\delta)\ge 1$.
+Thus any $\delta$-uniform local analysis must track $\delta$-aware resonance (either via $\mathcal R_{a,\delta}$ or via $N_{\rm near}$).
+\end{remark}
+
+\begin{lemma}[NO--GO: near-resonant quartets can make defect endpoints $\delta$--inert]
+\label{lem:defect-resonance-nogo}
+Fix $a\in(0,1)$, $m>0$, and $0<\varepsilon<a/2$.  Define the even polynomial
+\[
+E_{\varepsilon}(v):=\prod_{\sigma\in\{\pm1\}}\prod_{\tau\in\{\pm1\}}
+\bigl(v-\sigma(a+i\tau m)\bigr)\cdot
+\bigl(v-\sigma((a-\varepsilon)+i\tau m)\bigr),
+\]
+and form $\mathcal Q_a,\mathcal L_a$ as in Definition~\ref{def:defect-quotient}.
+Let $B=B(0,m,\delta)$ with $\delta\in[\varepsilon/2,2\varepsilon]$ and take $\kappa=1/10$.
+Then $B$ is $\kappa$--admissible (for $\delta\ll a$), but the defect endpoint satisfies
+\[
+\Phi^{\rm def}_B(a)\ \ge\ c_0
+\]
+for an absolute constant $c_0>0$ independent of $\delta$ and $\varepsilon$.
+In particular, $\Phi^{\rm def}_B(a)$ need not shrink as $\delta\to 0$ unless horizontal resonance is controlled.
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+Write $w=v-i m$.  A direct computation shows that $\mathcal Q_a(v)$ contains the factor
+\[
+g_{\varepsilon}(w):=\frac{w+\varepsilon}{w-\varepsilon},
+\]
+coming from the second quartet at real part $a-\varepsilon$:
+indeed $E_\varepsilon(v+a)$ vanishes at $v=i m-\varepsilon$ and $E_\varepsilon(v-a)$ vanishes at $v=i m+\varepsilon$.
+Hence $\mathcal Q_a$ has a zero at $w=-\varepsilon$ and a pole at $w=\varepsilon$.
+
+Consider the right vertical side of $\partial B_{\kappa/2}$, parameterized as $w=\delta+i t$ with $t\in[-\delta,\delta]$.
+On this side,
+\[
+\arg g_\varepsilon(\delta+i t)=\arg(\delta+\varepsilon+i t)-\arg(\delta-\varepsilon+i t),
+\]
+so the phase increment along the side is
+\[
+\Delta_t\arg g_\varepsilon=\Bigl[\arctan\!\Bigl(\frac{t}{\delta+\varepsilon}\Bigr)
+-\arctan\!\Bigl(\frac{t}{\delta-\varepsilon}\Bigr)\Bigr]_{t=-\delta}^{t=\delta}
+=2\arctan\!\Bigl(\frac{\delta}{\delta+\varepsilon}\Bigr)-2\arctan\!\Bigl(\frac{\delta}{\delta-\varepsilon}\Bigr).
+\]
+If $\delta\in[\varepsilon/2,2\varepsilon]$, then $\delta-\varepsilon$ has magnitude $\ll \delta$ and the second arctangent
+is bounded away from $0$, forcing $|\Delta_t\arg g_\varepsilon|\ge c_0$ for an absolute $c_0>0$.
+Since $\Delta\arg g_\varepsilon$ is an oriented side phase increment, this lower bound implies
+$\Phi^{\rm def}_B(a)\ge c_0$ (up to $O(\delta/a)$ terms from the far factors).
+\end{proof}
+
+
+
+
+% ============================================================
+% OPEN (Missing Lever): budget-eligible S5' endpoint (v39)
+% ============================================================
+
+
+\begin{lemma}[NO--GO: no $\delta$--uniform transfer to the centered defect box]\label{lem:ML1-samebox-nogo}
+Fix $\kappa\in(0,1/10)$ and $a\in(0,1)$.  Let $B=B(\pm a,m,\delta)$ be an aligned box at height $m$ and let
+$\widehat B=B(0,m,\delta)$ be the centered box of the same height and scale.
+Assume both boxes are $\kappa$--admissible and that $E$ has a quartet at height $m$ with tilt $a$, so that
+$E(\pm a\pm i m)=0$.
+
+Then there is \emph{no} constant $C_{\rm tr}$ independent of $\delta$ such that the transfer inequality
+\[
+\widetilde D_B(W)\ \le\ C_{\rm tr}\,\Phi^{\rm def}_{\widehat B}(a)
+\]
+holds uniformly as $\delta\downarrow 0$ for this box family.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:phase-forcing-argprinciple}, the interior zero of $W$ in $B_{\kappa/2}$ forces
+$\widetilde D_B(W)\ge \pi/2$ on the aligned box, uniformly in $\delta$.
+On the other hand, Lemma~\ref{lem:defect-cancellation} shows that on the centered box $\widehat B=B(0,m,\delta)$
+the defect endpoint may satisfy $\Phi^{\rm def}_{\widehat B}(a)=O(\delta/a)$ as $\delta\to 0$ (even for a single quartet).
+Thus any inequality of the displayed form would force $\pi/2\le C_{\rm tr}\,O(\delta/a)$, which fails for $\delta\downarrow 0$.
+\end{proof}
+
+\begin{remark}[Consequence for S5 endpoints]\label{rem:ml1-transfer-note}
+Lemma~\ref{lem:ML1-samebox-nogo} is the decisive obstruction to any v39-style strategy that tries to transfer
+aligned-box forcing to a centered defect box at the \emph{same} scale $\delta$.
+Any future closure attempt must either (i) use an endpoint that is forceable on the aligned box itself,
+or (ii) introduce genuinely new structure that avoids the centered cancellation mechanism.
+\end{remark}
+
+\begin{lemma}[NO--GO: defect-box pole-winding cannot substitute for transfer]\label{lem:defectbox-nogo-ML1}
+Fix $\kappa\in(0,1/10)$ and $a\in(0,1)$.  Let $\widehat B=B(2a,m,\delta)$ be the defect box that contains the pole $v=2a+i m$
+in the toy configuration of Lemma~\ref{lem:defect-cancellation}, and assume $\widehat B$ is $\kappa$--admissible.
+
+If $E$ has a quartet at height $m$ with tilt $a$, then for all sufficiently small $\delta\ll a$,
+\[
+\Phi^{\rm def}_{\widehat B}(a)\ \ge\ \frac{\pi}{2},
+\]
+independently of $\delta$.
+Consequently, no inequality of the form $\Phi^{\rm def}_{\widehat B}(a)\le C\,\delta^p(\log m)^q$ with $p>0$ and $C$
+independent of $\delta$ can hold uniformly as $\delta\to 0$ on this defect-box family.
+\end{lemma}
+
+\begin{proof}
+Since $E(a+i m)=0$, the denominator $E(v-a)$ vanishes at $v_0=2a+i m$, so $\mathcal Q_a$ has a pole at $v_0$.
+Under $\kappa$--admissibility, $\mathcal Q_a$ is meromorphic in a neighborhood of $\partial\widehat B_{\kappa/2}$ with exactly one
+pole and no zeros/poles on the contour. The argument principle gives total phase change $2\pi$ in magnitude around
+$\partial\widehat B_{\kappa/2}$. Since $\partial\widehat B_{\kappa/2}$ is the concatenation of four oriented sides,
+at least one side has phase increment magnitude at least $\pi/2$. By definition of $\Phi^{\rm def}_{\widehat B}(a)$
+as the max side increment, $\Phi^{\rm def}_{\widehat B}(a)\ge\pi/2$.
+The incompatibility with any $p>0$ $\delta$--gain is immediate.
+\end{proof}
+
+
+% === BEGIN: Missing Lever box (S5') ===
+\begin{center}
+\fbox{%
+\begin{minipage}{0.92\linewidth}
+\textbf{OPEN (Missing Lever; v40: ML-\(\Delta a\)).}\label{box:missing-lever-v40}
+
+\medskip
+\noindent\textbf{Goal.} Replace the v39 transfer/defect--UE/resonance triad by a single \emph{non-pointwise} endpoint redesign that is
+\(\delta\)-aware and robust under near-resonance.
+
+\medskip
+\noindent\textbf{Setup.} Let \(\mathcal D_{a,h}\) and \(\Phi^{(2\mathrm{s})}_B(a;h)\) be as in
+Definitions~\ref{def:two-sided-shift-diff}--\ref{def:two-sided-endpoint}.  In the nominal coupling of this program we take
+\[
+h=\delta,\qquad \delta=\delta_0(m,a):=\eta\,\frac{a}{(\log m)^2}.
+\]
+
+\medskip
+\noindent\textbf{(ML-\(\Delta a\)) Required statements (OPEN).}
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Forcing (truth-latching).}
+If \(E\) has an off-axis quartet at height \(m\) with tilt \(a>0\), then there exists a \(\kappa\)-admissible aligned box \(B=B(\pm a,m,\delta)\)
+such that
+\[
+\Phi^{(2\mathrm{s})}_B(a;h)\ \ge\ c_0
+\]
+for an absolute constant \(c_0>0\) (toy model suggests \(c_0\approx \pi/2\)).
+
+\item \textbf{UE upper bound (gate passing).}
+For all such admissible \(B\),
+\[
+\Phi^{(2\mathrm{s})}_B(a;h)\ \le\ \mathrm{UE}(m,a,\delta,h),
+\]
+where \(\mathrm{UE}\) is \(\delta\)-uniform at the nominal scale and passes the exponent-budget gate
+(Theorem~\ref{thm:exponent-budget} / Gate Calculator).
+
+\item \textbf{Resonance robustness.}
+Near-resonant quartets at tilts \(a-\varepsilon\sim a-h\) cannot make \(\Phi^{(2\mathrm{s})}\) \(\delta\)-inert in a way that violates (2).
+\end{enumerate}
+
+\medskip
+\noindent\textbf{NO--GO reminders.} Centered transfer to \(\widehat B=B(0,m,\delta)\) at the same \(\delta\) is impossible
+(Lemma~\ref{lem:ML1-samebox-nogo}); defect-box pole-winding forcing cannot substitute for transfer
+(Lemma~\ref{lem:defectbox-nogo-ML1}); the pointwise defect endpoint \(\Phi^{\rm def}\) has a side-length ceiling
+(Lemma~\ref{lem:defect-p-ceiling}); and near-resonant quartets can make \(\Phi^{\rm def}\) \(\delta\)-inert
+(Lemma~\ref{lem:defect-resonance-nogo}).  The older S5$^{\rm def}$ target bound (Remark~\ref{rem:defect-UE-target})
+is retained only as an archived benchmark.
+\end{minipage}}
+\end{center}
+% === END: Missing Lever box (S5') ===
+
+
+\begin{lemma}[Endpoint-only NO--GO: $\theta=0$ per pole forbids any $p>0$ UE gain]
+\label{lem:phase-UE-theta0-nogo}
+Fix $\kappa\in(0,1/10)$. Let $B=B(\alpha,m,\delta)$ be an aligned box and assume $\kappa$--admissibility so that
+$\widetilde D_B(W)$ is defined (Definition~\ref{def:Db-tilde-phase}).
+Let $E$ be holomorphic on a neighborhood of $\overline B$ with outer factorization $E=G_{\rm out}\,W$ on $B$.
+
+Assume $\Phi_B$ is a boundary functional acting on the trace of $E'/E$ and that
+there exist constants $C_{\rm loc}=C_{\rm loc}(\kappa)$ and $u\ge 0$ such that,
+for every $\rho\in B_{\kappa/2}$ and the test function $E_\rho(v):=v-\rho$, one has
+the per-pole bound
+\[
+\Phi_B\!\left(\frac{E_\rho'}{E_\rho}\right)
+=\Phi_B\!\left(\frac1{v-\rho}\right)
+\le C_{\rm loc}\,\kappa^{-u},
+\]
+uniformly in $\delta$ (this is the strong form of ``$\theta=0$ per pole'').
+
+Then there do not exist constants $C_{\rm up}>0$ and $p>0$ (independent of $\delta$)
+such that the phase-class UE inequality
+\[
+\widetilde D_B(W) \;\le\; C_{\rm up}\,\delta^{p}\,\Phi_B\!\left(\frac{E'}{E}\right)
+\]
+holds for all such boxes $B$ and all such holomorphic $E$.
+In fact, for $E=E_\rho(v)=v-\rho$ with $\rho\in B_{\kappa/2}$, the inequality forces
+\[
+\frac{\pi}{2} \;\le\; C_{\rm up}\,C_{\rm loc}\,\kappa^{-u}\,\delta^{p},
+\]
+which fails for sufficiently small $\delta$.
+\end{lemma}
+
+\begin{proof}
+Fix $\rho\in B_{\kappa/2}$ and take $E(v)=E_\rho(v)=v-\rho$.
+Then $E$ has a zero in $B_{\kappa/2}^\circ$, hence its quotient $W=E/G_{\rm out}$ also has a zero there
+(since $G_{\rm out}$ is holomorphic and zero-free on $B^\circ$).
+By Lemma~\ref{lem:phase-forcing-argprinciple} this implies $\widetilde D_B(W)\ge \pi/2$.
+On the other hand $E'/E=1/(v-\rho)$, so by hypothesis
+$\Phi_B(E'/E)\le C_{\rm loc}\kappa^{-u}$ uniformly in $\delta$.
+Substituting into the claimed UE bound gives
+$\pi/2 \le C_{\rm up}C_{\rm loc}\kappa^{-u}\delta^{p}$, contradicting $p>0$ as $\delta\to 0$.
+\end{proof}
+
+\begin{remark}[Consequence: endpoint-only $\theta=0$ cannot yield any $p>0$ gain]
+Any attempt to close the S5$'$ envelope obligation by choosing an endpoint class $\Phi_B$ that is $\delta$--inert on each
+local Cauchy kernel $(v-\rho)^{-1}$ (``$\theta=0$ per pole'') cannot produce a $\delta^p$ UE gain with
+$p>0$ via a purely local analytic argument: the test input $E(v)=v-\rho$ contradicts such a bound
+(Lemma~\ref{lem:phase-UE-theta0-nogo}). Therefore any successful phase-class UE inequality with
+$p\ge 1/2$ must incorporate additional structure that defeats the one-pole model (e.g.\ forcing redesign
+or pair-isolation/cancellation in the local factor).
+\end{remark}
+
+\begin{lemma}[LOCAL isolation needed to beat the one-pole obstruction]
+\label{lem:local-isolation-needed}
+Fix $\kappa\in(0,1/10)$ and let $\Phi_B$ be the endpoint class targeted in S5$'$.
+To obtain any UE gain $p>0$ with a local exponent $\theta<p$ in the S5$'$ budget theorem,
+it is necessary to prove a structural statement of the following form:
+
+Whenever $B=B(\alpha,m,\delta)$ is $\kappa$-admissible at the nominal scale
+$\delta\le \delta_0(m,\alpha)$ and $Z_{\rm loc}$ is the local factor of $E$ on $B$,
+there exists a factorization
+\[
+Z_{\rm loc} \;=\; Z_{\rm forced}\cdot Z_{\rm rest}
+\]
+such that (i) $Z_{\rm forced}$ contains only $O(1)$ zeros (the ``forced pair''), and (ii)
+\emph{in the chosen endpoint class} one has a $\delta$-small bound
+\[
+\Phi_B\!\left(\frac{Z_{\rm rest}'}{Z_{\rm rest}}\right)
+\;\le\;
+C\,\kappa^{-u}\,(\log m)^{q_{\rm eff}}\,\delta^{-(\theta_{\rm eff})}
+\qquad\text{with}\qquad \theta_{\rm eff}<p
+\]
+(and ideally $\theta_{\rm eff}=0$ with $q_{\rm eff}=0$ or with an extra $\delta$ factor).
+\end{lemma}
+
+
+
+
+\begin{remark}[S5 acceptance criterion (budget calculus; no drift)]
+\label{rem:S5-accept}
+Any proposed S5 redesign must specify a boundary functional $\Phi_B$ (shape--invariant; $\delta$--normalized)
+and prove two explicit inequalities uniformly for all $m\ge 10$, all $\alpha\in(0,1]$, and all
+$\kappa$--admissible $0<\delta\le \delta_0(m,\alpha)=\eta\alpha/(\log m)^2$:
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{(S5--UE)} a forceable upper-envelope bound
+\[
+D_B(W)\le C_{\rm up}\,\delta^{p}\,\Phi_B(E'/E)
+\]
+with an explicit exponent $p>0$ and $\delta$--uniform constant $C_{\rm up}$;
+
+\item \textbf{(S5--LOC)} a local/collar bound in the same endpoint class
+\[
+\Phi_B(Z'_{\rm loc}/Z_{\rm loc})\le C_{\rm loc}\,\delta^{-\theta}\,G(N_{\rm loc}(m),\kappa)
+\]
+with explicit $\theta\ge 0$ and an explicit growth model for $G$ (e.g.\ $G(n,\kappa)\ll \kappa^{-u}n^q$).
+\end{enumerate}
+
+The redesign is budget--viable for uniform $\eta$--shrinking closure under $\delta_0$
+only if the S5 Budget Theorem yields $2(p-\theta)\ge q$ (and $p-\theta>0$ for shrinkability).
+If $p-\theta<0$, the standard $\kappa$--admissible shrink policy is unsafe (shrinking $\delta$ can
+increase the envelope term) and must be redesigned.
+
+Finally, the forcing chain remains phrased in terms of $D_B(W)$; therefore S5 must include either
+$\Phi_B\ge D_B(W)$ on all admissible boxes or a new forcing lemma that lower-bounds $\Phi_B$
+directly (Remark~\ref{rem:s5-forceability-gate}).
+\end{remark}
+
+
+\begin{theorem}[S5 Budget Theorem (general endpoint functional)]
+\label{thm:S5-budget}
+Fix $\eta\in(0,1]$ and $\kappa\in(0,1/10)$ and define the nominal scale $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$.
+Let $\Phi_B$ be a boundary functional and assume that for every $m\ge 10$, $\alpha\in(0,1]$, and every
+$\kappa$--admissible $0<\delta\le \delta_0(m,\alpha)$ one has:
+\begin{enumerate}[leftmargin=1.5em]
+\item[(i)] \textbf{(S5--UE)} $D_B(W)\le C_{\rm up}\,\delta^{p}\,\Phi_B(E'/E)$ for some $p>0$ and $\delta$--uniform constant $C_{\rm up}$;
+\item[(ii)] \textbf{(S5--SPLIT)} $\Phi_B(E'/E)\le \mathrm{Res}(m)+\Phi_B(Z'_{\rm loc}/Z_{\rm loc})$;
+\item[(iii)] \textbf{(S5--LOC)} $\Phi_B(Z'_{\rm loc}/Z_{\rm loc})\le C_{\rm loc}\,\delta^{-\theta}\,G(N_{\rm loc}(m),\kappa)$ for some $\theta\ge 0$ and $\delta$--uniform $C_{\rm loc}$.
+\end{enumerate}
+Assume moreover that $N_{\rm loc}(m)\le A_N\log m+B_N$ and $\mathrm{Res}(m)\le A_L(\log m)^{r_L}+B_L$ for absolute constants,
+and that for some $q,u\ge 0$ one has the growth model
+\[
+G(n,\kappa)\le C_G\,\kappa^{-u}\,n^q\qquad (n\ge 1),
+\]
+with $C_G$ independent of $(m,\alpha,\delta)$.
+
+Then at the nominal choice $\delta=\delta_0(m,\alpha)$,
+\begin{equation}
+\label{eq:S5-budget}
+D_B(W)\ \le\
+C_{\rm up}\Bigl(\delta_0^{p}\,\mathrm{Res}(m)\ +\ C_{\rm loc}\,\delta_0^{p-\theta}\,G(N_{\rm loc}(m),\kappa)\Bigr).
+\end{equation}
+Furthermore:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{(Uniformity in $m$)} The local contribution in \eqref{eq:S5-budget} is uniformly bounded in $m\ge 10$ only if
+\begin{equation}
+\label{eq:S5-budget-condition}
+2(p-\theta)\ \ge\ q.
+\end{equation}
+\item \textbf{($\eta$--shrinkability)} If \eqref{eq:S5-budget-condition} holds and $p-\theta>0$, then
+\[
+\sup_{m\ge 10}\ \delta_0(m,1)^{p-\theta}\,G(N_{\rm loc}(m),\kappa)\ =\ O\big(\eta^{p-\theta}\big),
+\]
+so the local penalty can be made arbitrarily small by choosing $\eta$ sufficiently small.
+\item \textbf{($\delta$--shrink monotonicity)} If $p\ge 0$ and $p-\theta\ge 0$, then the right-hand side of \eqref{eq:S5-budget}
+is nondecreasing in $\delta$ (for fixed $m,\alpha$); hence replacing $\delta_0$ by a smaller $\kappa$--admissible $\delta\le\delta_0$
+can only improve the inequality. If $p-\theta<0$, $\kappa$--shrinking can \emph{worsen} the envelope term.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Combine (S5--UE) with (S5--SPLIT) and (S5--LOC) to obtain
+\[
+D_B(W)\le C_{\rm up}\,\delta^{p}\,\mathrm{Res}(m)+C_{\rm up}\,C_{\rm loc}\,\delta^{p-\theta}\,G(N_{\rm loc}(m),\kappa).
+\]
+Set $\delta=\delta_0(m,\alpha)$ to obtain \eqref{eq:S5-budget}.
+
+For the local contribution at $\alpha=1$ use $\delta_0=\eta/(\log m)^2$, the growth model $G(n,\kappa)\le C_G\kappa^{-u}n^q$,
+and $N_{\rm loc}(m)\ll\log m$ to get
+\[
+\delta_0^{p-\theta}\,G(N_{\rm loc}(m),\kappa)
+\ \ll\
+\kappa^{-u}\,\eta^{p-\theta}\,(\log m)^{-2(p-\theta)}\,(\log m)^{q}
+=\kappa^{-u}\,\eta^{p-\theta}\,(\log m)^{q-2(p-\theta)}.
+\]
+This is uniformly bounded in $m$ only if $q-2(p-\theta)\le 0$, i.e.\ \eqref{eq:S5-budget-condition}.
+If additionally $p-\theta>0$, the factor $\eta^{p-\theta}$ yields $\eta$--shrinkability.
+
+Finally, the monotonicity claim follows because $\delta\mapsto \delta^{p}$ and $\delta\mapsto \delta^{p-\theta}$ are
+nondecreasing on $(0,\infty)$ exactly when $p\ge 0$ and $p-\theta\ge 0$.
+\end{proof}
+
+% ============================================================
+% v39: S5' closure criterion (budget spine) + acceptance gate
+% ============================================================
+
+\begin{theorem}[S5$'$ closure from a forceable phase endpoint]\label{thm:S5prime-closure}
+Fix $\kappa\in(0,1/10)$ and $\eta\in(0,1)$ and define $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$.
+Let $\widetilde D_B$ be a boundary phase endpoint functional assigned to each $\kappa$--admissible
+aligned box $B=B(\pm a,m,\delta)$ and its boundary quotient $W$.
+Assume:
+\begin{enumerate}[leftmargin=1.5em]
+  \item[(S5$'$--FORCE)] Under an off-axis quartet at height $m$ with displacement $a>0$,
+  there exists an aligned $\kappa$--admissible box $B$ (with $\alpha\approx a$) such that
+  $\widetilde D_B(W)\ge c_{\rm force}-\delta\,\Xi(m)$ with $c_{\rm force}>0$ absolute and
+  $\Xi(m)\ge 0$ explicit.
+  \item[(S5$'$--UE+SPLIT)] For every $\kappa$--admissible aligned box,
+  \[
+    \widetilde D_B(W)\le C_{\rm up}\,\delta^p\Big(\mathrm{Res}(m)+C_{\rm loc}\,\delta^{-\theta}\,G(N_{\rm loc}(m),\kappa)\Big),
+  \]
+  where $p>0$, $\theta\ge 0$, and $C_{\rm up},C_{\rm loc}$ are $\delta$--uniform, and
+  $G(n,\kappa)\le C_G\,\kappa^{-u}n^q$ for fixed $u,q\ge 0$.
+\end{enumerate}
+Suppose additionally that $2p\ge 1$, $2(p-\theta)\ge q$, and $p-\theta>0$.
+Then there exists $\eta_\star\in(0,1)$ (depending on the displayed constants and $\kappa$) such that
+for every $\eta\in(0,\eta_\star]$ the S5$'$ tail inequality holds at $\delta=\delta_0(m,\alpha)$
+for all $m\ge 10$ and all $\alpha\in(0,1]$, and hence no off-axis quartet exists at any height $m\ge 10$.
+Combined with any finite-height front-end, this implies RH.
+\end{theorem}
+
+\begin{remark}[S5$'$ acceptance gate for phase endpoints (no drift)]\label{rem:S5prime-gate}
+Any proposed S5$'$ endpoint built from boundary phase data (e.g.\ $\Delta\arg$ or an integral of
+$\Im(\log\text{-derivative})$) must declare its exponent budget data $(p,\theta,q)$ in the
+schematic bound
+\[
+  \widetilde D_B(W)\le C_{\rm up}\,\delta^p\Big(\mathrm{Res}(m)+C_{\rm loc}\,\delta^{-\theta}\,G(N_{\rm loc}(m),\kappa)\Big),
+\]
+and must satisfy the uniformity/shrink conditions of Theorem~\ref{thm:S5prime-closure}:
+$2p\ge 1$, $2(p-\theta)\ge q$, and $p-\theta>0$.
+Pure $\Delta\arg$ endpoints have $p=0$ and are rejected.
+Any phase endpoint whose proof reduces to an absolute $L^r(\partial B)$ estimate for $E'/E$
+is also rejected by Lemma~\ref{lem:S5_Lp_collapse} and Proposition~\ref{prop:S5_Lp_nogo}.
+\end{remark}
+
+
+
+
+At fixed $(m,\alpha)$ the tail inequality \eqref{eq:tail-ineq} is a strict forcing--vs--envelope condition.
+In v39 (inherited from v36) the combination of Theorem~\ref{thm:exponent-budget}, Lemma~\ref{lem:UE-scaling-nogo}, and Lemma~\ref{lem:force-constant-limited}
+formally rules out the former ``$\eta$--absorption'' closure route based on the pointwise/sup endpoint
+$\sup_{\partial B}|E'/E|$ together with the pointwise collar bound.
+
+\medskip
+\noindent\textbf{What must change.}
+The forcing chain produces a lower bound for the \emph{dial deviation}
+\[
+D_B(W)\ :=\ \sum_{\pm}\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\]
+appearing in Lemma~\ref{lem:upper-envelope}.
+In the current architecture this deviation is upper-bounded by a pointwise endpoint
+$\delta\,\sup_{\partial B}|E'/E|$, which (via the collar) introduces the sharp $\delta^{-1}$ blow--up.
+To obtain a tail closure mechanism one must redesign the envelope endpoint and/or the local interface so that the exponent budget
+$p-\theta\ge \tfrac12$ is met \emph{uniformly in $m$}.
+
+\begin{remark}[Forcing compatibility for redesigned endpoints]
+\label{rem:forceability}
+The existing forcing chain lower-bounds $D_B(W)$ (via the pair-factor phase rotation) by a fixed constant $c$ up to $\delta$--small corrections.
+If one proposes a redesigned envelope endpoint $\Phi_B$ (non-pointwise, e.g.\ an $L^2$ or energy functional),
+then the current forcing lower bound is useful only if it implies a corresponding lower bound for $\Phi_B$.
+A sufficient (and simplest) compatibility condition is:
+\[
+\Phi_B\ \ge\ D_B(W)\qquad\text{for all admissible boxes and quotients }W,
+\]
+so that the forcing lower bound propagates unchanged.
+If this domination fails, then a \emph{new forcing lemma} must be proved that lower-bounds $\Phi_B$ directly.
+\end{remark}
+
+
+
+
+\begin{lemma}[Forceability transfer by domination]
+\label{lem:forceability-domination}
+Let $B$ be a $\kappa$--admissible aligned box and $W$ the associated boundary quotient.
+Suppose a boundary endpoint functional $\Phi_B$ satisfies
+\[
+\Phi_B \ge D_B(W)
+\quad\text{for all admissible }(B,W).
+\]
+Then the existing single--box forcing lower bound for $D_B(W)$ implies the same forcing lower bound
+for $\Phi_B$ with no change in the forcing constants.
+\end{lemma}
+
+
+\begin{remark}[Forceability gate for S5 endpoints (NO--GO unless met)]
+\label{rem:s5-forceability-gate}
+The current forcing architecture (Section~\ref{sec:forcing}) forces only the dial deviation $D_B(W)$
+by an $O(1)$ constant up to $\delta$--small deductions (Lemma~\ref{lem:force-constant-limited}).
+Consequently, any S5 redesign that replaces $D_B(W)$ by a different endpoint $\widetilde D_B$ (or $\Phi_B$)
+is \emph{invalid} unless it proves either:
+\begin{enumerate}[leftmargin=1.5em]
+\item[(i)] $\widetilde D_B \ge D_B(W)$ for all admissible boxes/quotients (domination transfer), or
+\item[(ii)] a new forcing lemma that lower--bounds $\widetilde D_B$ directly under an off--axis quartet.
+\end{enumerate}
+Without (i) or (ii), the forcing half of the tail inequality becomes logically disconnected from the envelope half.
+\end{remark}
+
+% ============================================================
+% v39: S5' phase endpoint toolkit + buffered phase forcing
+% Inserted after Remark~\ref{rem:s5-forceability-gate}.
+% ============================================================
+
+\subsection{S5$'$ phase endpoints: winding / argument-increment toolkit}\label{subsec:S5prime-phase-toolkit}
+
+\begin{definition}[Phase increment on a boundary arc]\label{def:phase_increment}
+Let $\Gamma\subset\mathbb{C}$ be a piecewise $C^1$ oriented curve and let $f$ be holomorphic
+on an open neighborhood of $\Gamma$ with $f(v)\neq 0$ for all $v\in\Gamma$.
+Define the phase increment of $f$ along $\Gamma$ by
+\[
+\Delta_{\Gamma}\arg f \ :=\ \Im\int_{\Gamma}\frac{f'(v)}{f(v)}\,dv.
+\]
+(Equivalently, $\Delta_{\Gamma}\arg f$ is the total change of a continuous branch of $\arg f$ along $\Gamma$.)
+\end{definition}
+
+\begin{lemma}[Phase increment identity and vertical specialization]\label{lem:phase_increment_identity}
+Under the hypotheses of Definition~\ref{def:phase_increment}, the phase increment is additive under concatenation of curves and satisfies:
+\begin{enumerate}[leftmargin=1.5em]
+\item If $\Gamma=\Gamma_1\cup\Gamma_2$ (oriented concatenation), then $\Delta_{\Gamma}\arg f=\Delta_{\Gamma_1}\arg f+\Delta_{\Gamma_2}\arg f$.
+\item If $\Gamma$ is the vertical segment $I_+:=\{\alpha+i y:\ |y-m|\le \delta\}$ oriented upward, then
+\[
+\Delta_{I_+}\arg f \ =\ \Im\int_{m-\delta}^{m+\delta}\frac{f'(\alpha+i y)}{f(\alpha+i y)}\,i\,dy
+\ =\ \int_{m-\delta}^{m+\delta}\Re\!\left(\frac{f'(\alpha+i y)}{f(\alpha+i y)}\right)\,dy.
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{remark}[Parentheses hygiene for phase endpoints]\label{rem:phase_parentheses_hygiene}
+For non-horizontal arcs, one must distinguish
+\[
+\Im\int_{\Gamma}\frac{f'}{f}\,dv
+\qquad\text{from}\qquad
+\int_{\Gamma}\Im\!\left(\frac{f'}{f}\right)\,dv.
+\]
+Only the former is a phase increment. This distinction is essential on vertical segments where $dv=i\,dy$.
+\end{remark}
+
+\begin{definition}[Shifted near-vertical segment]\label{def:Iplus_lambda}
+Let $B=B(\alpha,m,\delta)$ be an aligned box and let $\lambda\in(0,1)$.
+Define the shifted segment
+\[
+I_{+,\lambda}:=\{\alpha+\lambda\delta+i y:\ |y-m|\le \delta\},
+\]
+oriented upward. (\emph{This lies strictly inside $B$. It is separated from the unshifted vertical line
+$I_+=\{\alpha+iy:|y-m|\le\delta\}$ by horizontal distance $\lambda\delta$, and its distance to $\partial B$
+ is at least $(1-\lambda)\delta$.})
+\end{definition}
+
+\begin{lemma}[Phase split on $I_{+,\lambda}$]\label{lem:phase_split_Iplus_lambda}
+Let $B=B(\alpha,m,\delta)$ be $\kappa$--admissible and aligned, and let $I_{+,\lambda}$ be as in Definition~\ref{def:Iplus_lambda}.
+Assume $E$, $Z_{\rm loc}$ and $F:=E/Z_{\rm loc}$ are holomorphic and nonvanishing on an open neighborhood of $I_{+,\lambda}$.
+Then
+\[
+\Delta_{I_{+,\lambda}}\arg E \ =\ \Delta_{I_{+,\lambda}}\arg F\ +\ \Delta_{I_{+,\lambda}}\arg Z_{\rm loc}.
+\]
+Moreover,
+\[
+\bigl|\Delta_{I_{+,\lambda}}\arg F\bigr|
+\ \le\ 2\delta\ \sup_{v\in I_{+,\lambda}}\left|\frac{F'(v)}{F(v)}\right|
+\ \le\ 2\delta\ \sup_{v\in\partial B}\left|\frac{F'(v)}{F(v)}\right|.
+\]
+\end{lemma}
+
+\begin{corollary}[Residual phase budget ($\delta$--uniform)]\label{cor:residual_phase_budget}
+Assume the residual envelope bound of Lemma~\ref{lem:residual-envelope}, i.e.
+$\sup_{\partial B}|F'/F|\le C_1\log m+C_2$ on every $\kappa$--admissible aligned box.
+Then, for every $\lambda\in(0,1)$,
+\[
+\bigl|\Delta_{I_{+,\lambda}}\arg F\bigr|\ \le\ 2\delta\,(C_1\log m+C_2).
+\]
+\end{corollary}
+
+\begin{lemma}[Local phase is $\delta$--inert on line segments (per-zero contribution is $O(1)$)]
+\label{lem:local_phase_delta_inert}
+Let $S\subset\mathbb C$ be any oriented line segment and let $\rho\notin S$.
+Choose a continuous branch of $\arg(v-\rho)$ along $S$.
+Then
+\[
+\left|\Im\int_{S}\frac{dv}{v-\rho}\right|
+=\left|\arg(v_1-\rho)-\arg(v_0-\rho)\right|
+\le \pi,
+\]
+where $v_0,v_1$ are the endpoints of $S$.
+Consequently, writing $Z_{\rm loc}(v)=\prod_{\rho\in Z_{\rm loc}(m)}(v-\rho)^{m_\rho}$,
+for any segment $S$ avoiding $Z_{\rm loc}(m)$ one has
+\[
+\left|\Im\int_{S}\frac{Z'_{\rm loc}(v)}{Z_{\rm loc}(v)}\,dv\right|
+=\left|\Delta_{S}\arg Z_{\rm loc}\right|
+\le \pi\,N_{\rm loc}(m).
+\]
+\end{lemma}
+
+\begin{corollary}[Prototype phase upper bound (residual + local)]\label{cor:prototype_phase_upper}
+Under the hypotheses of Lemma~\ref{lem:phase_split_Iplus_lambda} and Corollary~\ref{cor:residual_phase_budget},
+\[
+\bigl|\Delta_{I_{+,\lambda}}\arg E\bigr|
+\le 2\delta\,(C_1\log m+C_2)\ +\ \bigl|\Delta_{I_{+,\lambda}}\arg Z_{\rm loc}\bigr|.
+\]
+In particular, the residual contribution is $O(\delta\log m)$ while the local contribution is $\delta$--inert in the phase class.
+\end{corollary}
+
+% ------------------------------------------------------------
+% Buffered boundary phase endpoint + forcing lemma (\pi/2)
+% ------------------------------------------------------------
+
+\begin{definition}[Buffered boundary phase endpoint]\label{def:Db-tilde-phase}
+Let $B=B(\alpha,m,\delta)$ be an aligned box and assume $\kappa$--admissibility:
+$\dist(\partial B, Z(E))\ge \kappa\delta$.
+Let $G_{\rm out}$ be the Dirichlet outer factor on $B^\circ$ and $W:=E/G_{\rm out}$ the inner quotient.
+Define the buffered inner rectangle
+\[
+B_{\kappa/2}:=\{v\in B:\dist(v,\partial B)\ge \tfrac{\kappa\delta}{2}\},
+\]
+and write its oriented boundary as $\partial B_{\kappa/2}=\bigcup_{j=1}^4 S_j$ (counterclockwise).
+Define the sidewise phase increment
+\[
+\Delta_{S_j}\arg W \ :=\ \Im\int_{S_j}\frac{W'(v)}{W(v)}\,dv,
+\]
+and the phase endpoint
+\[
+\widetilde D_B(W):=\max_{1\le j\le 4}\Bigl|\Delta_{S_j}\arg W\Bigr|.
+\]
+\end{definition}
+
+\begin{lemma}[Collar nonvanishing for buffered phase endpoints]
+\label{lem:phase_collar_nonvanishing}
+Let $B=B(\alpha,m,\delta)$ be $\kappa$--admissible:
+$\dist(\partial B,\mathcal Z(E))\ge \kappa\delta$.
+Let $B_{\kappa/2}$ be the buffered inner rectangle from Definition~\ref{def:Db-tilde-phase}.
+Then
+\[
+\dist(\partial B_{\kappa/2},\mathcal Z(E))\ \ge\ \frac{\kappa\delta}{2}.
+\]
+In particular, if $G_{\rm out}$ is the Dirichlet outer factor on $B^\circ$ and $W=E/G_{\rm out}$,
+then both $G_{\rm out}$ and $W$ are holomorphic and nonvanishing on an open neighborhood of $\partial B_{\kappa/2}$,
+so the phase increments $\Delta_{S_j}\arg W$ are well-defined (no branch crossing).
+\end{lemma}
+
+\begin{corollary}[Local term on the buffered boundary phase endpoint class]
+\label{cor:local_phase_on_buffered_boundary}
+Assume the hypotheses of Definition~\ref{def:Db-tilde-phase} and write $\partial B_{\kappa/2}=\bigcup_{j=1}^4 S_j$.
+Then the local factor satisfies
+\[
+\max_{1\le j\le 4}\left|\Im\int_{S_j}\frac{Z'_{\rm loc}(v)}{Z_{\rm loc}(v)}\,dv\right|
+\le \pi\,N_{\rm loc}(m).
+\]
+Equivalently,
+\[
+\max_{1\le j\le 4}\left|\Delta_{S_j}\arg Z_{\rm loc}\right|
+\le \pi\,N_{\rm loc}(m).
+\]
+\end{corollary}
+
+\begin{lemma}[Refined per-zero phase bound by horizontal separation]\label{lem:phase_kernel_refined}
+Let $S\subset\mathbb C$ be a line segment of length $|S|$ and let $\rho\notin S$.
+Write $d:=\dist(\rho,S)$.
+Then
+\[
+\left|\Im\int_{S}\frac{dv}{v-\rho}\right|
+\le
+\min\left\{\pi,\ \frac{|S|}{d}\right\}.
+\]
+\end{lemma}
+
+
+
+\begin{lemma}[Phase forcing from an interior zero]\label{lem:phase-forcing-argprinciple}
+Assume the setup of Definition~\ref{def:Db-tilde-phase}. If $W$ has at least one zero in
+$B_{\kappa/2}^\circ$ (equivalently $E$ has at least one zero there), then
+\[
+\widetilde D_B(W)\ge \frac{\pi}{2}.
+\]
+\end{lemma}
+
+\begin{proof}
+Since $W$ is holomorphic and nonvanishing on a neighborhood of $\partial B_{\kappa/2}$,
+the argument principle gives
+\[
+\oint_{\partial B_{\kappa/2}} \frac{W'(v)}{W(v)}\,dv = 2\pi i\,N,
+\]
+where $N\ge 1$ is the number of zeros of $W$ in $B_{\kappa/2}^\circ$, counted with multiplicity.
+Taking imaginary parts and decomposing $\partial B_{\kappa/2}$ into four sides yields
+\[
+\sum_{j=1}^4 \Delta_{S_j}\arg W = 2\pi N.
+\]
+Hence
+\[
+\widetilde D_B(W)\ \ge\ \frac{1}{4}\left|\sum_{j=1}^4 \Delta_{S_j}\arg W\right|
+\ =\ \frac{\pi N}{2}\ \ge\ \frac{\pi}{2}.
+\]
+\end{proof}
+
+\begin{corollary}[Forcing hypothesis is automatic for the buffered phase endpoint]
+\label{cor:S5prime-force-automatic}
+Let $\widetilde D_B$ be the buffered boundary phase endpoint of Definition~\ref{def:Db-tilde-phase}.
+Then whenever $W$ has a zero in $B_{\kappa/2}^\circ$ one has $\widetilde D_B(W)\ge \pi/2$.
+In particular, in Theorem~\ref{thm:S5prime-closure} the forcing condition {\rm(S5$'$--FORCE)}
+may be taken with $c_{\rm force}=\pi/2$ and $\Xi(m)\equiv 0$ whenever the contradiction endpoint
+is $\widetilde D_B$.
+\end{corollary}
+
+\begin{proof}
+This is exactly Lemma~\ref{lem:phase-forcing-argprinciple}.
+\end{proof}
+
+\begin{remark}[Forceability gate for phase endpoints]\label{rem:forceability-phase-gate}
+The single-box forcing chain in this manuscript supplies a lower bound only for a \emph{forced endpoint}.
+For the buffered phase endpoint $\widetilde D_B$ this lower bound is provided by Lemma~\ref{lem:phase-forcing-argprinciple}
+(and recorded as a hypothesis-discharge in Corollary~\ref{cor:S5prime-force-automatic}).
+Consequently, any proposed S5$'$ contradiction endpoint $\Phi_B$ is admissible only if either:
+\begin{enumerate}[leftmargin=1.5em]
+\item $\Phi_B(W)\ge \widetilde D_B(W)$ on every $\kappa$--admissible aligned box (forcing transfers), or
+\item a new forcing lemma is proved that lower-bounds $\Phi_B(W)$ directly under an interior zero/off-axis quartet.
+\end{enumerate}
+Without such a link, forcing and envelope are logically disconnected.
+\end{remark}
+
+
+
+
+\subsection{Baseline NO--GO results for naive non-pointwise endpoints}
+\label{subsec:S5-nogo-baseline}
+
+The S5 goal is to replace the pointwise/sup endpoint in Lemma~\ref{lem:upper-envelope}
+by a non--pointwise functional that still controls the same dial deviation $D_B(W)$ appearing in the forcing chain.
+The next two results prevent drift into two large endpoint classes that cannot work under the present $D_B(W)$ target
+and the v36 local split/collar interface (unchanged from v35).
+
+
+\begin{lemma}[Absolute $L^r$ endpoint scaling collapse]
+\label{lem:S5_Lp_collapse}
+Let $B=B(\pm a,m,\delta)$ be an aligned box and let $G_{\rm out}$ and $W=E/G_{\rm out}$ be as in
+Lemma~\ref{lem:upper-envelope}. Assume boundary contact so that $W$ has unimodular boundary values a.e.
+Fix $r\in[1,\infty]$ and write $L^r(\partial B)$ for $L^r(\partial B,ds)$.
+Then there exists a shape-only constant $C_r>0$ (depending only on the normalized square $Q=[-1,1]^2$)
+such that for each sign $\pm$,
+\begin{equation}
+\label{eq:S5-Lr-UE}
+\bigl|W(v_\pm)-e^{i\varphi_0^\pm}\bigr|
+\ \le\ C_r\,\delta^{\,1-1/r}\,
+\Bigl\|\frac{E'}{E}\Bigr\|_{L^r(\partial B)}.
+\end{equation}
+In particular, any upper-envelope mechanism whose endpoint is an \emph{absolute} $L^r(\partial B)$ norm of $E'/E$
+cannot have a $\delta$--prefactor exponent exceeding $p(r)=1-1/r$ within this endpoint class.
+\end{lemma}
+
+\begin{proof}
+Repeat the proof of Lemma~\ref{lem:upper-envelope} with $L^2$ replaced by $L^r$ throughout.
+Evaluation from the boundary gives $|W(v_\pm)-c|\le \|P_B(v_\pm,\cdot)\|_{L^q}\,\|W-c\|_{L^r}$ for $1/r+1/q=1$,
+and under affine rescaling $\|P_B\|_{L^q}\asymp \delta^{-1/r}$.
+Boundary Poincar\'e in $L^r$ yields $\|W-c\|_{L^r}\le C_r'\,\delta\,\|\partial_s W\|_{L^r}$ with a shape-only constant $C_r'$,
+and outer factor control bounds $\|\partial_s W\|_{L^r}$ by a shape-only constant times $\|E'/E\|_{L^r}$.
+Choosing $c=e^{i\varphi_0^\pm}$ gives \eqref{eq:S5-Lr-UE}, with overall factor $\delta^{-1/r}\cdot \delta=\delta^{1-1/r}$.
+\end{proof}
+
+
+\begin{proposition}[NO--GO: absolute $L^r$ log-derivative endpoints cannot clear the UE--Gate]
+\label{prop:S5_Lp_nogo}
+Assume in addition that $B$ is $\kappa$--admissible and hence the pointwise collar bound holds:
+$\sup_{\partial B}|Z'_{\rm loc}/Z_{\rm loc}|\le N_{\rm loc}(m)/(\kappa\delta)$ (Lemma~\ref{lem:Zloc-logder-collar}).
+Then for every $r\in[1,\infty]$,
+\[
+\delta^{\,1-1/r}\left\|\frac{Z'_{\rm loc}}{Z_{\rm loc}}\right\|_{L^r(\partial B)}
+\ \le\ 8^{1/r}\,\frac{N_{\rm loc}(m)}{\kappa},
+\]
+independent of $\delta$.
+In particular, under the nominal scale $\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$ and the unconditional majorant
+$N_{\rm loc}(m)\ll\log m$, uniform $\eta$--shrinking cannot suppress the local term within any envelope mechanism
+whose endpoint is an absolute $L^r(\partial B)$ norm of $E'/E$.
+\end{proposition}
+
+\begin{proof}
+Use $|\partial B|=8\delta$ and $\|f\|_{L^r}\le |\partial B|^{1/r}\|f\|_{L^\infty}$ to get
+\[
+\Bigl\|\frac{Z'_{\rm loc}}{Z_{\rm loc}}\Bigr\|_{L^r(\partial B)}
+\le (8\delta)^{1/r}\cdot \frac{N_{\rm loc}(m)}{\kappa\delta}
+=8^{1/r}\,\frac{N_{\rm loc}(m)}{\kappa\,\delta^{\,1-1/r}}.
+\]
+Multiply by $\delta^{\,1-1/r}$.
+\end{proof}
+
+
+\begin{remark}[Implication for S5 endpoint design]
+\label{rem:S5_endpoint_implication}
+Lemmas~\ref{lem:S5_Lp_collapse}--\ref{prop:S5_Lp_nogo} rule out the entire family of S5 proposals that attempt
+to replace $\sup_{\partial B}|E'/E|$ by an \emph{absolute} $L^r(\partial B)$ norm of $E'/E$ while keeping the same
+$\kappa$--collar local control. Any viable S5 redesign must instead (i) exploit cancellation (argument-principle style
+\emph{signed} endpoints) and/or (ii) move to a less singular boundary object (e.g.\ endpoints built from $\log|E|$ / BMO-type control).
+\end{remark}
+
+
+\begin{lemma}[NO--GO: local-kernel projection endpoints cannot control $D_B(W)$ without a new forcing link]
+\label{lem:S5-projection-nogo}
+Fix an aligned box $B$ and consider an endpoint functional of the form
+\[
+\Phi_B(E)\ :=\ \|(I-\Pi_B)(E'/E)\|_{X(\partial B)}
+\]
+for some normed boundary space $X(\partial B)$ and a bounded projection $\Pi_B$ satisfying
+$\Pi_B(Z'_{\rm loc}/Z_{\rm loc})=Z'_{\rm loc}/Z_{\rm loc}$ whenever $Z_{\rm loc}$ is the local factor
+associated to $B$ (so that the local term is annihilated under the split $E'/E=F'/F+Z'_{\rm loc}/Z_{\rm loc}$).
+Then there is no universal inequality of the form
+\[
+D_B(W)\ \le\ C\,\delta^{p}\,\Phi_B(E)
+\]
+(valid for all forcing-aligned boxes under the boundary-contact convention), for any fixed $p>0$ and constant $C$,
+unless one supplies a new forcing link that lower-bounds $\Phi_B$ directly under an off-axis quartet.
+\end{lemma}
+
+\begin{proof}
+This is a structural counterexample: in the class of holomorphic functions $E$ obeying the boundary-contact convention,
+take $E=Z_{\rm loc}$ on a box for which $Z_{\rm loc}$ has a zero at one of the dial points $v_\pm$.
+Then $F\equiv 1$ and $E'/E=Z'_{\rm loc}/Z_{\rm loc}$, so by assumption $(I-\Pi_B)(E'/E)=0$ and hence $\Phi_B(E)=0$.
+However $G_{\rm out}$ is zero-free, so $W=E/G_{\rm out}$ shares the same interior zeros as $E$ and
+$W(v_\pm)=0$ for at least one sign, giving $D_B(W)\ge 1$.
+Thus no inequality $D_B(W)\le C\delta^{p}\Phi_B(E)$ can hold from these hypotheses alone; any attempt to use such an endpoint
+must replace $D_B(W)$ as the forced object and provide a forcing-transfer lemma (Remark~\ref{rem:s5-forceability-gate}).
+\end{proof}
+
+
+\begin{remark}[Consequence for S5 searches]
+\label{rem:S5-nogo-consequence}
+Lemmas~\ref{prop:S5_Lp_nogo} and \ref{lem:S5-projection-nogo} close two broad endpoint classes:
+(i) absolute $L^r(\partial B)$ norms of $E'/E$ (including $L^2$) under the current collar interface,
+and (ii) endpoints that annihilate the local kernel span while still targeting the forced dial deviation $D_B(W)$.
+Any viable S5 redesign must introduce a genuinely new local-interface input and/or a new forcing-compatible endpoint.
+\end{remark}
+
+
+\medskip
+\noindent\textbf{S5 design targets (open).}
+A future closure route (S5) should provide a non--pointwise endpoint $\Phi_B$ and a UE--type inequality of the schematic form
+\[
+D_B(W)\ \le\ C_{\rm up}\,\delta^{p}\,\Phi_B(E)
+\qquad (p>0),
+\]
+together with a local/residual split of $\Phi_B(E)$ whose local contribution scales as $\delta^{-\theta}$ with $\theta<p-\tfrac12$,
+or more generally satisfies the exponent budget of Theorem~\ref{thm:exponent-budget}.
+The point is \emph{not} to recover the specific exponent $\tfrac32$ from older drafts, but to obtain any effective gain $p-\theta>\tfrac12$
+with proof--grade uniformity.
+
+\begin{remark}[Recorded open lemmas (S5 checklist)]
+A proof--grade S5 implementation would minimally require:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{(S5--UE)} a redesigned upper-envelope inequality with a forceable endpoint $\Phi_B$;
+\item \textbf{(S5--RES)} a $\delta$--uniform residual envelope bound in the same endpoint class;
+\item \textbf{(S5--LOC)} a collar/local bound in the same endpoint class that avoids the pointwise $\delta^{-1}$ blow--up;
+\item \textbf{(S5--FORCE)} either $\Phi_B\ge D_B(W)$ or a new forcing lemma as in Remark~\ref{rem:forceability}.
+\end{enumerate}
+\end{remark}
+
+
+\section{Global RH from a finite front-end + the tail criterion family}
+\label{sec:global}
+
+\begin{theorem}[Global closure (criterion-first logical form)]
+\label{thm:global}
+Assume:
+\begin{enumerate}[leftmargin=1.5em]
+\item (Front-end) All nontrivial zeros with $0<\ImPart(s)\le 5$ lie on the critical line.
+\item (Tail criterion) Fix some $\eta\in(0,1)$ and $\kappa\in(0,1/10)$, and assume the analytic inputs
+Lemmas~\ref{lem:upper-envelope}--\ref{lem:Nloc-logm} and Lemma~\ref{lem:horizontal-budget} with finite constants.
+Assume moreover that for every $m\ge 10$ and every $\alpha\in(0,1]$ there exists a $\kappa$--admissible
+scale $0<\delta\le \delta_0(m,\alpha)=\eta\alpha/(\log m)^2$ such that the strict tail inequality \eqref{eq:tail-ineq} holds.
+\end{enumerate}
+Then all nontrivial zeros of $\zeta(s)$ lie on the critical line.
+\end{theorem}
+
+\begin{proof}
+For each $m\ge 10$, Theorem~\ref{thm:tail-inequality} turns the strict inequality \eqref{eq:tail-ineq}
+into exclusion of off-axis quartets at height $m$.
+By the tail criterion hypothesis, no off-axis quartets exist at any height $m\ge 10$.
+By the front-end hypothesis, there are no off-axis zeros below height $5$.
+Hence there are no off-axis zeros at any height, so every nontrivial zero lies on the critical line.
+\end{proof}
+
+\begin{remark}[Role of computations and the repro pack (v40)]
+Appendix~\ref{app:certificate} provides a small interval-arithmetic harness that evaluates the tail inequality
+for pinned parameters and a pinned constant ledger. In v36 this is used only for audit purposes (e.g.\ exponent tracking),
+not as a proof substitute.
+\end{remark}
+
+\appendix
+
+\section{Discarded closure routes (as of v40)}
+\label{app:discarded}
+
+This appendix records closure routes that were explored in earlier iterations (v32--v34) but are now ruled out \emph{under the currently proved inputs}.
+The purpose is to prevent future drift: these routes should not be re-opened unless a genuinely new analytic input (e.g.\ an S5 endpoint redesign) is supplied.
+
+
+\subsection*{D0: Centered defect endpoint closure (S5$^{\rm def}$) is retired}
+The v39 ``defect endpoint'' family \(\Phi^{\rm def}\) on centered boxes cannot serve as a load-bearing closure route:
+transfer from aligned-box forcing to a centered defect box at the same \(\delta\) is impossible
+(Lemma~\ref{lem:ML1-samebox-nogo}); the defect endpoint has a side-length ceiling preventing any \(p>1\) gain from pointwise bounds
+(Lemma~\ref{lem:defect-p-ceiling}); and near-resonant quartets can make \(\Phi^{\rm def}\) \(\delta\)-inert
+(Lemma~\ref{lem:defect-resonance-nogo}).  The defect endpoint is therefore retained only as a cautionary NO--GO example.
+
+
+\subsection{D1: Pointwise UE endpoint $\,\sup_{\partial B}|E'/E|$ + collar + $\eta$--absorption (S1/S1$'$)}
+The former absorption narrative attempted to close the tail family by shrinking $\eta$ in the nominal scale
+$\delta_0(m,\alpha)=\eta\alpha/(\log m)^2$.
+In the pointwise/sup architecture the UE step has exponent $p=1$ (Lemma~\ref{lem:upper-envelope}) and the collar/local split has exponent $\theta=1$ (Lemma~\ref{lem:Zloc-logder-collar}),
+so the local contribution is $\delta$--inert and cannot be suppressed by $\eta$ (Lemma~\ref{lem:UE-d1-obstruction}).
+More strongly, the exponent budget (Theorem~\ref{thm:exponent-budget}) shows that uniform $\eta$--shrinking requires $p-\theta\ge \tfrac12$,
+while the scaling NO--GO (Lemma~\ref{lem:UE-scaling-nogo}) forbids any $p>1$ within this endpoint class.
+Finally, the forcing margin is constant--limited in the single--box architecture (Lemma~\ref{lem:force-constant-limited}), so one cannot compensate by ``making forcing grow with $m$''.
+
+\begin{proposition}[Historical record: formal anchor absorption under a hypothetical strengthened UE exponent]
+\label{prop:eta-absorption-conditional-appx}
+This proposition is \emph{not used} in v36. It is recorded only to document the logical shape of the discarded absorption idea.
+
+Assume that, for some $p>1$, an upper-envelope step admits the strengthened form
+\[
+D_B(W)\ \le\ 2C_{\rm up}\,\delta^{p}\,\sup_{\partial B}\Bigl|\frac{E'}{E}\Bigr|
+\]
+with the same constant ledger, and that all other constants in \eqref{eq:tail-ineq} are finite.
+Fix an anchor height $m_\star\ge 10$ and evaluate \eqref{eq:tail-ineq} at $(m,\alpha)=(m_\star,1)$ with the nominal scale
+$\delta_0(m_\star,1)=\eta/(\log m_\star)^2$.
+Then there exists $\eta_\star(m_\star,p)>0$ such that \eqref{eq:tail-ineq} holds at $(m_\star,1)$ for every $\eta\in(0,\eta_\star]$.
+
+\smallskip
+\noindent\emph{Warning:} within the pointwise/sup endpoint class, Lemma~\ref{lem:UE-scaling-nogo} forbids any $p>1$, so this proposition cannot be invoked without an S5 redesign.
+\end{proposition}
+
+\begin{proof}
+Under a strengthened exponent $p>1$, the envelope side becomes
+$A\,\eta^{p}+B\,\eta^{p-1}$ for finite constants $A,B$ depending on $(m_\star,p)$ and the constant ledger,
+while the forcing side equals $c-D\,\eta$ for a finite $D$.
+Since $p>1$, one has $\eta^{p}\to 0$, $\eta^{p-1}\to 0$, and $\eta\to 0$ as $\eta\downarrow 0$,
+so the strict inequality holds for all sufficiently small $\eta$.
+\end{proof}
+
+\subsection{D2: Shrinking the local window / short-interval zero counts}
+A tempting workaround is to replace the fixed local window $|\gamma-t|\le 1$ in the residual/collar interface by a shrinking window
+$|\gamma-t|\le \delta^\beta$ to reduce the local term.
+However, without additional analytic input, available RH--free methods control $N(t+1)-N(t-1)$ at unit scale and do \emph{not} provide a proof--grade bound for
+$N(t+\delta^\beta)-N(t-\delta^\beta)$ as $\delta\downarrow 0$.
+Thus v36 does not pursue window-shrinking as a substitute for the missing UE gain.
+
+\subsection{D3: ``Make forcing grow with $m$'' within single-box forcing}
+Because $\Delta_{I_+}\arg Z_{\rm pair}\le 2\pi$ uniformly (Lemma~\ref{lem:force-constant-limited}), the forcing constant $c$ in the tail inequality is $O(1)$.
+Any attempt to obtain a forcing side that grows like $\log m$ (or any unbounded function of $m$) would require a different forcing architecture (not the v36 single-box forcing chain).
+
+\subsection{D4: ``Boundary modulus implies interior zero-freeness'' converse}
+Under boundary-contact, the quotient $W=E/G_{\rm out}$ satisfies $|W|=1$ on $\partial B$ (Remark~\ref{rem:boundary_modulus}),
+but this has no converse implication toward zero-freeness or constancy (Remark~\ref{rem:no-converse}).
+Therefore, any closure route that implicitly treats $|W|=1$ as ``almost zero-free'' is invalid.
+
+
+
+
+
+\subsection{D5: Absolute $L^r$ log-derivative endpoints (NO--GO)}
+Replacing the pointwise endpoint $\sup_{\partial B}|E'/E|$ by an \emph{absolute} boundary $L^r(\partial B)$ norm of $E'/E$
+does not improve the exponent budget: Lemma~\ref{lem:S5_Lp_collapse} forces the UE prefactor exponent to be
+$p(r)=1-1/r$, while Proposition~\ref{prop:S5_Lp_nogo} shows the local/collar contribution has the same exponent
+$\theta(r)=1-1/r$, hence $p(r)-\theta(r)=0$ and the local leakage is $\delta$--inert.
+
+\subsection{D6: Projecting out the local kernel span (NO--GO)}
+A tempting idea is to define an endpoint by projecting $E'/E$ off the span of local Cauchy kernels so that the local term vanishes.
+Lemma~\ref{lem:S5-projection-nogo} shows this cannot control the forced dial deviation $D_B(W)$ without changing the contradiction endpoint
+or supplying a new forcing link.
+
+\medskip
+\noindent\emph{Supporting documentation for D6 (not a viable endpoint under current forcing).}
+The next definition and lemmas formalize the projection setup and the exact cancellation of the local term.
+They are recorded only to document the mechanism behind the NO--GO.
+
+
+
+\begin{definition}[Local Cauchy subspace and $L^2$ projection (supporting documentation)]
+\label{def:KB-projection}
+Let $B=B(\alpha,m,\delta)$ be $\kappa$--admissible and let $Z_{\rm loc}(m)$ denote the multiset
+of zeros of $E$ used to define $Z_{\rm loc}$ (counted with multiplicity).
+Define the finite-dimensional subspace
+\[
+K_B:=\mathrm{span}\{\,k_\rho:\partial B\to\mathbb{C},\ k_\rho(v)=(v-\rho)^{-1}\ :\ \rho\in Z_{\rm loc}(m)\,\}
+\subset L^2(\partial B,ds),
+\]
+and let $\Pi_B:L^2(\partial B)\to K_B$ be the orthogonal projection.
+\end{definition}
+
+
+\begin{lemma}[Projection kills the local log-derivative (supporting documentation)]
+\label{lem:proj-kills-Zloc}
+With notation as in Definition~\ref{def:KB-projection},
+\[
+\frac{Z'_{\rm loc}}{Z_{\rm loc}}(v)=\sum_{\rho\in Z_{\rm loc}(m)}\frac{m_\rho}{v-\rho}\in K_B
+\quad (v\in\partial B).
+\]
+Hence $\Pi_B(Z'_{\rm loc}/Z_{\rm loc})=Z'_{\rm loc}/Z_{\rm loc}$ and
+$(I-\Pi_B)(Z'_{\rm loc}/Z_{\rm loc})=0$ in $L^2(\partial B)$ (and thus pointwise on $\partial B$).
+Consequently, using Lemma~\ref{lem:logder-split},
+\[
+(I-\Pi_B)\!\left(\frac{E'}{E}\right)=(I-\Pi_B)\!\left(\frac{F'}{F}\right)
+\quad\text{on }\partial B.
+\]
+Moreover $\|\Pi_B\|_{L^2\to L^2}=1$.
+\end{lemma}
+
+
+\begin{remark}[Conditioning caveat for coefficient representations (supporting documentation)]
+\label{rem:proj-conditioning}
+Lemma~\ref{lem:proj-kills-Zloc} uses only the abstract orthogonal projection $\Pi_B$ (a contraction).
+No uniform bound on the inverse Gram matrix of the spanning kernels $k_\rho$ is available without
+a lower bound on pairwise zero separations in $Z_{\rm loc}(m)$.
+Therefore any coefficient-level formula for $\Pi_B$ must be treated as non-uniform unless additional
+spacing structure is proved.
+\end{remark}
+
+
+
+\section{S6 harness: explicit-formula interpretation (non-closure)}
+\label{app:S6-harness}
+
+This appendix is an \emph{interpretation harness only}.  It is not used in any implication in the manuscript.
+Its purpose is to connect the v--frame ``off-axis'' language to the classical explicit formula for prime-counting functions.
+
+\subsection{Frame mapping: v--displacement and the real part $\beta$}
+A nontrivial zero $\rho=\beta+i\gamma$ in the s--frame corresponds to
+\[
+u_\rho=2\rho=2\beta+i\,2\gamma,
+\qquad
+v_\rho=u_\rho-1=(2\beta-1)+i\,2\gamma.
+\]
+Thus an off-critical-line zero ($\beta\neq \tfrac12$) is exactly an off-axis v--zero ($\Re v_\rho\neq 0$),
+with displacement $a:=\Re v_\rho=2\beta-1$.
+
+\subsection{Explicit formula: off-axis zeros as amplitude leaks}
+In a standard explicit formula (e.g.\ for $\psi(x)=\sum_{n\le x}\Lambda(n)$), nontrivial zeros enter through terms of the form
+$x^\rho/\rho$ (or $\operatorname{Li}(x^\rho)$).  If $\rho=\beta+i\gamma$, then
+\[
+x^\rho = x^\beta e^{i\gamma\log x},
+\]
+so the amplitude is governed by $x^\beta$.  In v--variables, $\beta=\tfrac12+\tfrac{a}{2}$, so any $a>0$
+corresponds to an $x^{1/2+a/2}$-scale contribution (an ``amplitude leak'' beyond the square-root scale).
+
+\subsection{What S5$'$ would mean in this language}
+A successful S5$'$ closure would exclude all off-axis v--zeros, hence prove RH and thereby eliminate all amplitude leaks with $\beta>1/2$.
+However, the present manuscript does \emph{not} claim any new prime-error bounds directly: the S6 harness is only a translation layer
+for interpreting off-axis zeros in the classical explicit-formula setting.
+
+
+\paragraph{S6 cross-check for the ML-\(\Delta a\) redesign.}
+The two-sided endpoint \(\Phi^{(2\mathrm{s})}_B(a;h)\) is a \emph{tilt-sensitivity functional}: it is a finite-difference
+in the real displacement \(a\) of the log-derivative \((E'/E)\) evaluated on boundary segments in the \(v\)-plane.
+In explicit-formula language, changing \(a\) corresponds to changing \(\beta=\tfrac12+\tfrac a2\), i.e.\ changing the
+power \(x^\beta\) in the zero term \(x^\rho\).  Thus any persistent off-axis quartet (an \(x^{1/2+a/2}\) amplitude leak)
+must register as a nontrivial boundary phase response at the nominal scale; the ML-\(\Delta a\) strategy is to show that
+this response is incompatible with the \(\delta\)-uniform analytic envelope bounds available on admissible boxes.
+
+
+\section{Tail harness bundle and reproducibility (v40)}
+\label{app:certificate}
+
+\subsection{What the tail checks prove (and what they do not)}
+\label{app:what-proves}
+
+Each tail check records the statement:
+\begin{quote}
+Given a constants file that provides interval enclosures for
+$(C_1,C_2,C_{\mathrm{up}},C_h'',\kappa)$, the chosen parameters $(m,\eta,\alpha)$,
+and the recorded UE exponent $p$,
+the harness computes interval bounds for the left-hand side $\mathrm{LHS}$ and right-hand side $\mathrm{RHS}$ in
+\eqref{eq:tail-ineq} and reports whether the strict separation $\mathrm{LHS}_{\mathrm{hi}}<\mathrm{RHS}_{\mathrm{lo}}$ holds.
+\end{quote}
+
+
+It does \emph{not} certify that the constants file is correct.
+
+\subsection{SHA--256 table (exact artifacts)}
+\label{app:sha}
+
+The file \texttt{v40\_repro\_pack/SHA256SUMS.txt} is the canonical hash list.
+
+\lstinputlisting{v40_repro_pack/SHA256SUMS.txt}
+
+\subsection{Commands}
+\label{app:commands}
+
+From the directory \texttt{v40\_repro\_pack/}:
+\begin{enumerate}[leftmargin=1.5em]
+\item \texttt{sha256sum -c SHA256SUMS.txt}
+\item \texttt{python3 v36\_verify\_tail\_check.py --constants v36\_constants\_m10.json --certificate v36\_tail\_check\_m10.json}
+\item \texttt{python3 v36\_verify\_frontend\_certificate.py --certificate v36\_frontend\_certificate.json}
+\end{enumerate}
+
+\subsection{Expected verifier output: $m=10$ (verbatim; may report strict inequality as false)}
+\label{app:verifier-output-10}
+\lstinputlisting{v40_repro_pack/v40_tail_check_verifier_output_m10.txt}
+
+\subsection{Bundle files (verbatim)}
+\label{app:bundle-files}
+
+\paragraph{v36 low-anchor constants (intervals; audit harness).}
+\lstinputlisting{v40_repro_pack/v40_constants_m10.json}
+
+\paragraph{v36 low-anchor tail check ($m=10$).}
+\lstinputlisting{v40_repro_pack/v40_tail_check_m10.json}
+
+\paragraph{Generator implementation (directed rounding).}
+\lstinputlisting{v40_repro_pack/v40_generate_tail_check.py}
+
+\paragraph{Verifier implementation.}
+\lstinputlisting{v40_repro_pack/v40_verify_tail_check.py}
+
+\section{Finite-height front-end certificate (literature-based)}
+\label{app:frontend}
+
+The required front-end is RH up to height $H_0=5$.
+We record a discharge using Platt--Trudgian's published verification of RH up to
+$3\cdot 10^{12}$.
+
+\paragraph{Pinned front-end certificate JSON.}
+\lstinputlisting{v40_repro_pack/v40_frontend_certificate.json}
+
+\paragraph{Front-end verifier output (internal logic only).}
+\lstinputlisting{v40_repro_pack/v40_frontend_verifier_output.txt}
+
+\paragraph{Generator/verifier scripts.}
+\lstinputlisting{v40_repro_pack/v40_generate_frontend_certificate.py}
+\lstinputlisting{v40_repro_pack/v40_verify_frontend_certificate.py}
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{thebibliography}{99}
+
+\bibitem{CMM82}
+R.~Coifman, A.~McIntosh, and Y.~Meyer,
+\emph{L'int\'egrale de Cauchy d\'efinit un op\'erateur born\'e sur $L^2$ pour les courbes lipschitziennes},
+Annals of Mathematics (2) \textbf{116} (1982), no.~2, 361--387.
+
+\bibitem{DriscollTrefethenSC}
+T.~A. Driscoll and L.~N. Trefethen,
+\emph{Schwarz--Christoffel Mapping},
+Cambridge Monographs on Applied and Computational Mathematics, Cambridge University Press, 2002.
+
+\bibitem{DurenHp}
+P.~L. Duren,
+\emph{Theory of $H^p$ Spaces},
+Academic Press, 1970.
+
+\bibitem{GarnettBaf}
+J.~B. Garnett,
+\emph{Bounded Analytic Functions},
+Graduate Texts in Mathematics, Springer, 2007.
+
+\bibitem{Ivic}
+A.~Ivi\'c,
+\emph{The Riemann Zeta-Function: Theory and Applications},
+Wiley-Interscience, 1985.
+
+\bibitem{Titchmarsh}
+E.~C. Titchmarsh,
+\emph{The Theory of the Riemann Zeta-Function}, 2nd ed., revised by D.~R. Heath-Brown,
+Oxford University Press, 1986.
+
+\bibitem{BellottiWongZeta2024}
+A.~Bellotti and T.~Wong,
+\emph{An improved explicit bound on the argument of the Riemann zeta function on the critical line},
+arXiv:2412.15470v2 (2024).
+
+\bibitem{PlattTrudgian2021}
+D.~Platt and T.~Trudgian,
+\emph{The Riemann hypothesis is true up to $3\cdot 10^{12}$},
+Bulletin of the London Mathematical Society \textbf{53} (2021), no.~3, 792--797.
+\end{thebibliography}
+
+
+\end{document}
